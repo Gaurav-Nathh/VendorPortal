@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
+import { ConfigService } from '../../config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class ItemMappingService {
   private mappingItemsSubject = new BehaviorSubject<any[]>([]);
   mappingItems$ = this.mappingItemsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private envConfig: ConfigService) {}
 
   getMappingItems(): Observable<any[]> {
     const headers = new HttpHeaders({

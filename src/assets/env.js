@@ -1,4 +1,4 @@
 window.env = {
-  apiUrl: "{{API_URL}}",
-  apiKey: "{{API_KEY}}",
+  apiBaseUrl: "{{API_BASE_URL}}",
+  apiCode: "{{API_CODE}}",
 };

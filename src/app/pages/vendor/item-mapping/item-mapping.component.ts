@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ItemMappingService } from '../../../services/item-mapping/item-mapping.service';
+import { ItemMappingService } from '../../../services/vendor-service/item-mapping/item-mapping.service';
 
 @Component({
   selector: 'app-item-mapping',
