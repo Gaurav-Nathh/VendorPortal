@@ -1,0 +1,114 @@
+<aside
+  [ngClass]="{
+    'sidenav-open': isOpen,
+    'sidenav-closed': !isOpen,
+    overlay: sidebarShrinkStyle,
+    hide: !sidebarVisibility
+  }"
+  class="sidenav"
+>
+  <div class="sidenav-header">
+    <button
+      (click)="toggleSidenav()"
+      class="toggle-btn d-flex justify-content-center arrow"
+      aria-label="Toggle sidenav"
+    >
+      <i
+        class="fa-solid"
+        [ngClass]="isOpen ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"
+      ></i>
+    </button>
+  </div>
+  <div id="sidenav-container" class="scroll">
+    <nav class="sidenav-menu">
+      <ul>
+        <li *ngFor="let item of currentMenu" class="menu-item">
+          <a
+            (click)="toggleSubmenu(item, $event)"
+            [routerLink]="item.route"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="menu-link"
+            [attr.data-bs-toggle]="item.submenu ? 'collapse' : null"
+            [attr.data-bs-target]="
+              item.submenu ? '#collapse-' + item.text.toLowerCase() : null
+            "
+          >
+            <div class="icon">
+              <i class="{{ item.icon }}"></i>
+            </div>
+            <span class="menu-text" [ngClass]="{ 'd-none': !isOpen }">{{
+              item.text
+            }}</span>
+            <i
+              *ngIf="item.submenu && isOpen"
+              class="arrow bi bi-chevron-up"
+              [ngClass]="{
+                up: item.isSubmenuOpen,
+                down: !item.isSubmenuOpen
+              }"
+            ></i>
+          </a>
+          <div
+            *ngIf="item.submenu"
+            [id]="'collapse-' + item.text.toLowerCase()"
+            class="collapse"
+            [ngClass]="{ show: item.isSubmenuOpen }"
+          >
+            <ul class="submenu">
+              <li *ngFor="let subitem of item.submenu" class="submenu-item">
+                <a
+                  [routerLink]="subitem.route"
+                  routerLinkActive="active-link"
+                  [routerLinkActiveOptions]="{ exact: false }"
+                  [ngClass]="[isOpen ? 'submenu-link' : 'submenu-link-close']"
+                >
+                  <div class="sub-icon">
+                    <i class="{{ subitem.icon }}"></i>
+                  </div>
+                  <small
+                    class="submenu-text"
+                    [ngClass]="{ 'd-none': !isOpen }"
+                    >{{ subitem.text }}</small
+                  >
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div id="sidenav-container" class="">
+    <nav class="sidenav-menu">
+      <ul>
+        <li *ngFor="let item of commonMenu" class="menu-item">
+          <a
+            (click)="toggleSubmenu(item, $event)"
+            [routerLink]="item.route"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="menu-link"
+          >
+            <div class="icon">
+              <i class="{{ item.icon }}"></i>
+            </div>
+            <span class="menu-text" [ngClass]="{ 'd-none': !isOpen }">{{
+              item.text
+            }}</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-link" (click)="logout()">
+            <div class="icon">
+              <i class="fa-solid fa-power-off"></i>
+            </div>
+            <span class="menu-text" [ngClass]="{ 'd-none': !isOpen }"
+              >Logout</span
+            >
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

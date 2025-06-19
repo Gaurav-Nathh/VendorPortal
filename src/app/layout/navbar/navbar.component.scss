@@ -1,0 +1,98 @@
+.bord {
+  border: 1px solid red;
+}
+#nav {
+  background-color: var(--color-bg-secondry);
+  color: var(--primary-text);
+
+  .nav-icons {
+    display: flex;
+
+    .navbar-icon {
+      transition: transform 0.1s ease;
+      transform-origin: center center;
+
+      &:hover {
+        transform: scale(1.2);
+        color: var(--color-blue);
+      }
+    }
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+  #sidebarMode {
+    background-color: var(--toggle);
+  }
+  .btn-mnu {
+    background-color: transparent;
+    color: var(--primary-text);
+  }
+}
+.menu-toggler {
+  display: none;
+  @media (max-width: 768px) {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .hamburger {
+      display: inline-block;
+      width: 25px;
+      height: 18px;
+      position: relative;
+
+      span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background: #000;
+        border-radius: 2px;
+        position: absolute;
+        left: 0;
+        transition: all 0.3s ease;
+
+        &:nth-child(1) {
+          top: 0;
+        }
+        &:nth-child(2) {
+          top: 7.5px;
+        }
+        &:nth-child(3) {
+          top: 15px;
+        }
+      }
+    }
+    &[aria-expanded="true"] .hamburger span:nth-child(1) {
+      transform: rotate(45deg);
+      top: 7.5px;
+    }
+
+    &[aria-expanded="true"] .hamburger span:nth-child(2) {
+      opacity: 0;
+    }
+
+    &[aria-expanded="true"] .hamburger span:nth-child(3) {
+      transform: rotate(-45deg);
+      top: 7.5px;
+    }
+  }
+}
+
+.sideMenu-toggler {
+  background-color: transparent;
+  transition: rotate 0.3s ease-in-out;
+  rotate: -180deg;
+  color: var(--primary-text);
+
+  &[aria-expanded="false"] {
+    rotate: 0deg;
+  }
+}
+
+#navcollapse {
+  @media (min-width: 768px) {
+    display: none;
+  }
+}

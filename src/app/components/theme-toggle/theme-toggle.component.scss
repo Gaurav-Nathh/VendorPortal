@@ -1,0 +1,46 @@
+.checkbox {
+  opacity: 0;
+  position: absolute;
+}
+
+.checkbox-label {
+  background-color: #565a5f;
+  width: 43px;
+  height: 20px;
+  border-radius: 50px;
+  position: relative;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bi-moon-fill {
+  font-size: 13px;
+  color: #f1c40f;
+}
+
+.bi-sun-fill {
+  font-size: 13px;
+  color: #f39c12;
+}
+
+.checkbox-label .ball {
+  background-color: #ffffff;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  left: 3px;
+  top: 2.4px;
+  border-radius: 50%;
+  transition: transform 0.2s linear;
+}
+
+.checkbox:checked + .checkbox-label .ball {
+  transform: translateX(22px);
+}
+
+.bord {
+  border: 1px solid red;
+}

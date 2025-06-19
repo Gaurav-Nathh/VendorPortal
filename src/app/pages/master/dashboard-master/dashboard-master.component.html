@@ -1,0 +1,207 @@
+<div class="dashboard-container container-fluid p-4">
+    <!-- Header with Date Filter -->
+    <div class="row mb-4 align-items-center">
+      <div class="col-md-6">
+        <h2 class="fw-bold text-primary">Financial Dashboard</h2>
+        <p class="text-muted mb-0">Overview of your financial performance</p>
+      </div>
+      <div class="col-md-6 text-end ">
+        
+      </div>
+    </div>
+  
+    <!-- Quick Stats Row -->
+    <div class="row g-4 mb-4 ">
+      <!-- Receivables -->
+      <div class="col-md-6 ">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-header crd-head  border-0 py-3">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-arrow-down-circle text-success me-2"></i>
+              Total Receivables
+            </h5>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title fw-bold">₹0.00</h3>
+            <p class="text-muted small mb-3">Total Unpaid Invoices</p>
+            <div class="receivables-breakdown">
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Current</span>
+                <span class="fw-medium amnt">₹0.00</span>
+              </div>
+              <div class="d-flex justify-content-between py-2">
+                <span class="text-danger">Overdue</span>
+                <span class="fw-medium text-danger">₹0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Payables -->
+      <div class="col-md-6 ">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-header crd-head  border-0 ">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-arrow-up-circle text-danger me-2"></i>
+              Total Payables
+            </h5>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title fw-bold">₹0.00</h3>
+            <p class="text-muted small mb-3">Total Unpaid Bills</p>
+            <div class="payables-breakdown">
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Current</span>
+                <span class="fw-medium amnt">₹0.00</span>
+              </div>
+              <div class="d-flex justify-content-between py-2">
+                <span class="text-danger">Overdue</span>
+                <span class="fw-medium text-danger">₹0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+      <!-- Cash Flow -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100 card">
+          <div class="card-header crd-head  border-0 py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Cash Flow</h5>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Last 12 Months
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
+                <li><a class="dropdown-item" href="#">This Year</a></li>
+                <li><a class="dropdown-item" href="#">Custom Range</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper" style="height: 300px;">
+              <canvas baseChart
+                      [data]="cashFlowChartData"
+                      [options]="cashFlowChartOptions"
+                      [type]="'line'">
+              </canvas>
+            </div>
+            <div class="cash-summary mt-4">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded">
+                    <p class="small text-muted mb-1">Starting Balance</p>
+                    <h6 class="mb-0 fw-bold">₹0.00</h6>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded">
+                    <p class="small text-muted mb-1">Incoming</p>
+                    <h6 class="mb-0 text-success fw-bold">₹0.00</h6>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded">
+                    <p class="small text-muted mb-1">Outgoing</p>
+                    <h6 class="mb-0 text-danger fw-bold">₹0.00</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Income & Expense -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100 card">
+          <div class="card-header crd-head  border-0 py-3">
+            <h5 class="mb-0">Income vs Expense</h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper" style="height: 200px;">
+              <canvas baseChart
+              [data]="cashFlowChartData"
+              [options]="cashFlowChartOptions"
+              [type]="'line'">
+              </canvas>
+            </div>
+            <div class="total-summary mt-4">
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span>Total Income</span>
+                <span class="fw-bold">₹0.00</span>
+              </div>
+              <div class="d-flex justify-content-between py-2">
+                <span class="text-danger">Total Expenses</span>
+                <span class="fw-bold text-danger">₹-45,544.00</span>
+              </div>
+              <div class="alert alert-light mt-3 small">
+                <i class="bi bi-info-circle me-2"></i> Values displayed are exclusive of taxes
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Bottom Row -->
+    <div class="row g-4">
+      <!-- Top Expenses -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100 card">
+          <div class="card-header crd-head  border-0 py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Top Expenses</h5>
+            <button class="btn btn-sm btn-outline-primary">View All</button>
+          </div>
+          <div class="card-body">
+            <div class="text-center py-5">
+              <i class="bi bi-pie-chart text-muted" style="font-size: 2.5rem;"></i>
+              <p class="text-muted mt-3">No expenses recorded for this fiscal year</p>
+              <button class="btn btn-sm btn-primary">Add Expense</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Projects -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100 card">
+          <div class="card-header crd-head  border-0 py-3">
+            <h5 class="mb-0">Active Projects</h5>
+          </div>
+          <div class="card-body">
+            <div class="text-center py-5">
+              <i class="bi bi-folder text-muted" style="font-size: 2.5rem;"></i>
+              <p class="text-muted mt-3">No active projects</p>
+              <button class="btn btn-sm btn-primary">
+                <i class="bi bi-plus"></i> Add Project
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Bank Accounts -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100 card">
+          <div class="card-header crd-head  border-0 py-3">
+            <h5 class="mb-0">Bank Accounts</h5>
+          </div>
+          <div class="card-body">
+            <div class="text-center py-5">
+              <i class="bi bi-bank text-muted" style="font-size: 2.5rem;"></i>
+              <p class="text-muted mt-3">No bank accounts added</p>
+              <button class="btn btn-sm btn-primary">
+                <i class="bi bi-plus"></i> Add Bank Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

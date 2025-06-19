@@ -1,0 +1,112 @@
+<nav id="nav">
+  <section class="d-flex justify-content-between align-items-center py-2 px-3">
+    <div class="d-flex align-items-center gap-2">
+      <button
+        (click)="toggleSidebar()"
+        class="sideMenu-toggler"
+        type="button"
+        [attr.aria-expanded]="isSidebarVisible"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+      <span class="fw-semibold ps-3">{{ greeting }}</span>
+    </div>
+    <div class="nav-icons">
+      <div class="d-flex gap-4 align-items-center">
+        <app-theme-toggle> </app-theme-toggle>
+        <i
+          class="fa-solid fa-calendar-days fs-6 navbar-icon"
+          role="button"
+          title="Calendar"
+        ></i>
+        <i
+          class="fa-solid fa-bell fs-6 navbar-icon"
+          role="button"
+          title="Notifications"
+        ></i>
+        <i
+          class="bi-gear-fill fs-6 navbar-icon"
+          role="button"
+          title="Settings"
+        ></i>
+      </div>
+      <div class="d-flex ms-4 align-items-center">
+        <i class="fa-solid fa-circle-user fs-6"></i>
+        <i
+          class="bi bi-caret-down-fill"
+          style="font-size: 0.7rem; padding-left: 0.2rem"
+          id="profileDropdown"
+          data-bs-toggle="dropdown"
+        ></i>
+        <div class="dropdown">
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="profileDropdown"
+          >
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button
+      class="menu-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navcollapse"
+      aria-controls="navcollapse"
+      aria-expanded="false"
+    >
+      <span class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <!-- <i class="fa-solid fa-bars"></i> -->
+    </button>
+  </section>
+  <div class="collapse" id="navcollapse">
+    <div class="d-flex justify-content-center pb-2">
+      <div class="d-flex gap-4 align-items-center">
+        <app-theme-toggle> </app-theme-toggle>
+        <i
+          class="fa-solid fa-calendar-days fs-6 navbar-icon"
+          role="button"
+          title="Calendar"
+        ></i>
+        <i
+          class="fa-solid fa-bell fs-6 navbar-icon"
+          role="button"
+          title="Notifications"
+        ></i>
+        <i
+          class="bi-gear-fill fs-6 navbar-icon"
+          role="button"
+          title="Settings"
+        ></i>
+      </div>
+      <div class="d-flex ms-4 align-items-center">
+        <i class="fa-solid fa-circle-user fs-6"></i>
+        <i
+          class="bi bi-caret-down-fill"
+          style="font-size: 0.7rem; padding-left: 0.2rem"
+          id="profileDropdown"
+          data-bs-toggle="dropdown"
+        ></i>
+        <div class="dropdown">
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="profileDropdown"
+          >
+            <li><a class="dropdown-item">Profile</a></li>
+            <li><a class="dropdown-item">Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item text-danger">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
