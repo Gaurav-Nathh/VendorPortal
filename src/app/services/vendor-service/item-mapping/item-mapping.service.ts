@@ -18,12 +18,12 @@ export class ItemMappingService {
 
   getMappingItems(): Observable<any[]> {
     const headers = new HttpHeaders({
-      Code: this.apiKey,
+      Code: this.envConfig.apiCode,
       'Content-Type': 'application/json',
     });
 
     return this.http
-      .get<any[]>(`${this.apiUrl}/Item/GetItemByVendorCustomer`, {
+      .get<any[]>(`${this.envConfig.apiBaseUrl}/Item/GetItemByVendorCustomer`, {
         headers,
         params: { acmId: this.acmId },
       })

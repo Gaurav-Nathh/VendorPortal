@@ -11,18 +11,18 @@ export class ConfigService {
   constructor(private http: HttpClient) {}
 
   async loadConfig(): Promise<void> {
-    // if (isDevMode()) {
-    // const data = await firstValueFrom(this.http.get('src/assets/config.json'));
-    this.config = {
-      apiBaseUrl: 'https://efactoapidevelopment.efacto.cloud/api',
-      apiCode: '140-9299-524-TEST',
-    };
-    console.log('Config loaded:', this.config);
-    // } else {
-    //   this.config.apiBaseUrl = (window as any)['env']?.apiBaseUrl || '';
-    //   this.config.apiCode = (window as any)['env']?.apiCode || '';
-    //   return Promise.resolve();
-    // }
+    // this.config = {
+    //   apiBaseUrl: 'https://efactoapidevelopment.efacto.cloud/api',
+    //   apiCode: '140-9299-524-TEST',
+    // };
+    if (isDevMode()) {
+      const data = await firstValueFrom(this.http.get('/assets/config.json'));
+      this.config = data;
+    } else {
+      this.config.apiBaseUrl = (window as any)['env']?.apiBaseUrl || '';
+      this.config.apiCode = (window as any)['env']?.apiCode || '';
+      return Promise.resolve();
+    }
   }
 
   get apiBaseUrl(): string {
