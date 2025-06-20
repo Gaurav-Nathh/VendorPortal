@@ -3,7 +3,7 @@
   height: 100%;
   overflow: hidden;
 
-  #sales-order-form {
+  #purchase-order-container {
     position: absolute;
     overflow-y: auto;
     height: 100%;
@@ -42,14 +42,34 @@
   }
 }
 
-.card {
-  color: var(--pirmary-text) !important;
-  border-radius: 0.8rem !important;
-  background-color: var(--color-card);
-  border-color: var(--border-color);
-}
-.cardBody {
-  padding: 1rem;
+.purchase-order-form {
+  margin-right: 0.8rem;
+  margin-left: 0.6rem;
+  margin-top: 0.8rem;
+
+  .btn {
+    min-width: 0 !important;
+    width: fit-content;
+    color: white;
+    border-radius: 0.4rem !important;
+    padding-block: 0.4rem;
+    padding-inline: 0.8rem;
+  }
+
+  .card {
+    color: var(--pirmary-text) !important;
+    border-radius: 0.6rem !important;
+    background-color: var(--color-card);
+    border-color: var(--border-color);
+
+    .card-header {
+      background-color: var(--color-bg);
+    }
+
+    .card-body {
+      padding: 0.6rem !important;
+    }
+  }
 }
 
 .upload-container {
@@ -165,15 +185,6 @@
 .action-container {
   display: flex;
   gap: 0.4rem;
-
-  .btn {
-    min-width: 0 !important;
-    width: fit-content;
-    color: white;
-    border-radius: 0.4rem !important;
-    padding-block: 0.4rem;
-    padding-inline: 0.8rem;
-  }
 }
 
 .bord {

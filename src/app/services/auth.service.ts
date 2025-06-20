@@ -6,6 +6,7 @@ import { catchError, finalize, Observable, tap } from 'rxjs';
 import { UserService } from './user.service';
 import { from, of, switchMap, throwError, map } from 'rxjs';
 import { LoadingService } from './shared/loading.service';
+import { SessionServiceService } from './session-service.service';
 
 interface LoginPayload {
   userName: string;
@@ -23,7 +24,8 @@ export class AuthService {
     private router: Router,
     private http: HttpClient,
     private userService: UserService,
-    private loaderAuthService: LoadingService
+    private loaderAuthService: LoadingService,
+    private sessionService: SessionServiceService
   ) {}
 
   login(payload: LoginPayload): Observable<any> {
@@ -180,6 +182,7 @@ export class AuthService {
                   title: 'swal-title',
                 },
               });
+              this.sessionService.stopSession();
               this.clearSession();
             } else {
               Swal.fire({
@@ -212,10 +215,7 @@ export class AuthService {
     // localStorage.removeItem('userType');
     // localStorage.removeItem('UsrLghId');
     // this.router.navigate(['/login']);
-    sessionStorage.removeItem('isAuthenticated');
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('userType');
-    sessionStorage.removeItem('UsrLghId');
+    sessionStorage.clear()
     this.router.navigate(['/login']);
   }
 

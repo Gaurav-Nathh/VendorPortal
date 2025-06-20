@@ -22,8 +22,8 @@ export class SessionServiceService {
         takeUntil(this.stopPolling$),
         switchMap(() => {
           // const lghIdStr = localStorage.getItem('UsrLghId') || '0';
-          const lghIdStr = sessionStorage.getItem('UsrLghId') || '0';
-          const lghId = parseInt(lghIdStr, 10);
+          const lghId = sessionStorage.getItem('UsrLghId') || '0';
+          // const lghId = parseInt(lghIdStr, 10);
 
           return this.http.get(`${this.apiUrl}/Login/LoginAuthenticate`, {
             headers,
@@ -50,7 +50,6 @@ export class SessionServiceService {
       });
   }
   logoutUser() {
-    // localStorage.clear();
     sessionStorage.clear();
     this.router.navigate(['/login']);
   }

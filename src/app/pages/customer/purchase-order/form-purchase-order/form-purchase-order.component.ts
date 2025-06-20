@@ -67,17 +67,16 @@ export class FormPurchaseOrderComponent {
 
   form = {
     vendorName: '',
-    orgType: '',
-    deliveryAddress: '',
-    poNumber: '',
-    referenceNumber: '',
-    date: '',
-    deliveryDate: '',
-    paymentTerms: '',
-    shipmentPreference: '',
-    customerNotes: '',
-    terms: '',
-    discount: 0,
+    orderNumber: '',
+    date: new Date().toISOString().split('T')[0],
+    remark: '',
+    submitAction: 'Draft',
+  };
+
+  actionIcons: { [key: string]: string } = {
+    Draft: 'bi-file-earmark-text',
+    Confirm: 'bi-check2-square',
+    Print: 'bi-printer',
   };
 
   categories = [
@@ -290,6 +289,27 @@ export class FormPurchaseOrderComponent {
   onDelete(index: number): void {
     this.tempCheckoutItems.splice(index, 1);
     this.shoppingCartService.setCheckoutItems([...this.tempCheckoutItems]);
+  }
+  getTotalQuantity(): number {
+    return this.tempCheckoutItems.reduce(
+      (sum, item) => sum + (item.ItmQty || 0),
+      0
+    );
+  }
+
+  getTotalRate(): number {
+    return this.tempCheckoutItems.reduce(
+      (sum, item) => sum + (item.Itemprices?.[0]?.Costprice || 0),
+      0
+    );
+  }
+
+  getTotalAmount(): number {
+    return this.tempCheckoutItems.reduce(
+      (sum, item) =>
+        sum + (item.ItmQty || 0) * (item.Itemprices?.[0]?.Costprice || 0),
+      0
+    );
   }
 
   addEmptyRow(): void {
