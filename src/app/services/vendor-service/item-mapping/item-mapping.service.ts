@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { ConfigService } from '../../config.service';
+import { ItemMappingResponse } from '../../../pages/vendor/item-mapping/item-mapping.component';
 
 @Injectable({
   providedIn: 'root',
@@ -16,19 +17,19 @@ export class ItemMappingService {
 
   constructor(private http: HttpClient, private envConfig: ConfigService) {}
 
-  getMappingItems(): Observable<any[]> {
-    const headers = new HttpHeaders({
-      Code: this.envConfig.apiCode,
-      'Content-Type': 'application/json',
-    });
+getMappingItems(): Observable<ItemMappingResponse> {
+  const headers = new HttpHeaders({
+    Code: this.envConfig.apiCode,
+    'Content-Type': 'application/json',
+  });
 
-    return this.http
-      .get<any[]>(`${this.envConfig.apiBaseUrl}/Item/GetItemByVendorCustomer`, {
-        headers,
-        params: { acmId: this.acmId },
-      })
-      .pipe(tap((response) => this.mappingItemsSubject.next(response)));
-  }
+  return this.http
+    .get<ItemMappingResponse>(`${this.envConfig.apiBaseUrl}/Item/GetItemByVendorCustomer`, {
+      headers,
+      params: { acmId: this.acmId },
+    });
+}
+
 
   getCurrentMappingItems(): any[] {
     return this.mappingItemsSubject.getValue();
