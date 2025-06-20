@@ -194,20 +194,22 @@
       <div class="row mb-4">
         <div class="col-12">
           <div class="card shadow-sm">
-            <div class="card-header backg text-white">
+            <div class="card-header">
               <h5 class="mb-0">Items</h5>
             </div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead class="table-light">
-                    <tr>
+                    <tr class="text-center">
                       <th>Item Code</th>
                       <th>Item Name</th>
-                      <th class="text-end">MRP</th>
-                      <th class="text-end">Quantity</th>
-                      <th class="text-end">Rate</th>
-                      <th class="text-end">Amount</th>
+                      <th>Pack Unit</th>
+                      <th>Stock</th>
+                      <th>MRP</th>
+                      <th>Quantity</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -229,6 +231,24 @@
                           class="form-control"
                           [readonly]="editingIndex !== i"
                           [(ngModel)]="item.ItmName"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          name="ItmPackUntCode{{ i }}"
+                          class="form-control"
+                          [readonly]="editingIndex !== i"
+                          [(ngModel)]="item.ItmPackUntCode"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          name="ItmStock{{ i }}"
+                          class="form-control"
+                          [readonly]="editingIndex !== i"
+                          [(ngModel)]="item.Itemprices[0].Stock"
                         />
                       </td>
                       <td class="text-end">
@@ -265,44 +285,47 @@
                         </div>
                       </td>
                       <td class="text-end">
-                        ₹{{
-                          item.ItmQty * item.Itemprices[0].Costprice
-                            | number : "1.2-2"
-                        }}
+                        <div class="input-group justify-content-end">
+                          <span class="input-group-text">
+                            ₹{{
+                              item.ItmQty * item.Itemprices[0].Costprice
+                                | number : "1.2-2"
+                            }}
+                          </span>
+                        </div>
                       </td>
-                      <td>
+                      <td class="action-container">
                         <button
                           *ngIf="editingIndex !== i"
-                          class="btn btn-sm btn-primary me-1"
+                          class="btn btn-primary"
                           (click)="onEditItem(i)"
                         >
-                          Edit
+                          <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                         <button
                           *ngIf="editingIndex === i"
-                          class="btn btn-sm btn-success me-1"
+                          class="btn btn-success"
                           (click)="onSaveItem(i)"
                         >
-                          Save
+                          <i class="fa-solid fa-square-check"></i>
                         </button>
-                        <button
-                          class="btn btn-sm btn-danger"
-                          (click)="onDelete(i)"
-                        >
-                          Delete
+                        <button class="btn btn-danger" (click)="onDelete(i)">
+                          <i class="fa-solid fa-trash"></i>
                         </button>
                       </td>
                     </tr>
                     <tr *ngIf="tempCheckoutItems.length === 0">
-                      <td colspan="7" class="text-center">
-                        No items in checkout
-                      </td>
+                      <td colspan="9" class="text-center">No items</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <button class="btn btn-primary mt-3" type="button">
+              <button
+                class="btn btn-primary mt-3"
+                type="button"
+                (click)="addEmptyRow()"
+              >
                 <i class="bi bi-plus-circle me-2"></i>Add Row
               </button>
             </div>

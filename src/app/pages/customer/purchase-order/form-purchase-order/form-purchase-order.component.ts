@@ -291,4 +291,23 @@ export class FormPurchaseOrderComponent {
     this.tempCheckoutItems.splice(index, 1);
     this.shoppingCartService.setCheckoutItems([...this.tempCheckoutItems]);
   }
+
+  addEmptyRow(): void {
+    const newItem = {
+      ItmCode: '',
+      ItmName: '',
+      ItmPackUntCode: '',
+      ItmQty: 0,
+      Itemprices: [
+        {
+          MRP: 0,
+          Costprice: 0,
+          Stock: 0,
+        },
+      ],
+    };
+
+    this.tempCheckoutItems.push(newItem);
+    this.editingIndex = this.tempCheckoutItems.length - 1; // start editing new row
+  }
 }

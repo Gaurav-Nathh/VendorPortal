@@ -817,7 +817,7 @@ export class ShoppingCartComponent {
       return;
     }
 
-    this.shoppingCartService.setCheckoutItems(this.cart);
+    this.shoppingCartService.putCheckoutItems(this.cart);
     this.closeCartModal();
     this.sharedService.toggleShoppingCartVisibility(false);
 
@@ -827,7 +827,6 @@ export class ShoppingCartComponent {
       showConfirmButton: false,
       timer: 1000,
     });
-    console.log(this.shoppingCartService.getCheckoutItems());
   }
 
   filters: FilterCategory[] = [
