@@ -57,10 +57,10 @@
 
       <!-- Vendor Popup Modal -->
       <div *ngIf="showVendorPopup" class="modal-backdrop show"></div>
-      <div *ngIf="showVendorPopup" class="modal show d-block" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
-          <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+      <div *ngIf="showVendorPopup" class="modal show d-block" tabindex="-1" >
+        <div class="modal-dialog modal-xl modal-dialog-scrollable ">
+          <div class="modal-content ">
+            <div class="modal-header bg-primary text-white ">
               <h5 class="modal-title">Select Vendor</h5>
               <button
                 type="button"
@@ -70,60 +70,61 @@
             </div>
             <div class="modal-body">
               <!-- Filter Section -->
-              <div class="row mb-3 g-2">
-                <div class="col-md-5">
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="bi bi-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Search vendors..."
-                      [(ngModel)]="searchText"
-                      (ngModelChange)="onSearchChange($event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <select
-                    class="form-select"
-                    [(ngModel)]="selectedStatus"
-                    [ngModelOptions]="{ standalone: true }"
-                    aria-label="Status filter"
-                    (change)="filterType(selectedStatus)"
-                  >
-                    <option
-                      *ngFor="let category of categories"
-                      [value]="category.value"
-                    >
-                      {{ category.state }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-md-3">
-                  <select
-                    class="form-select"
-                    [(ngModel)]="selectedCategory"
-                    [ngModelOptions]="{ standalone: true }"
-                    (change)="filterVendors(selectedCategory)"
-                  >
-                    <option *ngFor="let status of statuses" [value]="status">
-                      {{ status }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-md-1">
-                  <button
-                    class="btn btn-outline-secondary w-100"
-                    (click)="resetFilters()"
-                    title="Reset filters"
-                  >
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                  </button>
-                </div>
-              </div>
+             <div class="row g-2 align-items-center mb-3">
+  <div class="col-md-5">
+    <div class="input-group">
+      <span class="input-group-text bg-light border-end-0">
+        <i class="bi bi-search"></i>
+      </span>
+      <input
+        type="text"
+        class="form-control border-start-0"
+        placeholder="Search vendors..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange($event)"
+        [ngModelOptions]="{ standalone: true }"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <select
+      class="form-select"
+      [(ngModel)]="selectedStatus"
+      [ngModelOptions]="{ standalone: true }"
+      (change)="filterType(selectedStatus)"
+      aria-label="Status filter"
+    >
+      <option *ngFor="let category of categories" [value]="category.value">
+        {{ category.state }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <select
+      class="form-select"
+      [(ngModel)]="selectedCategory"
+      [ngModelOptions]="{ standalone: true }"
+      (change)="filterVendors(selectedCategory)"
+    >
+      <option *ngFor="let status of statuses" [value]="status">
+        {{ status }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-1 d-grid">
+    <button
+      class="btn-fm"
+      (click)="resetFilters()"
+      title="Reset filters"
+    >
+      <i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+  </div>
+</div>
+
 
               <!-- Loading Indicator -->
               <div *ngIf="loading" class="text-center py-4">
@@ -152,11 +153,11 @@
                       <th>PIN</th>
                       <th>GSTIN</th>
                       <th>PAN</th>
-                      <th>Action</th>
+                     
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let vendor of vendorList">
+                    <tr *ngFor="let vendor of paginatedVendors" (click)="selectVendor(vendor)">
                       <td>{{ vendor.AcmCode || "N/A" }}</td>
                       <td>{{ vendor.AcmName || "N/A" }}</td>
                       <td>{{ vendor.AcmMobileNo || "N/A" }}</td>
@@ -164,16 +165,56 @@
                       <td>{{ vendor.AcmGstin || "N/A" }}</td>
                       <td>{{ vendor.AcmPan || "N/A" }}</td>
                       <td>
-                        <button
-                          class="btn btn-sm btn-primary"
-                          (click)="selectVendor(vendor)"
-                        >
-                          Select
-                        </button>
+                       
                       </td>
                     </tr>
                   </tbody>
+                <div class="pagination-container">
+  
+</div>
+
+
                 </table>
+                <div class="pagination-wrapper">
+    <div class="pagination-info">
+      Showing <strong>{{ (page - 1) * pageSize + 1 }}</strong> to 
+      <strong>{{ Math.min(page * pageSize, vendorList.length) }}</strong> of 
+      <strong>{{ vendorList.length }}</strong> entries
+    </div>
+
+    <div class="pagination-controls">
+      <button class="pagination-nav" 
+              [class.disabled]="page === 1"
+              (click)="goToPage(page - 1)">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="pagination-pages">
+        <button *ngFor="let p of [].constructor(totalPages); let i = index"
+                class="page-number"
+                [class.active]="page === i + 1"
+                (click)="goToPage(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <button class="pagination-nav" 
+              [class.disabled]="page === totalPages"
+              (click)="goToPage(page + 1)">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+
+      <select class="form-select page-size-selector" 
+              [(ngModel)]="pageSize"
+              [ngModelOptions]="{ standalone: true }">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+
+      <button class="more-actions" (click)="moreRecord()">
+        <i class="bi bi-three-dots"></i> {{aboutRecord}}
+      </button>
+    </div>
+  </div>
               </div>
 
               <!-- Empty State -->

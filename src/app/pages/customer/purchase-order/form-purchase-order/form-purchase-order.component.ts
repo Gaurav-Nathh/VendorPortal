@@ -88,6 +88,7 @@ export class FormPurchaseOrderComponent {
     { state: 'GSTIN', value: 'AcmGstin' },
     { state: 'PAN', value: 'AcmPan' },
   ];
+  pageSizeOptions = [10, 20, 50, 100];
   statuses = ['Contain', 'Start With', 'End With'];
 
   showVendorPopup = false;
@@ -103,6 +104,11 @@ export class FormPurchaseOrderComponent {
   selectedStatus = 'All';
   searchText: string = '';
   acmName: string = '';
+  aboutRecord:string = 'More Records';
+page: number = 1;
+pageSize: number = 10;
+Math = Math; // For using Math functions in the template
+
   private searchTextChanged = new Subject<string>();
   constructor(
     private sharedService: SharedService,
@@ -129,6 +135,20 @@ export class FormPurchaseOrderComponent {
       }));
     });
   }
+
+
+get paginatedVendors() {
+  const start = (this.page - 1) * this.pageSize;
+  return this.vendorList.slice(start, start + this.pageSize);
+}
+get totalPages() {
+  return Math.ceil(this.vendorList.length / this.pageSize);
+}
+goToPage(pageNum: number) {
+  this.page = pageNum;
+}
+
+
   toggleShoppingCart() {
     this.shoppingCartService.setBtpCode('PO');
     setTimeout(() => this.sharedService.toggleShoppingCartVisibility(true), 0);
@@ -291,4 +311,24 @@ export class FormPurchaseOrderComponent {
     this.tempCheckoutItems.splice(index, 1);
     this.shoppingCartService.setCheckoutItems([...this.tempCheckoutItems]);
   }
+
+  moreRecord()
+  
+  { 
+    
+    if(this.poService.poVendor.MaxRecord === 100) {
+    this.poService.poVendor.MaxRecord=200
+ 
+    this.aboutRecord="end Records";
+    
+  }
+  else { 
+    
+    this.poService.poVendor.MaxRecord=100
+   
+    this.aboutRecord="start Records";
+  }
+     this.dblClickVen();
+
+}
 }
