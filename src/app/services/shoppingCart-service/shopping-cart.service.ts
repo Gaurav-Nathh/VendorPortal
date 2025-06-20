@@ -39,6 +39,11 @@ export class ShoppingCartService {
     this.checkoutItemsSubject.next([...items]);
   }
 
+  putCheckoutItems(newItems: any[]): void {
+    const currentItems = this.checkoutItemsSubject.getValue();
+    this.checkoutItemsSubject.next([...currentItems, ...newItems]);
+  }
+
   getCheckoutItems(): any[] {
     return this.checkoutItemsSubject.getValue();
   }
