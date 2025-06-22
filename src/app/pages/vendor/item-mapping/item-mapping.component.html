@@ -1,110 +1,91 @@
-<div class="container-fluid item-mapping-container pt-3 pt-md-5">
+<div class="container-fluid item-mapping-container  pt-md-2">
   <!-- Search & Filter -->
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 mb-4">
     <div class="d-flex flex-column flex-sm-row gap-3 align-items-stretch align-items-sm-center w-100">
       <div class="position-relative flex-grow-1">
-        <input
+    <div class="position-relative w-100 mb-3">
+ <input
   type="text"
   class="form-control ps-3 pe-5 rounded-pill"
   placeholder="Search items..."
   [(ngModel)]="searchText"
+  (ngModelChange)="onSearchChange($event)"
 />
 
-        <button
-          class="btn position-absolute border-0 bg-transparent"
-          style="top: 50%; right: 10px; transform: translateY(-50%)"
-          (click)="applySearch()"
-          aria-label="Search"
-        >
-          <i class="fa fa-search text-muted"></i>
-        </button>
+  
+</div>
+
       </div>
-      <button class="btn btn-success flex-shrink-0" (click)="openFilterModal()">
-        <i class="fa-solid fa-filter text-white"></i> Filter
-      </button>
+     
     </div>
   </div>
 
   <!-- Desktop Table -->
-  <div class="d-none d-md-block table-responsive">
-    <table class="table table-striped table-hover mb-0 align-middle text-center">
-      <thead class="tables">
-        <tr>
-          <th class="py-3 px-3 fw-semibold">Item Code</th>
-          <th class="py-3 px-3 fw-semibold">Item Name</th>
-          <th class="py-3 px-3 fw-semibold">My Item Code</th>
-          <th class="py-3 px-3 fw-semibold">My Item Name</th>
-          <th class="py-3 px-3 fw-semibold">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of items">
-  <td>{{ item.ItmCode }}</td>
-  <td>{{ item.ItmName }}</td>
-  <td>
-    <input
-      type="text"
-      class="form-control form-control-sm"
-      [(ngModel)]="item.myItemCode"
-      [disabled]="!item.isEditing"
-      placeholder="Enter Code"
-    />
-  </td>
-  <td>
-    <input
-      type="text"
-      class="form-control form-control-sm"
-      [(ngModel)]="item.myItemName"
-      [disabled]="!item.isEditing"
-      placeholder="Enter Name"
-    />
-  </td>
-  <td>
-    <button *ngIf="!item.isEditing" class="btn btn-outline-primary btn-sm" (click)="enableEditing(item)">Edit</button>
-    <button *ngIf="item.isEditing" class="btn btn-primary btn-sm" (click)="saveItem(item)">Save</button>
-  </td>
-</tr>
-
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Mobile Cards -->
-  <div class="d-md-none mobile-items-container mt-3">
-    <div class="card shadow-sm mb-3" *ngFor="let item of filteredItems">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <div>
-          <h6 class="mb-0 fw-bold">{{ item.customerItemName }}</h6>
-          <small class="text-muted">{{ item.customerItemCode }}</small>
-        </div>
-        <div class="dropdown">
-          <button
-            class="btn btn-sm btn-outline-secondary"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            aria-label="Action"
-          >
-            <i class="fa-solid fa-ellipsis-vertical"></i>
+ <!-- Enhanced Table with Column Lines and Row Gaps -->
+<div class="table-container">
+  <table class="table table-hover mb-0 align-middle text-center w-100">
+    <thead>
+      <tr>
+        <th class="py-3 px-3 fw-semibold">Item Code</th>
+        <th class="py-3 px-3 fw-semibold">Item Name</th>
+        <th class="py-3 px-3 fw-semibold">My Item Code</th>
+        <th class="py-3 px-3 fw-semibold">My Item Name</th>
+        <th class="py-3 px-3 fw-semibold">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredItems" class="mb-2">
+        <td 
+          [attr.title]="item.ItmCode" 
+          data-bs-toggle="tooltip"
+          [ngClass]="{'text-start': isNaN(item.ItmCode), 'text-end': !isNaN(item.ItmCode)}">
+          {{ item.ItmCode?.length > 25 ? (item.ItmCode | slice:0:25) + '...' : item.ItmCode }}
+        </td>
+        
+        <td 
+          [attr.title]="item.ItmName" 
+          data-bs-toggle="tooltip" 
+          [ngClass]="{'text-start': isNaN(item.ItmName), 'text-end': !isNaN(item.ItmName)}">
+          {{ item.ItmName?.length > 25 ? (item.ItmName | slice:0:25) + '...' : item.ItmName }}
+        </td>
+        
+        <td>
+          <input
+            type="text"
+            class="input-des"
+            [(ngModel)]="item.ItmItvPrdCode"
+            [disabled]="!item.isEditing"
+            placeholder="Enter Code"
+            [attr.aria-label]="'Item code for ' + item.ItmName" />
+        </td>
+        
+        <td>
+          <input
+            type="text"
+            class="input-des"
+            [(ngModel)]="item.ItmItvPrdName"
+            [disabled]="!item.isEditing"
+            placeholder="Enter Name"
+            [attr.aria-label]="'Item name for ' + item.ItmName" />
+        </td>
+        
+        <td>
+          <button 
+            *ngIf="!item.isEditing" 
+            class="btn btn-outline-primary btn-sm" 
+            (click)="enableEditing(item)"
+            [attr.aria-label]="'Edit ' + item.ItmName">
+            Edit
           </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <button class="dropdown-item" (click)="editItem(item)">
-                <i class="fa fa-edit text-primary me-2"></i> Edit
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item" (click)="deleteItem(item)">
-                <i class="fa fa-trash text-danger me-2"></i> Delete
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="mb-2"><strong>Vendor Code:</strong> {{ item.vendorItemCode }}</div>
-        <div class="mb-2"><strong>Vendor Name:</strong> {{ item.vendorItemName }}</div>
-        <div><strong>Product:</strong> {{ item.product }}</div>
-      </div>
-    </div>
-  </div>
+          <button 
+            *ngIf="item.isEditing" 
+            class="btn btn-primary btn-sm" 
+            (click)="saveItem(item)"
+            [attr.aria-label]="'Save changes for ' + item.ItmName">
+            Save
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

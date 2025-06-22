@@ -1,0 +1,283 @@
+// Variables
+$primary-color: var(--color-blue);
+$primary-light: #eef2ff;
+$primary-dark: #3a56d4;
+$border-color: #e2e8f0;
+$row-gap: 12px;
+$column-border: 1px solid #dee2e6;
+$hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+$transition: all 0.3s ease;
+
+// Table Container
+.table-container {
+  background-color: var(--color-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  
+  margin: 20px 0;
+  
+  // Table styling
+  .table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0 $row-gap;
+    
+    // Header styling
+    thead {
+      th {
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 16px 12px;
+        font-weight: 600;
+        text-align: center;
+        position: relative;
+        vertical-align: middle;
+        
+        // Column separators for header
+        &:not(:last-child)::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 15%;
+          height: 70%;
+          width: 2px;
+          background-color: rgba(216, 216, 216, 0.708);
+        }
+        
+        // Rounded corners for header
+        &:first-child {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+        }
+        
+        &:last-child {
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+      }
+    }
+    
+    // Body styling with gaps between rows
+    tbody {
+      tr {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: $transition;
+        
+        // Hover effect
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: $hover-shadow;
+        }
+        
+        td {
+          border: none;
+          padding: 10px 12px;
+          vertical-align: middle;
+          position: relative;
+          background-color: var(--color-card);
+          color: var(--color-text);
+          
+          // Column separators for body rows
+          &:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background-color: $border-color;
+          }
+          
+          // Rounded corners for body cells
+          &:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+          }
+          
+          &:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+          
+          // Text alignment based on content type
+          &.text-start {
+            text-align: left !important;
+          }
+          
+          &.text-end {
+            text-align: right !important;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Input styling
+.input-des {
+  width: 100%;
+  max-width: 240px;
+  padding: 8px 12px;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: $transition;
+  background-color: #f8fafc;
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    outline: none;
+    background-color: white;
+  }
+  
+  &:disabled {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border-color: #e2e8f0;
+  }
+  
+  &::placeholder {
+    color: #94a3b8;
+    font-size: 0.8rem;
+  }
+}
+
+// Button styling
+.btn {
+  transition: $transition;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  
+  &.btn-outline-primary {
+    border-color: $primary-color;
+    color: $primary-color;
+    
+    &:hover {
+      background-color: $primary-color;
+      border-color: $primary-color;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.2);
+    }
+  }
+  
+  &.btn-primary {
+    background-color: $primary-color;
+    border-color: $primary-color;
+    
+    &:hover {
+      background-color: $primary-dark;
+      border-color: $primary-dark;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+    }
+  }
+  
+  &.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .table-container {
+    padding: 15px;
+    overflow-x: auto;
+    
+    .table {
+      min-width: 700px;
+      
+      thead th {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+      }
+      
+      tbody td {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+      }
+    }
+  }
+  
+  .input-des {
+    max-width: 120px;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .btn.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+// Additional utility classes
+.fw-semibold {
+  font-weight: 600;
+}
+
+// Tooltip styling (if using Bootstrap tooltips)
+.tooltip {
+  font-size: 0.8rem;
+  
+  .tooltip-inner {
+    background-color: #1e293b;
+    color: white;
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+}
+
+// Animation for row loading
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.table tbody tr {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+// Alternative row styling (if you want alternating colors)
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f8fafc;
+  
+  td {
+    background-color: #f8fafc;
+  }
+}
+
+// Loading state
+.table-loading {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+}

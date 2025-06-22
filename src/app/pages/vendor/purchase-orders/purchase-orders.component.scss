@@ -1,82 +1,230 @@
-.purchase-order-form {
-  .card {
-    border: none;
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
+$primary-color: var(--color-blue);
+$primary-light: #eef2ff;
+$primary-dark: #3a56d4;
+$border-color: #e2e8f0;
+$row-gap: 12px;
+$column-border: 1px solid #dee2e6;
+$hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+$transition: all 0.3s ease;
+
+
+.item-mapping-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  padding: 1rem;
+
+  // Search Container Styles
+  .search-containers {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     
-    .card-header {
-      border-radius: 0.5rem 0.5rem 0 0 !important;
-      padding: 1rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    .dropdown-wrapper {
+      min-width: 200px;
+      
+      .status-select {
+        border-radius: 12px;
+        border: 1px solid #e1e5e9;
+        background: white;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:focus {
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+          transform: translateY(-1px);
+        }
+      }
     }
-    
-    .card-body {
-      padding: 1.5rem;
+
+    .search-input-group {
+      .search-input {
+        border-radius: 25px;
+        border: 1px solid #e1e5e9;
+        padding: 0.75rem 3rem 0.75rem 1.25rem;
+        background: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:focus {
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+          transform: translateY(-1px);
+        }
+      }
+      
+      .search-icon {
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        z-index: 5;
+      }
     }
-  }
-  .backg{
-    background-color: var(--color-blue);
-  }
-  
-  .form-label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    
-    span {
-      color: var(--bs-danger);
-    }
-  }
-  
-  .table {
-    th {
+
+    .refresh-btn {
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
       font-weight: 600;
-      white-space: nowrap;
-      vertical-align: middle;
-    }
-    
-    td {
-      vertical-align: middle;
-    }
-    
-    .form-control-sm {
-      padding: 0.25rem 0.5rem;
-      min-width: 80px;
-    }
-    
-    .text-end {
-      text-align: end;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+      }
     }
   }
+
+  // Enhanced Table Styles
+  .table-container {
+  background-color: var(--color-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
   
-  .modal {
-    .modal-content {
-      border: none;
-      border-radius: 0.5rem;
+  margin: 20px 0;
+  
+  // Table styling
+  .table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0 $row-gap;
+    
+    // Header styling
+    thead {
+      th {
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 16px 12px;
+        font-weight: 600;
+       
+        position: relative;
+        vertical-align: middle;
+        
+        // Column separators for header
+        &:not(:last-child)::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 15%;
+          height: 70%;
+          width: 2px;
+          background-color: rgba(216, 216, 216, 0.708);
+        }
+        
+        // Rounded corners for header
+        &:first-child {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+        }
+        
+        &:last-child {
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+      }
     }
     
-    .modal-header {
-      border-radius: 0.5rem 0.5rem 0 0 !important;
-    }
-    
-    .table-responsive {
-      max-height: 60vh;
-      overflow-y: auto;
+    // Body styling with gaps between rows
+    tbody {
+      tr {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: $transition;
+        
+        // Hover effect
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: $hover-shadow;
+        }
+        
+        td {
+          border: none;
+          padding: 10px 12px;
+          vertical-align: middle;
+          position: relative;
+          background-color: var(--color-card);
+          color: var(--color-text);
+          
+          // Column separators for body rows
+          &:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background-color: $border-color;
+          }
+          
+          // Rounded corners for body cells
+          &:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+          }
+          
+          &:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+          
+          // Text alignment based on content type
+          &.text-start {
+            text-align: left !important;
+          }
+          
+          &.text-end {
+            text-align: right !important;
+           
+            font-weight: 500;
+          }
+        }
+      }
     }
   }
-  
-  .btn {
-    i {
-      font-size: 1rem;
-    }
-  }
-  
-  // Responsive adjustments
+}
+
+
+
+  // Responsive Design
   @media (max-width: 768px) {
-    .card-body {
+    padding: 0.5rem;
+    
+    .search-container {
       padding: 1rem;
+      border-radius: 12px;
     }
     
-    .modal-dialog {
-      margin: 0.5rem auto;
+    .table-container {
+      border-radius: 12px;
+      
+      .custom-table {
+        font-size: 0.9rem;
+        
+        .table-header-cell .header-content,
+        .table-cell .cell-content {
+          padding: 1rem 0.75rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .table-container .custom-table {
+      font-size: 0.8rem;
+      
+      .item-count-cell {
+        .view-btn {
+          display: block;
+          margin-top: 0.5rem;
+          margin-left: 0 !important;
+        }
+      }
     }
   }
 }

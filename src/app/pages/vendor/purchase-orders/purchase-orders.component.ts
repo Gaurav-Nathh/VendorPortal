@@ -1,23 +1,14 @@
+
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-/* import { PoServiceFileService } from '../../services/po-service/po-service-file.service'; */
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { VendorServiceFileService } from '../../../services/vendor-service/vendor-service-file.service';
-import { SearchVendorModel } from '../../../Models/data-structure/vendor.model';
-/* import { SearchVendorModel } from '../../Models/data-structure/po.form.model';
- */
+import { PoVendorServiceService } from '../../../services/vendor-service/po-vendor-service/po-vendor-service.service';
 
 
 
-interface AttachedFile {
-  name: string;
-  size: number;
-  type: string;
-}
+
+
+
 
 export interface Acm {
   ACMCODE: string;
@@ -54,299 +45,202 @@ export interface TDSResponse {
   PartyTcs: any[];
   TdsDetail: any[];
 }
-
-
-interface Vendor {
-  AcmId: number;
-  AcmCode: string;
-  AcmName: string;
-  AcmMobileNo: string;
-  AcmPinCode: string;
-  AcmGstin: string;
-  AcmPan: string;
+interface TableItem {
+  id: number;            // We'll assign index-based IDs
+  orderNo: string;       // From PomVno
+  date: string;          // From PomVdate
+  itemCount: number;     // Sum of PodQty
+  value: number;         // Sum of PodNetAmt
+  status: string;        // From PomStatus
 }
+
+
+
+
 
 @Component({
   selector: 'app-purchase-orders',
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './purchase-orders.component.html',
   styleUrl: './purchase-orders.component.scss'
 })
 export class PurchaseOrdersComponent {
 
-
- form = {
-    vendorName: '',
-    orgType: '',
-    deliveryAddress: '',
-    poNumber: '',
-    referenceNumber: '',
-    date: '',
-    deliveryDate: '',
-    paymentTerms: '',
-    shipmentPreference: '',
-    customerNotes: '',
-    terms: '',
-    discount: 0
-  };
-
-  items = [
-    { itemName: '', account: '', quantity: 0, rate: 0, amount: 0 }
+   
+   status: string = '';
+  searchTerm: string = '';
+  
+  statusArray: string[] = [
+   'open',
+   'Billed'
   ];
-  categories = [
-    {state:'All',value:'All'},
-     {state:"Code",value:"AcmCode"},
-      {state:"Name",value:"AcmName"},
-      {state:"Pin code",value:"AcmPinCode"},
-      {state:"GSTIN",value:"AcmGstin"},
-      {state:"PAN",value:"AcmPan"}
-     ];
-  statuses = ['Contain', 'Start With', 'End With'];
 
-  showVendorPopup = false;
-  vendorList: Vendor[] = [];
-  selectedVendor: Vendor | null = null;
-  selectVenId:number | null=null;
-  
-  loading = false;
-  errorMessage: string | null = null;
-  searchTerm = '';
-   filteredVendors: Vendor[] = [];
-   selectedCategory = 'Contain';
-   selectedStatus = "All";
-   searchText: string = '';
-   acmName:string="";
-private searchTextChanged = new Subject<string>();
+  // Sample data for demonstration
+  sampleData: TableItem[] = []
     
 
- constructor(public poService:VendorServiceFileService) {
-  this.searchTextChanged.pipe(
-    debounceTime(500) // wait 500ms after last keystroke
-  ).subscribe(value => {
-    this.searchcat(value); // call your function here
-  });
+  filteredData: TableItem[] = [];
 
- }
-
- onSearchChange(value: string) {
-  this.searchTextChanged.next(value);
-}
-
- searchcat(value:string){
-  this.poService.poVendor.Search= value;
-  this.dblClickVen()
- }
-
- filterVendors(data:any){
- console.log(data)
- this.poService.poVendor.SearchType=data;
- this.dblClickVen();
- }
-filterType(data: any) {
- 
-  this.poService.poVendor.SearchColumn=data; 
-  this.dblClickVen()
-  // this.selectedStatus = data; // not needed, already bound by ngModel
-  
-}
-resetFilters(){
-  this.poService.poVendor = new SearchVendorModel();
-  this.dblClickVen();
-
-}
-
-  addItem(): void {
-    this.items.push({ itemName: '', account: '', quantity: 0, rate: 0, amount: 0 });
+  constructor(private poListService:PoVendorServiceService) { 
+    this.status = this.statusArray[0];
   }
 
-  removeItem(index: number): void {
-    this.items.splice(index, 1);
+  ngOnInit(): void {
+    this.filteredData = [...this.sampleData];
+    this.getPoList();
   }
 
-  updateAmount(item: any): void {
-    const qty = +item.quantity || 0;
-    const rate = +item.rate || 0;
-    item.amount = qty * rate;
+  statusfun(): void {
+    console.log('Status changed to:', this.status);
+    this.filterData();
+
   }
 
-  onSubmit(form: any): void {
-    if (form.valid) {
-      console.log('Form Submitted', this.form, this.items);
-    } else {
-      console.log('Form is invalid');
-    }
+  onSearch(): void {
+    console.log('Search term:', this.searchTerm);
+    this.filterData();
   }
 
-  attachedFiles: AttachedFile[] = [];
-
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files) {
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        // Check if already at max files (10)
-        if (this.attachedFiles.length >= 10) {
-          alert('Maximum 10 files allowed');
-          break;
-        }
-
-        // Check file size (10MB max)
-        if (file.size > 10 * 1024 * 1024) {
-          alert(`File ${file.name} exceeds the 10MB size limit`);
-          continue;
-        }
-
-        this.attachedFiles.push({
-          name: file.name,
-          size: file.size,
-          type: file.type
-        });
-      }
-    }
-  }
-
-  removeFile(index: number) {
-    this.attachedFiles.splice(index, 1);
-  }
-
-  formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  PoaddForm(){
-    console.log(this.poService.poForm);
-   this.poService.postPoForm(this.poService.poForm).subscribe({
-    next:(res:any)=>{
-      console.log(res,"data")
-    }
-   })
-  }
-
-  getItemclick(){
-    console.log("hii")
-  }
- 
- dblClickVen() {
-    this.loading = true;
-    this.errorMessage = null;
-    this.showVendorPopup = true;
+  refreshData(): void {
+    console.log('Refreshing data...');
     
-    this.poService.getVendor(this.poService.poVendor).subscribe({
-      next: (res: any) => {
-        console.log('API Response:', res); // Debug log
-        this.loading = false;
-        this.processVendorResponse(res);
-      },
-      error: (error) => {
-        this.loading = false;
-        this.errorMessage = 'Failed to load vendors. Please try again.';
-        console.error("Error fetching vendors", error);
-      }
-    });
+    // Reset filters
+    this.searchTerm = '';
+    this.status = this.statusArray[0];
+    
+    // Simulate data refresh
+    this.loadData();
+    
+    // Show refresh feedback (optional)
+    this.showRefreshFeedback();
   }
 
-private processVendorResponse(response: any): void {
-    try {
-      this.vendorList = [];
-      
-      // Handle array response
-      if (Array.isArray(response)) {
-        // If the array contains objects with AcmSearchList
-        if (response.length > 0 && response[0].AcmSearchList) {
-          this.vendorList = response.flatMap(item => item.AcmSearchList);
-        } 
-        // If the array contains vendor objects directly
-        else {
-          this.vendorList = response;
-        }
-      }
-      // Handle single vendor object
-      else if (response && typeof response === 'object') {
-        if (response.AcmSearchList) {
-          this.vendorList = response.AcmSearchList;
-        } else {
-          this.vendorList = [response];
-        }
-      }
+  private filterData(): void {
+    let filtered = [...this.sampleData];
 
-      console.log('Processed Vendor List:', this.vendorList); // Debug log
+    // Filter by status
+    if (this.status && this.status !== 'All Status') {
+      filtered = filtered.filter(item => 
+        item.status.toLowerCase() === this.status.toLowerCase()
+      );
+    }
 
-      if (this.vendorList.length === 0) {
-        this.errorMessage = 'No vendor data available';
-      }
-    } catch (e) {
-      this.errorMessage = 'Error processing vendor data';
-      this.vendorList = [];
-      console.error('Data processing error', e);
+    // Filter by search term
+    if (this.searchTerm && this.searchTerm.trim()) {
+      const searchLower = this.searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(item =>
+        item.orderNo.toLowerCase().includes(searchLower) ||
+        item.date.includes(searchLower) ||
+        item.status.toLowerCase().includes(searchLower) ||
+        item.value.toString().includes(searchLower)
+      );
+    }
+
+    this.filteredData = filtered;
+    console.log('Filtered data:', this.filteredData);
+  }
+
+  private loadData(): void {
+    // Simulate API call
+    setTimeout(() => {
+      this.filteredData = [...this.sampleData];
+      console.log('Data loaded successfully');
+    }, 500);
+  }
+
+  private showRefreshFeedback(): void {
+    // Add visual feedback for refresh action
+    const refreshBtn = document.querySelector('.refresh-btn');
+    if (refreshBtn) {
+      refreshBtn.classList.add('loading');
+      setTimeout(() => {
+        refreshBtn.classList.remove('loading');
+      }, 1000);
     }
   }
 
-selectVendor(vendor: Vendor) {
-  this.selectVenId = vendor.AcmId;
-  console.log("Selected AcmId:", this.selectVenId);
+  // Helper methods for template
+  getStatusClass(index: number): string {
+    const statuses = ['status-active', 'status-pending', 'status-completed'];
+    return statuses[index % statuses.length];
+  }
 
-  // Format current date as yyyy-MM-dd
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0]; // "2025-06-18"
+ 
 
-  // Set Vdate before calling API
-  this.poService.poTdsDetails.Vdate = formattedDate;
+  viewItems(item: TableItem): void {
+    console.log('Viewing items for:', item.orderNo);
+    // Implement view logic here
+  }
 
-  this.poService.TDSDetails(vendor.AcmId).subscribe({
-    next: (response:TDSResponse) => {
-      console.log("TDS Details:", response);
-       this.acmName = response.ACM[0]?.ACMNAME;
-      console.log("inside fun",this.acmName)
-      this.poService.poTdsDetails = response;
-      
+  // Optional: Add sorting functionality
+  sortBy(column: string): void {
+    console.log('Sorting by:', column);
+    // Implement sorting logic here
+  }
+  
+
+
+getAlignment(value: any): string {
+  return typeof value === 'number' ? 'text-end' : 'text-start';
+}
+
+/* getPoList(){
+  this.poListService.vendorPoList().subscribe({
+    next: (data) => {
+      console.log('PO List:', data);
+      // Process the data as needed
     },
-    error: (err) => {
-      console.error("Error fetching TDS details:", err);
+    error: (error) => {
+      console.error('Error fetching PO list:', error);
     }
   });
-
-  this.poService.AcmContactSearchList(vendor.AcmId).subscribe({
-    next:(res)=>{
-      console.log("acm-contact-data",res)
-      this.getAcm();
-
-    },
-    error:(err)=>{
-      console.error("error fetching acm-contac-data",err)
-    }
-  })
-  
-  this.closePopup();
  
-}
+} */
 
-getAcm(){
-   console.log("acm data",this.acmName)
-  this.poService.GetAcmByName(this.acmName).subscribe({
-    next:(res)=>{
-     
-  //  console.log("acm-name",res)
+  getPoList() {
+  this.poListService.vendorPoList().subscribe({
+    next: (data: any) => {
+      console.log('PO List:', data);
+
+      this.sampleData = data.POList.map((po: any, index: number) => {
+        const totalQty = po.PoDetails?.reduce((sum: number, d: any) => sum + (d.PodQty || 0), 0) || 0;
+        const totalNetAmt = po.PoDetails?.reduce((sum: number, d: any) => sum + (d.PodNetAmt || 0), 0) || 0;
+
+        return {
+          id: index + 1,
+          orderNo: po.PomVno ?? 'N/A',
+          date: (po.PomVdate ?? '').slice(0, 10),
+
+          itemCount: totalQty,
+          value: totalNetAmt,
+          status: po.PomStatus ?? 'Unknown'
+        };
+      });
+
+      // Now apply filters if needed
+      this.filteredData = [...this.sampleData];
     },
-    error:(err)=>{
-      console.error("error fetching acm-name",err)
-
-
+    error: (error) => {
+      console.error('Error fetching PO list:', error);
     }
-  })
+  });
 }
 
+ 
 
-  closePopup() {
-    this.showVendorPopup = false;
-    this.vendorList = [];
-    this.errorMessage = null;
-  }
+
+ 
+
+ 
+ 
+ 
+
+
+
+
+
+
+ 
 
   
 }

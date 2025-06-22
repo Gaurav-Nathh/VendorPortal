@@ -105,6 +105,7 @@ export class FormPurchaseOrderComponent {
   searchText: string = '';
   acmName: string = '';
   aboutRecord:string = 'More Records';
+  vendor:string = '';
 page: number = 1;
 pageSize: number = 10;
 Math = Math; // For using Math functions in the template
@@ -234,7 +235,7 @@ goToPage(pageNum: number) {
   }
 
   selectVendor(vendor: Vendor) {
-    this.selectVenId = vendor.AcmId;
+   /*  this.selectVenId = vendor.AcmId;
     console.log('Selected AcmId:', this.selectVenId);
 
     // Format current date as yyyy-MM-dd
@@ -267,6 +268,8 @@ goToPage(pageNum: number) {
     });
 
     this.closePopup();
+    this.vendor = vendor.AcmName;
+    console.log('Selected Vendor:', this.vendor);
   }
 
   getAcm() {
@@ -278,7 +281,7 @@ goToPage(pageNum: number) {
       error: (err) => {
         console.error('error fetching acm-name', err);
       },
-    });
+    }); */
   }
 
   closePopup() {
@@ -329,5 +332,18 @@ goToPage(pageNum: number) {
 
     this.tempCheckoutItems.push(newItem);
     this.editingIndex = this.tempCheckoutItems.length - 1; // start editing new row
+  }
+  moreRecord(){
+    if(this.poService.poVendor.MaxRecord===100)
+    {
+      this.poService.poVendor.MaxRecord=200;
+      this.aboutRecord = 'End Records';
+
+    }
+    else {
+      this.poService.poVendor.MaxRecord=100;
+      this.aboutRecord = 'More Records';
+    }
+    this.dblClickVen();
   }
 }
