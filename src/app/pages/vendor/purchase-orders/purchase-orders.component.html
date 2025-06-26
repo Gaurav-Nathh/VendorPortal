@@ -1,103 +1,131 @@
-<div class="container-fluid item-mapping-container  pt-md-2">
+<div class="container-fluid item-mapping-container pt-md-2">
   <!-- Search & Filter -->
- <!-- Component Template (HTML) -->
-<div class="search-containers mb-4 ">
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3">
-    
-    <!-- Search Controls Section -->
-    <div class="d-flex flex-column flex-sm-row gap-3 align-items-stretch align-items-sm-center flex-grow-1">
-      
-      <!-- Status Dropdown -->
-      <div class="dropdown-wrapper">
-        <select 
-          class="form-select status-select" 
-          [(ngModel)]="status" 
-          
-          aria-label="Select status">
-          <option *ngFor="let state of statusArray" [value]="state">
-            {{state}}
-          </option>
-        </select>
-      </div>
-      
-      <!-- Search Input with Button -->
-      <div class="search-input-group flex-grow-1">
-        <div class="position-relative">
-          <input 
-            type="text"
-            class="form-control search-input"
-            placeholder="Search items..."
-            [(ngModel)]="searchTerm"
-            
-            aria-label="Search items" />
-          
-          <!-- Search Icon (optional) -->
-          <span class="search-icon position-absolute">
-            <i class="bi bi-search" aria-hidden="true"></i>
-          </span>
+  <div class="search-containers mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3">
+      <!-- Search Controls Section -->
+      <div class="d-flex flex-column flex-sm-row gap-3 align-items-stretch align-items-sm-center flex-grow-1">
+        <!-- Status Dropdown -->
+        <div class="dropdown-wrapper">
+          <select class="form-select status-select" [(ngModel)]="status" aria-label="Select status">
+            <option *ngFor="let state of statusArray" [value]="state">
+              {{state}}
+            </option>
+          </select>
+        </div>
+        
+        <!-- Search Input with Button -->
+        <div class="search-input-group flex-grow-1">
+          <div class="position-relative">
+            <input 
+              type="text"
+              class="form-control search-input"
+              placeholder="Search items..."
+              [(ngModel)]="searchTerm"
+              aria-label="Search items" />
+            <span class="search-icon position-absolute">
+              <i class="bi bi-search" aria-hidden="true"></i>
+            </span>
+          </div>
         </div>
       </div>
       
+      <!-- Refresh Button -->
+      <div class="refresh-button-wrapper">
+        <button 
+          type="button" 
+          class="btn btn-outline-primary refresh-btn"
+          (click)="getPoList()"
+          aria-label="Refresh data">
+          <i class="bi bi-arrow-clockwise me-2" aria-hidden="true"></i>
+          Refresh
+        </button>
+      </div>
     </div>
-    
-    <!-- Refresh Button -->
-    <div class="refresh-button-wrapper">
-      <button 
-        type="button" 
-        class="btn btn-outline-primary refresh-btn"
-        (click)="getPoList()"
-        aria-label="Refresh data">
-        <i class="bi bi-arrow-clockwise me-2" aria-hidden="true"></i>
-        Refresh
-      </button>
-    </div>
-    
   </div>
-</div>
 
   <!-- Desktop Table -->
- <!-- Enhanced Table with Column Lines and Row Gaps -->
-<div class="table-container">
-  <table class="table table-hover mb-0 align-middle text-center w-100">
-    <thead>
-      <tr>
-        <th class="py-3 px-3 fw-semibold">Order No.</th>
-        <th class="py-3 px-3 fw-semibold">Date</th>
-        <th class="py-3 px-3 fw-semibold">Item Count|View</th>
-        <th class="py-3 px-3 fw-semibold">Value</th>
-        <th class="py-3 px-3 fw-semibold">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of  sampleData" class="mb-2">
-      <td [attr.title]="item.orderNo" data-bs-toggle="tooltip"
-      [ngClass]="getAlignment(item.orderNo)"
-      >
-  {{ item.orderNo }}
-</td>
-<td [attr.title]="item.date" data-bs-toggle="tooltip"
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle w-100">
+        <thead>
+          <tr>
+            <th class="py-3 px-3 fw-semibold">Order No.</th>
+            <th class="py-3 px-3 fw-semibold">Date</th>
+            <th class="py-3 px-3 fw-semibold">Item Count|View</th>
+            <th class="py-3 px-3 fw-semibold">Value</th>
+            <th class="py-3 px-3 fw-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let item of sampleData; let i = index">
+            <!-- Main Table Row -->
+            <tr class="table-row" 
+                [class.row-expanded]="selectedRowIndex === i"
+                (click)="toggleRowDropdown(item, i, $event)">
+              <td [attr.title]="item.orderNo" 
+                  data-bs-toggle="tooltip" 
+                  [ngClass]="getAlignment(item.orderNo)">
+                {{ item.orderNo }}
+              </td>
+              <td [attr.title]="item.date" data-bs-toggle="tooltip">
+                {{ item.date }}
+              </td>
+              <td [attr.title]="item.itemCount + ' items'" 
+                  data-bs-toggle="tooltip" 
+                  [ngClass]="getAlignment(item.itemCount)">
+                {{ item.itemCount }}
+              </td>
+              <td [attr.title]="item.value" 
+                  data-bs-toggle="tooltip" 
+                  [ngClass]="getAlignment(item.value)">
+                ₹{{ item.value | number:'1.2-2' }}
+              </td>
+              <td [attr.title]="item.status" 
+                  data-bs-toggle="tooltip" 
+                  [ngClass]="getAlignment(item.status)">
+                <span class="badge" >
+                  {{ item.status }}
+                </span>
+              </td>
+            </tr>
 
+            <!-- Dropdown Row - Appears below clicked row -->
+            <tr *ngIf="showModal && selectedRowIndex === i" class="dropdown-row">
+              <td colspan="5" class="p-0">
+                <div class="row-dropdown-container" 
+                     [@slideDown]
+                     (click)="$event.stopPropagation()">
+                  
+                  <!-- Dropdown Header -->
+                  <div class="dropdown-header d-flex justify-content-between align-items-center pt-0">
+                    <div class="header-content">
+                      <h6 class="mb-0 fw-bold text-white">
+                        <i class="bi bi-file-text me-2"></i>
+                        Purchase Order Details - {{ selectedPoItem?.orderNo }}
+                      </h6>
+                    </div>
+                    <button type="button" 
+                            class="btn-close btn-close-white" 
+                            aria-label="Close" 
+                            (click)="closeDropdown()">
+                    </button>
+                  </div>
 
->
-  {{ item.date }}
-</td>
-<td [attr.title]="item.itemCount + ' items'" data-bs-toggle="tooltip"
-[ngClass]="getAlignment(item.itemCount)"
->
-  {{ item.itemCount }} 
-</td>
-<td [attr.title]="item.value" data-bs-toggle="tooltip"
- [ngClass]="getAlignment(item.value)"
->
-  ₹{{ item.value |number:'1.2-2' }}
-</td>
-<td [attr.title]="item.status" data-bs-toggle="tooltip"
-[ngClass]="getAlignment(item.status)"
->
-  {{ item.status }}
-</td>
-
-      </tr>
-    </tbody>
-  </table>
+                  <!-- Dropdown Body -->
+                  <div class="dropdown-body">
+                   
+                    <!-- Component Container -->
+                    <div class="component-container">
+                      
+                      <app-po-list [po]="selectedPoItem" class="po-list-component"></app-po-list>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

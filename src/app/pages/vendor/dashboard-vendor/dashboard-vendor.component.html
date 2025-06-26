@@ -1,1 +1,78 @@
-<p>dashboard-vendor works!</p>
+<div class="dashboard-container container-fluid p-4">
+
+  <!-- Top Info Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="info-card">
+        <h5>Pending Payment</h5>
+        <p class="amount">₹9999.99</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="info-card">
+        <h5>Last Payment Amount</h5>
+        <p class="amount">₹99999.99</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="info-card">
+        <h5>Last Payment Date</h5>
+        <p class="date">12th June 2025</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchases and Chart -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <h5>My Monthly Purchase</h5>
+      <div class="chart-placeholder">[Chart: 6-month graph]</div>
+    </div>
+    <div class="col-md-6">
+      <h5>Last 5 Purchases</h5>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Invoice No.</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let purchase of recentPurchases">
+            <td>{{ purchase.date }}</td>
+            <td>{{ purchase.invoiceNo }}</td>
+            <td>₹{{ purchase.amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Profile and Address -->
+  <div class="row">
+    <div class="col-md-6">
+      <h5>My Profile</h5>
+      <ul class="profile-list">
+        <li><strong>Name:</strong> {{ profile.name }}</li>
+        <li><strong>GSTIN:</strong> {{ profile.gstin }}</li>
+        <li><strong>Phone:</strong> {{ profile.phone }}</li>
+        <li><strong>Email:</strong> {{ profile.email }}</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h5>Address</h5>
+      <ul class="address-list">
+        <li><strong>Billing Address:</strong> {{ profile.billingAddress }}</li>
+        <li><strong>Shipping Address:</strong> {{ profile.shippingAddress }}</li>
+      </ul>
+      <h5 class="mt-3">Bank Details</h5>
+      <ul class="bank-list">
+        <li><strong>Account No:</strong> {{ profile.bank.accountNo }}</li>
+        <li><strong>Bank:</strong> {{ profile.bank.name }}</li>
+        <li><strong>IFSC:</strong> {{ profile.bank.ifsc }}</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

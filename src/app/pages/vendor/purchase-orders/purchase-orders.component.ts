@@ -1,8 +1,9 @@
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PoVendorServiceService } from '../../../services/vendor-service/po-vendor-service/po-vendor-service.service';
+import { PoListComponent } from "../../../componenets/vendor/po-list/po-list.component";
 
 
 
@@ -60,13 +61,14 @@ interface TableItem {
 
 @Component({
   selector: 'app-purchase-orders',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule, PoListComponent],
   templateUrl: './purchase-orders.component.html',
   styleUrl: './purchase-orders.component.scss'
 })
 export class PurchaseOrdersComponent {
 
-   
+   showModal: boolean = false;
+   selectedPoItem: TableItem | null = null;
    status: string = '';
   searchTerm: string = '';
   
@@ -184,40 +186,33 @@ getAlignment(value: any): string {
   return typeof value === 'number' ? 'text-end' : 'text-start';
 }
 
-/* getPoList(){
-  this.poListService.vendorPoList().subscribe({
-    next: (data) => {
-      console.log('PO List:', data);
-      // Process the data as needed
-    },
-    error: (error) => {
-      console.error('Error fetching PO list:', error);
-    }
-  });
- 
-} */
+
 
   getPoList() {
   this.poListService.vendorPoList().subscribe({
     next: (data: any) => {
       console.log('PO List:', data);
 
-      this.sampleData = data.POList.map((po: any, index: number) => {
+      // Sort the original PO list by PomVdate descending
+      const sortedPoList = data.POList.sort(
+        (a: any, b: any) => new Date(b.PomVdate).getTime() - new Date(a.PomVdate).getTime()
+      );
+
+      // Then map to your TableItem interface
+      this.sampleData = sortedPoList.map((po: any, index: number): TableItem => {
         const totalQty = po.PoDetails?.reduce((sum: number, d: any) => sum + (d.PodQty || 0), 0) || 0;
-        const totalNetAmt = po.PoDetails?.reduce((sum: number, d: any) => sum + (d.PodNetAmt || 0), 0) || 0;
+       
 
         return {
           id: index + 1,
           orderNo: po.PomVno ?? 'N/A',
           date: (po.PomVdate ?? '').slice(0, 10),
-
           itemCount: totalQty,
-          value: totalNetAmt,
+          value: po.PomNetAmt,
           status: po.PomStatus ?? 'Unknown'
         };
       });
 
-      // Now apply filters if needed
       this.filteredData = [...this.sampleData];
     },
     error: (error) => {
@@ -226,11 +221,16 @@ getAlignment(value: any): string {
   });
 }
 
- 
-
 
  
 
+
+ 
+ openPoListModal(item:any){
+  console.log('Opening PO list modal for item:', item);
+    this.selectedPoItem = item;
+  this.showModal = true;
+  }
  
  
  
@@ -239,8 +239,63 @@ getAlignment(value: any): string {
 
 
 
+  
+  selectedRowIndex: number | null = null;
 
- 
+
+  // Toggle row dropdown
+  toggleRowDropdown(item: any, index: number, event: Event): void {
+    event.stopPropagation();
+    
+    if (this.selectedRowIndex === index && this.showModal) {
+      // Close if same row clicked
+      this.closeDropdown();
+    } else {
+      // Open dropdown for this row
+      this.selectedPoItem = item;
+      this.selectedRowIndex = index;
+      this.showModal = true;
+    }
+  }
+
+  // Close dropdown
+  closeDropdown(): void {
+    this.showModal = false;
+    this.selectedPoItem = null;
+    this.selectedRowIndex = null;
+  }
+
+  // Handle clicks outside the table to close dropdown
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    const tableContainer = target.closest('.table-container, .row-dropdown-container');
+    
+    if (!tableContainer && this.showModal) {
+      this.closeDropdown();
+    }
+  }
+
+  // Handle escape key to close dropdown
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(event: KeyboardEvent): void {
+    if (this.showModal) {
+      this.closeDropdown();
+    }
+  }
+
+  // Get status badge class
+
+
+  
+
+  // Optional: Method to handle outside clicks more precisely
+  onTableClick(event: Event): void {
+    // Stop propagation to prevent document click handler
+    event.stopPropagation();
+  }
+
+
 
   
 }
