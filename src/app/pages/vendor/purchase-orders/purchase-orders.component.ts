@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PoVendorServiceService } from '../../../services/vendor-service/po-vendor-service/po-vendor-service.service';
-import { PoListComponent } from "../../../componenets/vendor/po-list/po-list.component";
+import { PoListComponent } from "../../../components/vendor/po-list/po-list.component";
 
 
 
@@ -47,12 +47,7 @@ export interface TDSResponse {
   TdsDetail: any[];
 }
 interface TableItem {
-  id: number;            // We'll assign index-based IDs
-  orderNo: string;       // From PomVno
-  date: string;          // From PomVdate
-  itemCount: number;     // Sum of PodQty
-  value: number;         // Sum of PodNetAmt
-  status: string;        // From PomStatus
+ 
 }
 
 
@@ -67,234 +62,121 @@ interface TableItem {
 })
 export class PurchaseOrdersComponent {
 
-   showModal: boolean = false;
-   selectedPoItem: TableItem | null = null;
-   status: string = '';
+  fullData: any[] = [];
+   //showModal: boolean = false;
+  selectedPoItem: any = null; // or use a typed interface if you have one
+
+   status: string = 'All';
   searchTerm: string = '';
+   expandedMkey: string | null = null;
   
+  currentPage: number = 1;
+itemsPerPage: number = 10;
+
+
   statusArray: string[] = [
    'open',
    'Billed'
   ];
 
-  // Sample data for demonstration
-  sampleData: TableItem[] = []
-    
-
-  filteredData: TableItem[] = [];
 
   constructor(private poListService:PoVendorServiceService) { 
-    this.status = this.statusArray[0];
+   
   }
+filteredData: any[]=[]
+
 
   ngOnInit(): void {
-    this.filteredData = [...this.sampleData];
-    this.getPoList();
-  }
-
-  statusfun(): void {
-    console.log('Status changed to:', this.status);
-    this.filterData();
+   this.getPoList()
 
   }
 
-  onSearch(): void {
-    console.log('Search term:', this.searchTerm);
-    this.filterData();
+  applyFilters() {
+  this.filteredData = this.fullData.filter(item => {
+    const matchesStatus = this.status === 'All' || item.PomStatus?.toLowerCase() === this.status.toLowerCase();
+    const matchesSearch = this.searchTerm === '' || item.PomVno?.toLowerCase().includes(this.searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+}
+
+get paginatedData(){
+  const start= (this.currentPage-1)*this.itemsPerPage;
+  const end = start+ this.itemsPerPage;
+  return this.filteredData.reverse().slice(start, end);
+}
+get totalPages(): number {
+  return Math.ceil(this.filteredData.length / this.itemsPerPage);
+}
+
+goToPreviousPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
   }
+}
 
-  refreshData(): void {
-    console.log('Refreshing data...');
-    
-    // Reset filters
-    this.searchTerm = '';
-    this.status = this.statusArray[0];
-    
-    // Simulate data refresh
-    this.loadData();
-    
-    // Show refresh feedback (optional)
-    this.showRefreshFeedback();
+goToNextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
   }
+}
 
-  private filterData(): void {
-    let filtered = [...this.sampleData];
 
-    // Filter by status
-    if (this.status && this.status !== 'All Status') {
-      filtered = filtered.filter(item => 
-        item.status.toLowerCase() === this.status.toLowerCase()
-      );
+
+
+  getPoList() {
+  this.poListService.vendorPoList().subscribe((data: any) => {
+    if (Array.isArray(data.POList)) {
+      this.fullData = data.POList.map((item: any) => ({
+        PomVno: item.PomVno,
+        PomVdate: item.PomVdate,
+        PomMkey: item.PomMkey,
+        PomNetAmt: item.PomNetAmt,
+        PomStatus: item.PomStatus,
+        PomShpBrnName: item.PomShpBrnName,
+        PomItems:item.PomItems
+      }));
+      this.applyFilters();
+    } else {
+      console.error('POList is not an array', data);
     }
-
-    // Filter by search term
-    if (this.searchTerm && this.searchTerm.trim()) {
-      const searchLower = this.searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(item =>
-        item.orderNo.toLowerCase().includes(searchLower) ||
-        item.date.includes(searchLower) ||
-        item.status.toLowerCase().includes(searchLower) ||
-        item.value.toString().includes(searchLower)
-      );
-    }
-
-    this.filteredData = filtered;
-    console.log('Filtered data:', this.filteredData);
-  }
-
-  private loadData(): void {
-    // Simulate API call
-    setTimeout(() => {
-      this.filteredData = [...this.sampleData];
-      console.log('Data loaded successfully');
-    }, 500);
-  }
-
-  private showRefreshFeedback(): void {
-    // Add visual feedback for refresh action
-    const refreshBtn = document.querySelector('.refresh-btn');
-    if (refreshBtn) {
-      refreshBtn.classList.add('loading');
-      setTimeout(() => {
-        refreshBtn.classList.remove('loading');
-      }, 1000);
-    }
-  }
-
-  // Helper methods for template
-  getStatusClass(index: number): string {
-    const statuses = ['status-active', 'status-pending', 'status-completed'];
-    return statuses[index % statuses.length];
-  }
+  });
+}
 
  
 
-  viewItems(item: TableItem): void {
-    console.log('Viewing items for:', item.orderNo);
-    // Implement view logic here
+
+getPoDetails(item: any) {
+  if (this.expandedMkey === item.PomMkey) {
+    this.expandedMkey = null;
+    this.selectedPoItem = null;
+  // this.showModal = false;
+  } else {
+    this.expandedMkey = item.PomMkey;
+    this.selectedPoItem = item;
+   // this.showModal = true;
+   // console.log('Fetching details for PO:', item.PomMkey);
+  }
+}
+
+
+closeDropdown() {
+  this.expandedMkey = null;
+  this.selectedPoItem = null;
+//  this.showModal = false;
+}
+
+
+
+  downloadPdf(data:string){
+
   }
 
-  // Optional: Add sorting functionality
-  sortBy(column: string): void {
-    console.log('Sorting by:', column);
-    // Implement sorting logic here
-  }
-  
+
 
 
 getAlignment(value: any): string {
   return typeof value === 'number' ? 'text-end' : 'text-start';
 }
-
-
-
-  getPoList() {
-  this.poListService.vendorPoList().subscribe({
-    next: (data: any) => {
-      console.log('PO List:', data);
-
-      // Sort the original PO list by PomVdate descending
-      const sortedPoList = data.POList.sort(
-        (a: any, b: any) => new Date(b.PomVdate).getTime() - new Date(a.PomVdate).getTime()
-      );
-
-      // Then map to your TableItem interface
-      this.sampleData = sortedPoList.map((po: any, index: number): TableItem => {
-        const totalQty = po.PoDetails?.reduce((sum: number, d: any) => sum + (d.PodQty || 0), 0) || 0;
-       
-
-        return {
-          id: index + 1,
-          orderNo: po.PomVno ?? 'N/A',
-          date: (po.PomVdate ?? '').slice(0, 10),
-          itemCount: totalQty,
-          value: po.PomNetAmt,
-          status: po.PomStatus ?? 'Unknown'
-        };
-      });
-
-      this.filteredData = [...this.sampleData];
-    },
-    error: (error) => {
-      console.error('Error fetching PO list:', error);
-    }
-  });
-}
-
-
- 
-
-
- 
- openPoListModal(item:any){
-  console.log('Opening PO list modal for item:', item);
-    this.selectedPoItem = item;
-  this.showModal = true;
-  }
- 
- 
- 
-
-
-
-
-
-  
-  selectedRowIndex: number | null = null;
-
-
-  // Toggle row dropdown
-  toggleRowDropdown(item: any, index: number, event: Event): void {
-    event.stopPropagation();
-    
-    if (this.selectedRowIndex === index && this.showModal) {
-      // Close if same row clicked
-      this.closeDropdown();
-    } else {
-      // Open dropdown for this row
-      this.selectedPoItem = item;
-      this.selectedRowIndex = index;
-      this.showModal = true;
-    }
-  }
-
-  // Close dropdown
-  closeDropdown(): void {
-    this.showModal = false;
-    this.selectedPoItem = null;
-    this.selectedRowIndex = null;
-  }
-
-  // Handle clicks outside the table to close dropdown
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    const tableContainer = target.closest('.table-container, .row-dropdown-container');
-    
-    if (!tableContainer && this.showModal) {
-      this.closeDropdown();
-    }
-  }
-
-  // Handle escape key to close dropdown
-  @HostListener('document:keydown.escape', ['$event'])
-  onEscapeKey(event: KeyboardEvent): void {
-    if (this.showModal) {
-      this.closeDropdown();
-    }
-  }
-
-  // Get status badge class
-
-
-  
-
-  // Optional: Method to handle outside clicks more precisely
-  onTableClick(event: Event): void {
-    // Stop propagation to prevent document click handler
-    event.stopPropagation();
-  }
-
 
 
   

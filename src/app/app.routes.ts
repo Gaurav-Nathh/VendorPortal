@@ -84,8 +84,8 @@ export const routes: Routes = [
         path: 'page-under-construction',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/under-work/under-work.component').then(
-            (c) => c.UnderWorkComponent
+          import('./pages/vendor/goods-receipts/goods-receipts.component').then(
+            (c) => c.GoodsReceiptsComponent
           ),
         canActivate: [authGuard],
       },

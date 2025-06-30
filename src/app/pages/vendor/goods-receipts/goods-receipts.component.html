@@ -1,0 +1,142 @@
+<div class="container-fluid item-mapping-container ">
+  <!-- Search & Filter -->
+ <div class="container-fluid  border rounded shadow-sm p-3 ">
+ <div class="row align-items-end justify-content-between">
+
+  <!-- Left side: Status + Search -->
+  <div class="col-12 col-md-9">
+    <div class="row g-3">
+      <!-- Status Dropdown -->
+     
+
+      <!-- Search Input -->
+      <div class="col-12 col-md-6">
+       
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control border-start-0"
+            placeholder="Search by PO number or item..."
+           
+            aria-label="Search items" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+ 
+
+</div>
+
+</div>
+
+
+  <!-- Desktop Table -->
+  <div class="table-container ">
+    <div class="table-responsive">
+   <table class="table table-hover mb-0 align-middle w-100 ">
+  <thead>
+    <tr>
+      <th class="py-3 px-3 fw-semibold">Branch</th>
+      <th class="py-3 px-3 fw-semibold">Bill No.</th>
+      <th class="py-3 px-3 fw-semibold">Date</th>
+      <th class="py-3 px-3 fw-semibold">V. No.</th>
+      <th class="py-3 px-3 fw-semibold">Date</th>
+      <th class="py-3 px-3 fw-semibold">Item Count | View</th>
+      <th class="py-3 px-3 fw-semibold text-end">Bill Value</th>
+      <th class="py-3 px-3 fw-semibold text-end">TDS</th>
+      <th class="py-3 px-3 fw-semibold text-end">Adjustment</th>
+      <th class="py-3 px-3 fw-semibold text-end">Net Payable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let item of paginatedData; let i = index">
+      <tr class="table-row " >
+        <td [attr.title]="item.PomShpBrnName" data-bs-toggle="tooltip">
+          {{ item.GrmBrnName }}
+        </td>
+
+        <td [attr.title]="item.PomBillNo" data-bs-toggle="tooltip">
+          {{ item.GrmRefNo }}
+        </td>
+
+        <td class="text-center" [attr.title]="item.PomBillDate | date:'dd/MM/yyyy'" data-bs-toggle="tooltip">
+          {{ item.GrmVdate | date:'dd/MM/yyyy' }}
+        </td>
+
+        <td [attr.title]="item.PomVno" data-bs-toggle="tooltip">
+          {{ item.GrmVno }}
+        </td>
+
+        <td class="text-center" [attr.title]="item.PomVdate | date:'dd/MM/yyyy'" data-bs-toggle="tooltip">
+          {{ item.GrmRefDate | date:'dd/MM/yyyy' }}
+        </td>
+
+        <td class="text-center">
+         
+          <button class="bg-transparent d-flex  justify-content-around w-50" title="View Items" (click)="expandDropdown(item)">
+          {{item.GrmItems}}  <i class="bi bi-eye text-primary"></i>
+          </button>
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomNetAmt" data-bs-toggle="tooltip">
+          ₹{{ item.GrmBillDisAmt | number:'1.2-2' }}
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomTds" data-bs-toggle="tooltip">
+          ₹{{ item.GrmTdsAmt | number:'1.2-2' }}
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomAdjAmt" data-bs-toggle="tooltip">
+          ₹{{ item.GrmAdjAmt | number:'1.2-2' }}
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomNetPayable" data-bs-toggle="tooltip">
+          ₹{{ item.GrmNetAmt | number:'1.2-2' }}
+        </td>
+      </tr>
+
+      <!-- Optional dropdown/details row -->
+        <tr *ngIf="expandedkey===item.GrmMkey" class="bg-dark">
+  <td colspan="10" class="p-0">
+    <div class="row-dropdown-container">
+      
+      <div class="dropdown-body ">
+     
+    <!--     <app-po-list [po]="selectedPoItem" [close]="closeDropdown.bind(this)"></app-po-list> -->
+         <app-po-good-receipt [data]="selectedItem" [close]="closeDropdown.bind(this)"></app-po-good-receipt>
+      </div>
+    </div>
+  </td>
+</tr>
+    </ng-container>
+  </tbody>
+</table>
+
+    </div>
+  </div>
+</div>
+
+ <div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
+  <button 
+    class="btn btn-sm btn-secondary me-2" 
+    [disabled]="currentPage === 1" 
+    (click)="goToPreviousPage()">
+    Prev
+  </button>
+
+  <span class="fw-semibold">
+    Page {{ currentPage }} of {{ totalPages }}
+  </span>
+
+  <button 
+    class="btn btn-sm btn-secondary ms-2" 
+    [disabled]="currentPage === totalPages" 
+    (click)="goToNextPage()">
+    Next
+  </button>
+</div>

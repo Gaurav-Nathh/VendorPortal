@@ -1,37 +1,117 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Chart, registerables } from 'chart.js';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-vendor',
-  imports: [],
+  imports: [CommonModule],
+    standalone: true,
   templateUrl: './dashboard-vendor.component.html',
   styleUrl: './dashboard-vendor.component.scss'
 })
 export class DashboardVendorComponent {
 
-    pendingPayment = 9999.99;
-  lastPaymentAmount = 99999.99;
-  lastPaymentDate = '12th June 2025';
-
-  recentPurchases = [
-    { date: '10-Jun-2025', invoiceNo: 'INV1001', amount: 5000 },
-    { date: '05-Jun-2025', invoiceNo: 'INV1000', amount: 3000 },
-    { date: '28-May-2025', invoiceNo: 'INV0999', amount: 4200 },
-    { date: '18-May-2025', invoiceNo: 'INV0998', amount: 3800 },
-    { date: '10-May-2025', invoiceNo: 'INV0997', amount: 6100 }
+  @ViewChild('salesChart') salesChartRef: any;
+  
+  currentDate = new Date();
+  
+  recentSales = [
+    { date: new Date('2025-06-20'), invoiceNo: 'INV-2025-0620', amount: 12500.00, status: 'Paid' },
+    { date: new Date('2025-06-15'), invoiceNo: 'INV-2025-0615', amount: 8500.50, status: 'Paid' },
+    { date: new Date('2025-06-10'), invoiceNo: 'INV-2025-0610', amount: 15000.00, status: 'Pending' },
+    { date: new Date('2025-06-05'), invoiceNo: 'INV-2025-0605', amount: 7500.75, status: 'Paid' },
+    { date: new Date('2025-05-28'), invoiceNo: 'INV-2025-0528', amount: 22000.00, status: 'Overdue' }
   ];
 
-  profile = {
-    name: 'Ayush Panwar',
-    gstin: '29ABCDE1234F2Z5',
-    phone: '+91-9876543210',
-    email: 'ayush@example.com',
-    billingAddress: '123 Main Road, Delhi, India',
-    shippingAddress: 'Warehouse 21, Sector 45, Noida, UP',
-    bank: {
-      accountNo: '123456789012',
-      name: 'HDFC Bank',
-      ifsc: 'HDFC0001234'
-    }
-  };
+  constructor() {
+    Chart.register(...registerables);
+  }
 
+  ngOnInit(): void {
+    // Initialization logic
+  }
+
+  ngAfterViewInit(): void {
+    this.initSalesChart();
+  }
+
+  initSalesChart(): void {
+    const ctx = this.salesChartRef.nativeElement.getContext('2d');
+    
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            label: 'Sales Value',
+            data: [120000, 190000, 150000, 180000, 220000, 195000],
+            backgroundColor: '#3b82f6',
+            borderRadius: 6,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Number of Invoices',
+            data: [12, 19, 15, 18, 22, 19],
+            backgroundColor: '#93c5fd',
+            borderRadius: 6,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.datasetIndex === 0) {
+                  label += '₹' + context.parsed.y.toLocaleString();
+                } else {
+                  label += context.parsed.y;
+                }
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Sales Value (₹)'
+            },
+            ticks: {
+              callback: function(value) {
+                return '₹' + value.toLocaleString();
+              }
+            }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Number of Invoices'
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          }
+        }
+      }
+    });
+  }
 }

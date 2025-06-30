@@ -1,0 +1,87 @@
+<!-- Purchase Order Table Template -->
+<div class="po-table-container">
+  <!-- Header Section -->
+  <div class="po-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        
+        <p class="po-number mb-0">PO #{{ purchaseOrderNo }}</p>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="close()" aria-label="cross"></button>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-wrapper">
+    <div class="table-responsive">
+      <table class="table table-hover po-table">
+        <thead class="">
+          <tr>
+            <th scope="col" class="text-start">#</th>
+            <th scope="col" class="text-start">Item Code</th>
+            <th scope="col" class="text-start">Item Name</th>
+            <th scope="col" class="text-start">My Item Code</th>
+            <th scope="col" class="text-start">My Item Name</th>
+            <th scope="col" class="text-start">Qty</th>
+            <th scope="col" class="text-start">Rate</th>
+            <th scope="col" class="text-start">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of poItems; let i = index" class="">
+  <td class="text-center">
+    <div class="serial-number">{{ i + 1 }}</div>
+  </td>
+ <td [ngClass]="getAlignment(item.ItmCode)">
+  <span class="item-code">{{ item.ItmCode }}</span>
+</td>
+
+<td [ngClass]="getAlignment(item.ItmName)">
+  <div class="item-name text-truncate" [attr.title]="item.ItmName"
+   data-bs-toggle="tooltip" 
+    data-bs-placement="top"
+    style="max-width: 150px;"
+  >
+    {{ item.ItmName }}
+  </div>
+</td>
+
+<td [ngClass]="getAlignment(item.MyItmCode)">
+  <span *ngIf="item.MyItmCode" class="my-item-code">{{ item.MyItmCode }}</span>
+</td>
+
+<td [ngClass]="getAlignment(item.MyItmName)">
+  <div class="my-item-name text-truncate" [attr.title]="item.MyItmName"
+   data-bs-toggle="tooltip" 
+    data-bs-placement="top"
+    style="max-width: 150px;"
+  >
+    {{ item.MyItmName }}
+  </div>
+</td>
+
+<td [ngClass]="getAlignment(item.Qty)">
+  {{ item.Qty }}
+</td>
+
+<td [ngClass]="getAlignment(item.Rate)">
+  ₹{{ item.Rate | number:'1.2-2' }}
+</td>
+
+<td [ngClass]="getAlignment(item.Amount)">
+  ₹{{ item.Amount | number:'1.2-2' }}
+</td>
+
+</tr>
+
+        </tbody>
+     
+
+
+      </table>
+    </div>
+  </div>
+
+  <!-- Summary Section -->
+ 
+</div>
