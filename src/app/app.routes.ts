@@ -57,8 +57,17 @@ export const routes: Routes = [
         path: 'invoice',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/under-work/under-work.component').then(
-            (c) => c.UnderWorkComponent
+          import('./pages/view-invoice/view-invoice.component').then(
+            (c) => c.ViewInvoiceComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'invoice-form',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/invoice-form/invoice-form.component').then(
+            (c) => c.InvoiceFormComponent
           ),
         canActivate: [authGuard],
       },
