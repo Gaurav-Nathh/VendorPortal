@@ -1,0 +1,107 @@
+<section id="login-page" class="">
+  <div *ngIf="loadingServie.loading$ | async" class="global-spinner-overlay">
+    <div class="spinner-border" role="status"></div>
+    <span class="spinner-text">Authenticating...</span>
+  </div>
+  <div class="w-100 d-flex justify-content-end p-2">
+    <app-theme-toggle></app-theme-toggle>
+  </div>
+  <div class="login-container">
+    <div class="login-left">
+      <img src="/assets/efacto.webp" alt="Logo" class="logo mb-4" />
+      <span class="fs-4 fw-semibold" style="color: var(--color-blue)"
+        >Log in</span
+      >
+      <span class="login-content"
+        >Please enter your credential to access Portal</span
+      >
+      <form #loginForm="ngForm" (submit)="onSubmit()" class="">
+        <div class="form-group">
+          <div class="input-field">
+            <i class="icon-left fa-solid fa-envelope"></i>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              [(ngModel)]="loginModel.userName"
+              #email="ngModel"
+              name="email"
+              required
+            />
+          </div>
+          <div
+            *ngIf="(email.touched || loginForm.submitted) && email.invalid"
+            class="error-text"
+          >
+            <div *ngIf="email.errors?.['required']">Email is required.</div>
+            <div *ngIf="email.errors?.['email']">
+              Please enter a valid email.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group password-group" [class.show]="showPasswordField">
+          <div class="input-field">
+            <i class="icon-left fa-solid fa-lock"></i>
+            <i
+              class="icon-right bi"
+              [ngClass]="{
+                'bi-eye-fill': hidePassword,
+                'bi-eye-slash-fill': !hidePassword
+              }"
+              (click)="togglePassword()"
+            ></i>
+            <input
+              [type]="hidePassword ? 'password' : 'text'"
+              name="password"
+              id="password"
+              placeholder="Enter your password"
+              [(ngModel)]="loginModel.password"
+              #password="ngModel"
+              required
+            />
+          </div>
+          <div
+            *ngIf="
+              (password.touched || loginForm.submitted) && password.invalid
+            "
+            class="error-text"
+          >
+            <div *ngIf="password.errors?.['required']">
+              Password is required.
+            </div>
+          </div>
+        </div>
+        <a class="forget-password" routerLink="/forget-password"
+          ><small>Forget Password?</small></a
+        >
+        <button type="button" (click)="nextStep()" *ngIf="!showPasswordField">
+          Next
+        </button>
+        <button type="submit" *ngIf="showPasswordField">Login</button>
+      </form>
+      <div class="copy-right-body">
+        <span>© BNG Infotech Private Limited</span>
+      </div>
+    </div>
+
+    <div class="vrt-line-body">
+      <span class="vrt-line"></span>
+    </div>
+    <div class="login-right">
+      <div class="carousel">
+        <img [src]="images[currentImage].src" alt="Slide Image" />
+        <div class="carousel-text">{{ images[currentImage].text }}</div>
+        <div class="progress-bar-body">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-100 text-center py-2">
+    <small class="" style="color: #727070">
+      © 2025, BNG Pvt.Ltd. All Right Reserved.
+    </small>
+  </div>
+</section>

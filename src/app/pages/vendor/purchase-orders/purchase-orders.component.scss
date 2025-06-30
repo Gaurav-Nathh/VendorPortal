@@ -1,0 +1,158 @@
+
+.page-container{
+  position: relative;
+
+}
+.pagination-container {
+  position: fixed;
+  bottom: 10px;
+  right: 0;
+  left: 0; /* This stretches it full width */
+  
+  
+  z-index: 0; /* Optional: ensures it appears above other content */
+  
+}
+
+
+.bnt-pry {
+  width: 10%;
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #b0d4ff;
+    cursor: not-allowed;
+  }
+}
+
+
+// Table Container Fixes
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--color-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+  height: 74vh;
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    width: 100%;
+    min-width: 800px; // Ensures table doesn't collapse on small screens
+    margin-bottom: 0;
+    border-collapse: separate;
+    
+
+    th, td {
+      white-space: nowrap;
+      &:first-child {
+        padding-left: 1.5rem;
+      }
+      &:last-child {
+        padding-right: 1.5rem;
+      }
+    }
+  }
+}
+
+// Table Row Styles
+.table-row {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background-color: white;
+
+  &:hover {
+    background-color: rgba(0, 123, 255, 0.05) !important;
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &.row-expanded {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+    
+    td {
+      border-bottom: 2px solid #007bff;
+    }
+  }
+}
+
+// Dropdown Row Container
+.dropdown-row {
+  td {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+}
+
+.row-dropdown-container {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  margin: 0;
+  overflow: hidden;
+  animation: slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+}
+
+// Responsive Adjustments
+@media (max-width: 992px) {
+  .table-container {
+    border-radius: 8px;
+    
+    table {
+      min-width: 900px; // Adjust as needed for your columns
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .search-containers {
+    flex-direction: column;
+    
+    .dropdown-wrapper, 
+    .search-input-group {
+      width: 100%;
+    }
+  }
+  
+  .table-container {
+    margin: 10px 0;
+    
+    table {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .table-container {
+    border-radius: 6px;
+    
+    table {
+      min-width: 600px; // Adjust as needed for your columns
+      font-size: 0.85rem;
+    }
+  }
+}

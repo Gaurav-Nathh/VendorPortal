@@ -1,0 +1,729 @@
+<section id="shopping-cart" class="">
+  <Section id="nav-prod" class="">
+    <span class="fw-bold text-nowrap">Shopping Cart</span>
+    <div id="search-section" class="search-container">
+      <div id="search-category-box" class="position-relative">
+        <button
+          class="d-flex align-items-center justify-content-between border-end-only w-auto"
+          type="button"
+          id="dropdownSearch"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          {{ selectedSearchOpitionDisplay }}
+        </button>
+
+        <ul
+          class="dropdown-menu border-0 shadow-sm mt-3 p-2 rounded-3"
+          aria-labelledby="dropdownSearch"
+          style="min-width: max-content"
+        >
+          <li *ngFor="let option of searchOptions">
+            <a
+              class="dropdown-item rounded-2 px-2 py-2"
+              (click)="searchOption(option.title); $event.stopPropagation()"
+            >
+              {{ option.title }}
+            </a>
+          </li>
+        </ul>
+      </div>
+      <span style="color: var(--color-blue)">|</span>
+      <input
+        type="text"
+        id="prod-search"
+        class="search-input"
+        placeholder="Search products..."
+        [(ngModel)]="searchText"
+      />
+      <button id="search-btn" class="search-button" (click)="searchProducts()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+
+    <div id="cartNavIcons" class="d-flex align-items-center">
+      <div
+        id="sortByBody"
+        class="dropdown d-flex justify-content-end"
+        [class.show]="sortByDropDownOpen"
+      >
+        <div class="sortBy">
+          <small
+            class="dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            (click)="toggleDropdown()"
+          >
+            Sort by
+            <span style="color: var(--color-blue)" class="mx-1">{{
+              selectedOption
+            }}</span>
+          </small>
+          <ul class="dropdown-menu w-100" [class.show]="sortByDropDownOpen">
+            <li *ngFor="let option of sortByOptions">
+              <small
+                class="dropdown-item"
+                (click)="selectOption(option); $event.stopPropagation()"
+                >{{ option.title }}</small
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <button
+        id="toggleSortByMobile"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMobileCollapse"
+        aria-bs-expanded="false"
+        aria-bs-controls="collapseExample"
+        style="background-color: transparent"
+      >
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+      <div id="cart-body" class="">
+        <div class="cart-container" (click)="openCartModal()">
+          <i class="fa fa-shopping-cart cart-icon"></i>
+          <span *ngIf="cartQty > 0" class="cart-badge">
+            {{ cartQty > 99 ? "99+" : cartQty }}
+          </span>
+        </div>
+      </div>
+      <div class="d-flex align-items-center">
+        <i
+          class="fs-4 fa-solid fa-circle-xmark"
+          style="color: red"
+          (click)="closeShoppingCart()"
+        ></i>
+      </div>
+    </div>
+  </Section>
+  <!-- Product Ends -->
+  <section id="cartNavCollapse" class="">
+    <div class="collapse" id="navMobileCollapse">
+      <div
+        id="sortByCollapse"
+        class="dropdown shortByCollapse"
+        (click)="toggleDropdown()"
+        [class.show]="sortByDropDownOpen"
+      >
+        <small
+          class="dropdown-toggle d-flex align-items-center justify-content-between"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Sort by {{ selectedOption }}
+        </small>
+
+        <ul class="dropdown-menu w-100" [class.show]="sortByDropDownOpen">
+          <li *ngFor="let option of sortByOptions">
+            <small
+              class="dropdown-item"
+              (click)="selectOption(option); $event.stopPropagation()"
+              >{{ option.title }}</small
+            >
+          </li>
+        </ul>
+      </div>
+      <section id="filterTop" class="mobile">
+        <div class="category-box" [class.show]="categoryDropDownOpen">
+          <button
+            class="p-2 fs-6 d-flex align-items-center justify-content-between"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            (click)="toggleFilterTopDropdown()"
+          >
+            {{ selectedNavFilterTitleDisplay }}
+            <i
+              class="bi bi-chevron-down ms-2"
+              [class.rotate]="filterTopDropDownOpen"
+            ></i>
+          </button>
+
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li *ngFor="let filter of filters">
+              <a class="dropdown-item" (click)="selectNavFilterTitle(filter)">{{
+                filter.title
+              }}</a>
+            </li>
+          </ul>
+        </div>
+        <div id="filterTopContainer" class="">
+          <div id="listContainer" class="">
+            <div
+              id="filterList"
+              *ngIf="selectedNavFilterTitle"
+              [ngClass]="filterTopList ? 'list-open' : 'list-close'"
+            >
+              <div
+                *ngIf="selectedNavFilterTitle.loading"
+                class="spinnerContainer text-center py-2"
+              >
+                <div
+                  class="spinner-border spinner-border-sm"
+                  style="color: var(--color-blue)"
+                ></div>
+              </div>
+              <div
+                *ngFor="let option of selectedNavFilterTitle.options"
+                class="d-flex align-items-center gap-1"
+              >
+                <input
+                  type="radio"
+                  name="options"
+                  [id]="option.Id"
+                  [value]="option.Id"
+                  (change)="selectNavFilterOption(option.Id)"
+                  id="{{ option.Id }}"
+                />
+                <label for="{{ option.Id }}">{{ option.Text }}</label>
+              </div>
+            </div>
+            <button
+              *ngIf="selectedNavFilterTitle != null"
+              id="filterDropDownBtn"
+              style="background-color: transparent"
+              (click)="toggleFilterTopList()"
+            >
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+  <!-- Mobile CartNav  -->
+
+  <!-- FilterSingle -->
+
+  <section id="filterTop" class="screen">
+    <div class="category-box" [class.show]="categoryDropDownOpen">
+      <button
+        class="p-2 fs-6 d-flex align-items-center justify-content-between"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        data-bs-target="dropdownMenu"
+        (click)="toggleFilterTopDropdown()"
+      >
+        {{ selectedNavFilterTitleDisplay }}
+        <i
+          class="fa-solid fa-chevron-down"
+          [class.rotate]="filterTopDropDownOpen"
+        ></i>
+      </button>
+
+      <ul
+        class="dropdown-menu"
+        id="dropdownMenu"
+        aria-labelledby="dropdownMenuButton"
+      >
+        <li *ngFor="let filter of filters">
+          <a class="dropdown-item" (click)="selectNavFilterTitle(filter)">{{
+            filter.title
+          }}</a>
+        </li>
+      </ul>
+    </div>
+    <div id="filterTopContainer" class="">
+      <div id="listContainer" class="">
+        <div
+          id="filterList"
+          *ngIf="selectedNavFilterTitle"
+          [ngClass]="filterTopList ? 'list-open' : 'list-close'"
+        >
+          <div
+            *ngIf="selectedNavFilterTitle.loading"
+            class="spinnerContainer text-center py-2"
+          >
+            <div
+              class="spinner-border spinner-border-sm"
+              style="color: var(--color-blue)"
+            ></div>
+          </div>
+          <div
+            *ngFor="let option of selectedNavFilterTitle.options"
+            class="d-flex align-items-center gap-1"
+          >
+            <input
+              type="radio"
+              name="options"
+              [id]="option.Id"
+              [value]="option.Id"
+              (change)="selectNavFilterOption(option.Id)"
+              id="{{ option.Id }}"
+            />
+            <label for="{{ option.Id }}">{{ option.Text }}</label>
+          </div>
+        </div>
+        <button
+          *ngIf="selectedNavFilterTitle != null"
+          id="filterDropDownBtn"
+          style="background-color: transparent"
+          (click)="toggleFilterTopList()"
+        >
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side Filter and Shoppin Cart section -->
+  <section id="shopping-section" class="">
+    <!-- Side Filter -->
+    <section class="category-side-menu" [class.show]="!sideFilterMobile">
+      <div id="sectionTitle" class="">
+        <span class="fs-5">Filters</span>
+        <button
+          class="resetBtn"
+          (click)="resetFilters()"
+          *ngIf="anyFilterSlected"
+        >
+          Reset All
+        </button>
+      </div>
+      <div class="applyFilterBtn" (click)="applyFilters()">
+        <span>Apply</span>
+      </div>
+
+      <!-- Price Range Filter Start -->
+      <div class="mt-3">
+        <span>Price</span>
+        <div id="priceFilter" class="">
+          <ngx-slider
+            [(value)]="minValue"
+            [(highValue)]="maxValue"
+            [options]="options"
+          >
+            <div class="ngx-slider-bar"></div>
+            <div class="ngx-slider-selection"></div>
+            <div class="ngx-slider-pointer"></div>
+          </ngx-slider>
+
+          <div class="inputContainer row">
+            <div class="inputBody col">
+              <label for="minPrice">Min Price</label>
+              <input
+                type="number"
+                id="minPrice"
+                class="form-control"
+                [(ngModel)]="minValue"
+                [min]="options.floor ?? 0"
+                [max]="maxValue - 1"
+              />
+            </div>
+            <div class="inputBody col">
+              <label for="maxPrice">Max Price</label>
+              <input
+                type="number"
+                id="maxPrice"
+                class="form-control"
+                [(ngModel)]="maxValue"
+                [min]="minValue + 1"
+                [max]="options.ceil ?? 100000"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Price Range Filter End -->
+
+      <!-- In Stock Toggle -->
+      <div id="inStockContainer">
+        <div class="form-check form-switch inStock">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="inStockToggle"
+            [checked]="inStock"
+            (change)="onInStockChange($event)"
+          />
+        </div>
+        <span>In Stock</span>
+      </div>
+      <!-- In Stock END -->
+
+      <!-- With Image -->
+      <div id="inStockContainer">
+        <div class="form-check form-switch inStock">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="withImageToggle"
+            [checked]="withImage"
+            (change)="onWithImageChange($event)"
+          />
+        </div>
+        <span>With Image</span>
+      </div>
+      <!-- With Image Ends -->
+      <div class="checkbox-title" *ngFor="let filter of filters; let i = index">
+        <div
+          class="title"
+          data-bs-toggle="collapse"
+          [attr.href]="'#filter' + i"
+          (click)="onDropDownOpen(filter)"
+        >
+          <div>
+            <span>{{ filter.title }}</span>
+          </div>
+          <div class="controlBody">
+            <button
+              id="resetBtn"
+              (click)="resetFilterSection(filter.title, filter.key)"
+              *ngIf="selectedFilters[filter.title].length > 0"
+            >
+              Reset
+            </button>
+            <i class="bi bi-caret-down-fill"></i>
+          </div>
+        </div>
+        <div class="collapse" id="filter{{ i }}">
+          <div *ngIf="filter.loading" class="text-center py-2">
+            <div
+              class="spinner-border spinner-border-sm text-primary"
+              role="status"
+            ></div>
+          </div>
+          <div class="option-section" *ngIf="filter.options.length > 0">
+            <div
+              class="checkbox-container"
+              *ngFor="let option of filter.options.slice(0, 5)"
+            >
+              <label class="checkbox" [for]="option.Id">
+                <input
+                  type="checkbox"
+                  class="form-check-input rounded-circle"
+                  [id]="option.Id"
+                  [checked]="selectedFilters[filter.title].includes(option.Id)"
+                  (change)="onFilterChange(filter.title, option.Id, $event)"
+                />
+              </label>
+              <span class="truncate-text">
+                {{ option.Text }}
+              </span>
+            </div>
+            <button
+              id="moreBtn"
+              *ngIf="filter.options.length > 5"
+              (click)="openFilterModal(filter)"
+            >
+              more...
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Side Filter Ends -->
+
+    <!-- Side Filter Option Modal -->
+    <section class="modal fade" id="filterModal" tabindex="-1" #filterModalRef>
+      <div class="modal-dialog modal-dialog-centered custom-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">
+              {{ currentModalFilter?.title }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              (click)="closeFilterModal()"
+            ></button>
+          </div>
+
+          <!-- Make only this area scrollable -->
+          <div class="modal-body scrollable-body">
+            <ng-container *ngIf="currentModalFilter">
+              <div class="option-grid">
+                <div
+                  class="form-check"
+                  *ngFor="let option of currentModalFilter.options"
+                >
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    [id]="'modal-' + option.Id"
+                    [checked]="
+                      selectedFilters[currentModalFilter.title].includes(
+                        option.Id
+                      )
+                    "
+                    (change)="
+                      onFilterChange(
+                        currentModalFilter.title,
+                        option.Id,
+                        $event
+                      )
+                    "
+                  />
+                  <label class="form-check-label" [for]="'modal-' + option.Id">
+                    {{ option.Text }}
+                  </label>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              *ngIf="currentModalFilter"
+              class="btn btn-outline-danger btn-sm me-2"
+              (click)="
+                resetFilterSection(
+                  currentModalFilter.title,
+                  currentModalFilter.key
+                )
+              "
+            >
+              Reset {{ currentModalFilter.title }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side Filter Option Modal ENDS-->
+
+    <section class="card-section" #cardSectionRef (scroll)="onScrollDataLoad()">
+      @if(productLoader) {
+      <div class="loaderContainer">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-center">Loading products...</p>
+      </div>
+      } @else {
+      <div *ngIf="products.length === 0" class="noItem">
+        <img src="/assets/images/no-item.svg" alt="" class="" />
+        <p class="">No such Item found!</p>
+      </div>
+      <div class="card-container">
+        <div
+          class="product-card d-flex flex-column justify-content-between"
+          *ngFor="let product of products"
+        >
+          <div class="img-container">
+            <img
+              *ngIf="product.ItmImage === '' || !product.ItmImage"
+              src="/assets/images/product-placeholder.svg"
+              alt="Product Image"
+              class=""
+            />
+            <img
+              *ngIf="product.ItmImage && product.ItmImage !== ''"
+              [src]="productImgUrl + product.ItmImage"
+              alt="Product Image"
+              class=""
+            />
+          </div>
+
+          <div class="card-content">
+            <h6
+              class="card-title fw-bold text-uppercase text-break text-center"
+            >
+              {{ product.ItmName }}
+            </h6>
+            <div class="d-flex justify-content-between my-3">
+              <small>Stock Id: {{ product.ItmCode }}</small>
+              <small>Pack Unit: {{ product.ItmPackUntCode }}</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="fw-semibold mb-0">
+                Price: ₹ {{ product.Itemprices[0].ShowPrice }}
+              </p>
+              @if(product.Itemprices[0].Stock<10 &&
+              product.Itemprices[0].Stock>1) {
+              <small style="color: var(--color-red)"
+                >{{ product.Itemprices[0].Stock }} left</small
+              >
+              } @else if (product.Itemprices[0].Stock === 0) {
+              <small style="color: var(--color-red)">Out of stock</small>
+              } @else {
+              <small style="color: var(--color-green)"
+                >{{ product.Itemprices[0].Stocks }} In stock</small
+              >
+              }
+            </div>
+            <div class="btn-container">
+              <div class="quantity-container">
+                <button
+                  (click)="decreaseItmCardQty(product)"
+                  [disabled]="product.ItmQty <= 1"
+                >
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <span>{{ product.ItmQty }}</span>
+                <button (click)="increaseItmCardQty(product)">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div class="addToCart-container">
+                <button
+                  class=""
+                  style="background-color: var(--color-blue)"
+                  (click)="addToCart(product)"
+                >
+                  ADD TO CART
+                </button>
+              </div>
+              <!-- <div class="quantity-container">
+                <button>
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <span>1</span>
+                <button>
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div>
+                <button
+                  class=""
+                  style="background-color: var(--color-blue)"
+                  (click)="addToCart(product)"
+                >
+                  ADD TO CART
+                </button>
+              </div> -->
+              <!-- <button (click)="buyNow(product)" id="buyNowBtn">BUY NOW</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="moreItmLoader" *ngIf="products.length != 0 && isDataLoading">
+        <div
+          class="spinner-border"
+          role="status"
+          style="color: var(--color-blue)"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="text-center">Loading products...</span>
+      </div>
+      }
+    </section>
+    <div id="filterBtn" (click)="toggleSideFilterMobile()">
+      <i class="fa-solid fa-filter"></i>
+    </div>
+  </section>
+  <div class="modal fade" id="cartModal" tabindex="-1" #cartModalRef>
+    <div class="modal-dialog modal-dialog-centered custom-cart-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="customModalLabel">Cart</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeCartModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div id="cart-product-list" class="">
+            <div class="list-header" id="heading">
+              <div class="container-1">
+                <span class="text-center">Product</span>
+                <span class="text-center">Product Code</span>
+              </div>
+              <div class="container-2">
+                <span class="text-center">Price</span>
+                <div class="text-center">Quantity</div>
+                <span class="text-center">Total</span>
+                <div class=""></div>
+              </div>
+            </div>
+            <div class="list-container">
+              <div
+                class="cart-product-container container-style"
+                *ngFor="let item of cart"
+              >
+                <div class="container-1">
+                  <span class="fw-semibold">{{ item.ItmName }}</span>
+                  <span>{{ item.ItmCode }}</span>
+                </div>
+                <div class="container-2">
+                  <span class="">₹{{ item.Itemprices[0].MRP }}</span>
+                  <div class="quantity-container">
+                    <button (click)="decrementQty(item)">
+                      <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <span>{{ item.ItmQty }}</span>
+                    <button (click)="incrementQty(item)">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                  <span class="fw-bold"
+                    >₹{{ item.Itemprices[0].MRP * item.ItmQty }}</span
+                  >
+                  <button (click)="removeItem(item)" class="delete-btn">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="summary-container" class="">
+            <h5 class="card-title">Order Summary</h5>
+            <div class="card-content">
+              <div class="details-container">
+                <span class="fw-semibold">{{ totalQty }} Items</span>
+
+                <div class="scrollable-items">
+                  <ul class="px-0 list-group list-group-flush mb-4">
+                    <li
+                      class="list-group-item d-flex justify-content-between align-items-center gap-4"
+                      *ngFor="let item of cart"
+                    >
+                      <span
+                        >{{ item.ItmName }}
+                        <small style="color: var(--color-green)"
+                          >(Qty: {{ item.ItmQty }})</small
+                        ></span
+                      >
+                      <span class="fw-medium"
+                        >₹{{
+                          (item.Itemprices[0].MRP * (item.ItmQty || 1)).toFixed(
+                            2
+                          )
+                        }}</span
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="border-top pt-3">
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Subtotal</span>
+                  <span>{{ totalAmount.toFixed(2) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Shipping</span>
+                  <span class="text-success">Free</span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                  <span>Total</span>
+                  <span>₹{{ totalAmount.toFixed(2) }}</span>
+                </div>
+                <div class="mt-3 d-grid gap-2">
+                  <button class="btn" type="button" (click)="checkout()">
+                    Proceed to Checkout
+                  </button>
+                  <button class="btn" (click)="closeCartModal()">
+                    Continue Shopping
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

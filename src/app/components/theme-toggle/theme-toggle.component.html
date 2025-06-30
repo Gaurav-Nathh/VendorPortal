@@ -1,0 +1,14 @@
+<div>
+  <input
+    type="checkbox"
+    class="checkbox"
+    id="checkbox"
+    [checked]="isDarkMode"
+    (change)="toggleTheme()"
+  />
+  <label for="checkbox" class="checkbox-label">
+    <i class="bi bi-sun-fill"></i>
+    <i class="bi bi-moon-fill"></i>
+    <span class="ball"></span>
+  </label>
+</div>

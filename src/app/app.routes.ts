@@ -1,3 +1,181 @@
 import { Routes } from '@angular/router';
-
-export const routes: Routes = [];
+import { authGuard } from './auth/auth.guard';
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login-page/login-page.component').then(
+        (c) => c.LoginPageComponent
+      ),
+  },
+  {
+    path: 'forget-password',
+    loadComponent: () =>
+      import('./pages/reset-password/reset-password.component').then(
+        (c) => c.ResetPasswordComponent
+      ),
+  },
+  {
+    path: 'vendor',
+    loadComponent: () =>
+      import('./pages/user/user.component').then((c) => c.UserComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './pages/vendor/dashboard-vendor/dashboard-vendor.component'
+          ).then((c) => c.DashboardVendorComponent),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'item-mapping',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/vendor/item-mapping/item-mapping.component').then(
+            (c) => c.ItemMappingComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'purchase-orders',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './pages/vendor/purchase-orders/purchase-orders.component'
+          ).then((c) => c.PurchaseOrdersComponent),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'invoice',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/view-invoice/view-invoice.component').then(
+            (c) => c.ViewInvoiceComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'invoice-form',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/invoice-form/invoice-form.component').then(
+            (c) => c.InvoiceFormComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'update-password',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/update-password/update-password.component').then(
+            (c) => c.UpdatePasswordComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'update-profile',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/update-profile/update-profile.component').then(
+            (c) => c.UpdateProfileComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'page-under-construction',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/vendor/goods-receipts/goods-receipts.component').then(
+            (c) => c.GoodsReceiptsComponent
+          ),
+        canActivate: [authGuard],
+      },
+    ],
+  },
+  {
+    path: 'customer',
+    loadComponent: () =>
+      import('./pages/user/user.component').then((c) => c.UserComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './pages/customer/dashboard-customer/dashboard-customer.component'
+          ).then((c) => c.DashboardCustomerComponent),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'update-profile',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/update-profile/update-profile.component').then(
+            (c) => c.UpdateProfileComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'update-password',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/update-password/update-password.component').then(
+            (c) => c.UpdatePasswordComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'shopping-cart',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/shopping-cart/shopping-cart.component').then(
+            (c) => c.ShoppingCartComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'sales-order',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './pages/customer/sales-order/list-sales-order/list-sales-order.component'
+          ).then((c) => c.ListSalesOrderComponent),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'my-orders',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/customer/my-orders/my-orders.component').then(
+            (c) => c.MyOrdersComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'page-under-construction',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/under-work/under-work.component').then(
+            (c) => c.UnderWorkComponent
+          ),
+        canActivate: [authGuard],
+      },
+    ],
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./components/no-page-exist/no-page-exist.component').then(
+        (c) => c.NoPageExistComponent
+      ),
+  },
+];

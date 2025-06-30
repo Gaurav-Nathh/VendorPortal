@@ -1,0 +1,93 @@
+<div class="container-fluid item-mapping-container  pt-md-2">
+  <!-- Search & Filter -->
+  <div class="">
+    <div class="w-100">
+      <div class="position-relative flex-grow-1">
+ <div class="position-relative col-4 mb-3">
+  <input
+    type="text"
+    class="form-control ps-3 pe-5 rounded-pill"
+    placeholder="Search items..."
+    [(ngModel)]="searchText"
+    (ngModelChange)="onSearchChange($event)"
+  />
+  
+  <!-- Search Icon -->
+  <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+</div>
+
+
+      </div>
+     
+    </div>
+  </div>
+
+  <!-- Desktop Table -->
+ <!-- Enhanced Table with Column Lines and Row Gaps -->
+<div class="table-container">
+  <table class="table table-hover mb-0 align-middle text-center w-100">
+    <thead>
+      <tr>
+        <th class="py-3 px-3 fw-semibold">Item Code</th>
+        <th class="py-3 px-3 fw-semibold">Item Name</th>
+        <th class="py-3 px-3 fw-semibold">My Item Code</th>
+        <th class="py-3 px-3 fw-semibold">My Item Name</th>
+        <th class="py-3 px-3 fw-semibold">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredItems" class="mb-2">
+        <td 
+          [attr.title]="item.ItmCode" 
+          data-bs-toggle="tooltip"
+          [ngClass]="{'text-start': isNaN(item.ItmCode), 'text-end': !isNaN(item.ItmCode)}">
+          {{ item.ItmCode?.length > 25 ? (item.ItmCode | slice:0:25) + '...' : item.ItmCode }}
+        </td>
+        
+        <td 
+          [attr.title]="item.ItmName" 
+          data-bs-toggle="tooltip" 
+          [ngClass]="{'text-start': isNaN(item.ItmName), 'text-end': !isNaN(item.ItmName)}">
+          {{ item.ItmName?.length > 25 ? (item.ItmName | slice:0:25) + '...' : item.ItmName }}
+        </td>
+        
+        <td>
+          <input
+            type="text"
+            class="input-des"
+            [(ngModel)]="item.ItmItvPrdCode"
+            [disabled]="!item.isEditing"
+            placeholder="Enter Code"
+            [attr.aria-label]="'Item code for ' + item.ItmName" />
+        </td>
+        
+        <td>
+          <input
+            type="text"
+            class="input-des"
+            [(ngModel)]="item.ItmItvPrdName"
+            [disabled]="!item.isEditing"
+            placeholder="Enter Name"
+            [attr.aria-label]="'Item name for ' + item.ItmName" />
+        </td>
+        
+        <td>
+          <button 
+            *ngIf="!item.isEditing" 
+            class="btn btn-outline-primary btn-sm" 
+            (click)="enableEditing(item)"
+            [attr.aria-label]="'Edit ' + item.ItmName">
+            Edit
+          </button>
+          <button 
+            *ngIf="item.isEditing" 
+            class="btn btn-primary btn-sm" 
+            (click)="saveItem(item)"
+            [attr.aria-label]="'Save changes for ' + item.ItmName">
+            Save
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

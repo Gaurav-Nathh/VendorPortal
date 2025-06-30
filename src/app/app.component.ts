@@ -1,12 +1,23 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
+import { CommonModule, NgIf } from '@angular/common';
+import { SessionServiceService } from './services/session-service.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true, // Mark this as a standalone component
+  imports: [RouterOutlet, RouterModule, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'portal';
+export class AppComponent implements OnInit {
+  constructor(private sessionService: SessionServiceService) {}
+
+  ngOnInit(): void {
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+    console.log(isAuthenticated);
+    if (isAuthenticated) {
+      this.sessionService.startSession();
+    }
+  }
 }
