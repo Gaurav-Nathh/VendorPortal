@@ -11,11 +11,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { SharedService } from '../../services/shared/shared.service';
 import Swal from 'sweetalert2';
-import { FilterOptionTopService } from '../../services/shoppingCart-service/filter-option-top.service';
 import { ShoppingCartService } from '../../services/shoppingCart-service/shopping-cart.service';
-import { routes } from '../../app.routes';
 import { Router } from '@angular/router';
-import { MockService } from '../../services/customer-service/mock.service';
 import { PSOMain } from '../../Models/SalesOrder/SalesOrder';
 import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
 
@@ -120,8 +117,6 @@ export class ShoppingCartComponent {
   isCartEditing = false;
 
   constructor(
-    private sharedService: SharedService,
-    private filterService: FilterOptionTopService,
     private shoppingCartService: ShoppingCartService,
     private salesOrderService: SalesOrderService,
     private renderer: Renderer2,
@@ -133,13 +128,6 @@ export class ShoppingCartComponent {
   }
 
   ngOnInit() {
-    this.filterPayload.btpCode = this.shoppingCartService.getBtpCode() || 'SO';
-    if (this.filterPayload.btpCode === 'SO') {
-      this.filterPayload.priceAt = 'Cost';
-    } else {
-      this.filterPayload.priceAt = 'MRP';
-    }
-
     this.shoppingCartService.isEditing$.subscribe((flag) => {
       if (flag === true) {
         this.setEditableItems();
@@ -597,7 +585,7 @@ export class ShoppingCartComponent {
     brnType: '',
     itemType: '',
     isWrhUnderIncl: false,
-    btpCode: '',
+    btpCode: 'SO',
     getpriceCode: false,
     maxLength: 10,
     catType: '',
@@ -1084,7 +1072,7 @@ export class ShoppingCartComponent {
   onDropDownOpen(filter: any) {
     if (filter.options.length === 0) {
       filter.loading = true;
-      this.filterService.getFilterOptionsTop(filter.title).subscribe({
+      this.shoppingCartService.getFilterOptionsTop(filter.title).subscribe({
         next: (res: any) => {
           filter.options = res?.ShopCartCatgoryList || [];
           filter.loading = false;

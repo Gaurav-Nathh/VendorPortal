@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { PurchaseOrderService } from '../../../../services/customer-service/purchase-order-service/purchase-order.service';
 import { FormsModule } from '@angular/forms';
-import { MockService } from '../../../../services/customer-service/mock.service';
 import { ShoppingCartService } from '../../../../services/shoppingCart-service/shopping-cart.service';
 import { SalesOrderService } from '../../../../services/customer-service/sales-order/sales-order.service';
 import Swal from 'sweetalert2';
@@ -28,7 +26,6 @@ export class ListSalesOrderComponent implements OnInit {
   openCollapseIndex: number | null = null;
 
   constructor(
-    private POService: PurchaseOrderService,
     private shoppingCartService: ShoppingCartService,
     private router: Router,
     private salesOrderService: SalesOrderService
@@ -47,7 +44,6 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   createSO() {
-    this.POService.setBtpCode('SO');
     this.shoppingCartService.disableEditing();
     this.router.navigate(['/customer/shopping-cart']);
   }

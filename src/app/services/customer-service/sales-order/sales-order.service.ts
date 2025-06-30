@@ -2,19 +2,18 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PSOMain } from '../../../Models/SalesOrder/SalesOrder';
 import { map, catchError, Observable, throwError } from 'rxjs';
+import { ApiConfigService } from '../../api-config/api-config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SalesOrderService {
-  private apiUrlLocal = 'http://localhost:5024/api';
-
-  private apiUrl = 'https://efactoapidevelopment.efacto.cloud/api';
-  private apiKey = '140-9299-524-TEST';
+  // private apiUrlLocal = 'http://localhost:5024/api';
+  private apiUrlLocal = 'http://localhost:5252/api';
 
   private editableItemId: any;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private config: ApiConfigService) {}
 
   postSalesOrder(salesOrder: PSOMain): Observable<any> {
     return this.http
@@ -27,7 +26,6 @@ export class SalesOrderService {
   }
 
   updateSalesOrder(updatedOrder: PSOMain): Observable<any> {
-    console.log('Updated Order:', updatedOrder);
     return this.http
       .post<any>(`${this.apiUrlLocal}/PSOMain/UpdatePSO`, updatedOrder)
       .pipe(
@@ -44,13 +42,10 @@ export class SalesOrderService {
   }
 
   getItemsDetail(codes: { code: string }[]): Observable<any[]> {
-    const headers = new HttpHeaders({
-      Code: this.apiKey,
-      'Content-Type': 'application/json',
-    });
+    const headers = this.config.getHeader();
     return this.http
       .post<{ Detail: any[] }>(
-        `${this.apiUrl}/Common/GetItemDetailList`,
+        `${this.config.getApiUrl()}/Common/GetItemDetailList`,
         codes,
         { headers }
       )
@@ -58,10 +53,7 @@ export class SalesOrderService {
   }
 
   getOrderList(acmId: number): Observable<any[]> {
-    const headers = new HttpHeaders({
-      Code: this.apiKey,
-      'Content-Type': 'application/json',
-    });
+    const headers = this.config.getHeader();
     return this.http.get<any[]>(
       `${this.apiUrlLocal}/PSOMain/GetPSOByAcmID/${acmId}`,
       { headers }

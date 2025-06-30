@@ -5,7 +5,7 @@ import { SessionServiceService } from './services/session-service.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true, // Mark this as a standalone component
+  standalone: true,
   imports: [RouterOutlet, RouterModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
