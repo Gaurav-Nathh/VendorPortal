@@ -143,34 +143,28 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
-        path: 'purchase-order',
+        path: 'sales-order',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './pages/customer/sales-order/list-sales-order/list-sales-order.component'
+          ).then((c) => c.ListSalesOrderComponent),
         canActivate: [authGuard],
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            loadComponent: () =>
-              import(
-                './pages/customer/purchase-order/list-purchase-order/list-purchase-order.component'
-              ).then((c) => c.ListPurchaseOrderComponent),
-            canActivate: [authGuard],
-          },
-          {
-            path: 'create',
-            pathMatch: 'full',
-            loadComponent: () =>
-              import(
-                './pages/customer/purchase-order/form-purchase-order/form-purchase-order.component'
-              ).then((c) => c.FormPurchaseOrderComponent),
-            canActivate: [authGuard],
-          },
-        ],
+      },
+      {
+        path: 'my-orders',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/customer/my-orders/my-orders.component').then(
+            (c) => c.MyOrdersComponent
+          ),
+        canActivate: [authGuard],
       },
       {
         path: 'page-under-construction',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/under-work/under-work.component').then(
+          import('./components/under-work/under-work.component').then(
             (c) => c.UnderWorkComponent
           ),
         canActivate: [authGuard],
@@ -178,156 +172,9 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'master',
-    loadComponent: () =>
-      import('./pages/user/user.component').then((c) => c.UserComponent),
-    canActivate: [authGuard],
-    children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import(
-            './pages/master/dashboard-master/dashboard-master.component'
-          ).then((c) => c.DashboardMasterComponent),
-        canActivate: [authGuard],
-      },
-      {
-        path: 'sales',
-        children: [
-          {
-            path: 'customers',
-            canActivate: [authGuard],
-            children: [
-              {
-                path: '',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/sales/customers/dashbard-customer/dashbard-customer.component'
-                  ).then((c) => c.DashbardCustomerComponent),
-                canActivate: [authGuard],
-              },
-              {
-                path: 'create',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/sales/customers/create-customer/create-customer.component'
-                  ).then((c) => c.CreateCustomerComponent),
-              },
-            ],
-          },
-          {
-            path: 'sales-order',
-            canActivate: [authGuard],
-            children: [
-              {
-                path: '',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/sales/sales-order/dashboard-sales-order/dashboard-sales-order.component'
-                  ).then((c) => c.DashboardSalesOrderComponent),
-              },
-              {
-                path: 'create',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/sales/sales-order/form-sales-order/form-sales-order.component'
-                  ).then((c) => c.FormSalesOrderComponent),
-              },
-            ],
-          },
-          // {
-          //   path: 'vendors',
-          //   children: [
-          //     {
-          //       path: '',
-          //       pathMatch: 'full',
-          //       loadComponent: () =>
-          //         import(
-          //           './pages/vendor-dashboard/vendor-dashboard.component'
-          //         ).then((c) => c.VendorDashboardComponent),
-          //       canActivate: [authGuard],
-          //     },
-          //     {
-          //       path: 'create',
-          //       pathMatch: 'full',
-          //       loadComponent: () =>
-          //         import(
-          //           './components/create-vendor-form/create-vendor-form.component'
-          //         ).then((c) => c.CreateVendorFormComponent),
-          //       canActivate: [authGuard],
-          //     },
-          //   ],
-          // },
-        ],
-      },
-      {
-        path: 'purchase',
-        children: [
-          {
-            path: 'vendors',
-            canActivate: [authGuard],
-            children: [
-              {
-                path: '',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/purchase/vendors/dashboard-vendors/dashboard-vendors.component'
-                  ).then((c) => c.DashboardVendorsComponent),
-              },
-              {
-                path: 'create',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/purchase/vendors/create-vendors/create-vendors.component'
-                  ).then((c) => c.CreateVendorsComponent),
-              },
-            ],
-          },
-          {
-            path: 'purchase-order',
-            canActivate: [authGuard],
-            children: [
-              {
-                path: '',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/purchase/purchase-order/dashboard-purchase-order/dashboard-purchase-order.component'
-                  ).then((c) => c.DashboardPurchaseOrderComponent),
-              },
-              // {
-              //   path: 'create',
-              //   pathMatch: 'full',
-              //   loadComponent: () =>
-              //     import(
-              //       './pages/master/purchase/purchase-order/create-purchase-order/create-purchase-order.component'
-              //     ).then((c) => c.CreatePurchaseOrderComponent),
-              // },
-              {
-                path: 'create',
-                pathMatch: 'full',
-                loadComponent: () =>
-                  import(
-                    './pages/master/purchase/purchase-order/form-purchase-order/form-purchase-order.component'
-                  ).then((c) => c.FormPurchaseOrderComponent),
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
     path: '**',
     loadComponent: () =>
-      import('./pages/no-page-exist/no-page-exist.component').then(
+      import('./components/no-page-exist/no-page-exist.component').then(
         (c) => c.NoPageExistComponent
       ),
   },

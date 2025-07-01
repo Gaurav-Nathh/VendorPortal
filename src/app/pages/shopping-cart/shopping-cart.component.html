@@ -332,7 +332,6 @@
 
       <!-- In Stock Toggle -->
       <div id="inStockContainer">
-        <span>In Stock</span>
         <div class="form-check form-switch inStock">
           <input
             class="form-check-input"
@@ -342,12 +341,12 @@
             (change)="onInStockChange($event)"
           />
         </div>
+        <span>In Stock</span>
       </div>
       <!-- In Stock END -->
 
       <!-- With Image -->
       <div id="inStockContainer">
-        <span>With Image</span>
         <div class="form-check form-switch inStock">
           <input
             class="form-check-input"
@@ -357,6 +356,7 @@
             (change)="onWithImageChange($event)"
           />
         </div>
+        <span>With Image</span>
       </div>
       <!-- With Image Ends -->
       <div class="checkbox-title" *ngFor="let filter of filters; let i = index">
@@ -538,7 +538,7 @@
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <p class="fw-semibold mb-0">
-                Price: ₹ {{ product.Itemprices[0].showPrice }}
+                Price: ₹ {{ product.Itemprices[0].ShowPrice }}
               </p>
               @if(product.Itemprices[0].Stock<10 &&
               product.Itemprices[0].Stock>1) {
@@ -553,17 +553,47 @@
               >
               }
             </div>
-            <div
-              class="btn-container d-flex justify-content-between mt-3 bottom-0"
-            >
-              <button
-                class=""
-                style="background-color: var(--color-blue)"
-                (click)="addToCart(product)"
-              >
-                ADD TO CART
-              </button>
-              <button (click)="buyNow(product)" id="buyNowBtn">BUY NOW</button>
+            <div class="btn-container">
+              <div class="quantity-container">
+                <button
+                  (click)="decreaseItmCardQty(product)"
+                  [disabled]="product.ItmQty <= 1"
+                >
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <span>{{ product.ItmQty }}</span>
+                <button (click)="increaseItmCardQty(product)">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div class="addToCart-container">
+                <button
+                  class=""
+                  style="background-color: var(--color-blue)"
+                  (click)="addToCart(product)"
+                >
+                  ADD TO CART
+                </button>
+              </div>
+              <!-- <div class="quantity-container">
+                <button>
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <span>1</span>
+                <button>
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div>
+                <button
+                  class=""
+                  style="background-color: var(--color-blue)"
+                  (click)="addToCart(product)"
+                >
+                  ADD TO CART
+                </button>
+              </div> -->
+              <!-- <button (click)="buyNow(product)" id="buyNowBtn">BUY NOW</button> -->
             </div>
           </div>
         </div>
@@ -619,8 +649,8 @@
                   <span>{{ item.ItmCode }}</span>
                 </div>
                 <div class="container-2">
-                  <span class="">₹{{ item.Itemprices[0].showPrice }}</span>
-                  <div class="qunatity-container">
+                  <span class="">₹{{ item.Itemprices[0].MRP }}</span>
+                  <div class="quantity-container">
                     <button (click)="decrementQty(item)">
                       <i class="fa-solid fa-minus"></i>
                     </button>
@@ -630,7 +660,7 @@
                     </button>
                   </div>
                   <span class="fw-bold"
-                    >₹{{ item.Itemprices[0].showPrice * item.ItmQty }}</span
+                    >₹{{ item.Itemprices[0].MRP * item.ItmQty }}</span
                   >
                   <button (click)="removeItem(item)" class="delete-btn">
                     <i class="bi bi-trash-fill"></i>
@@ -659,9 +689,9 @@
                       >
                       <span class="fw-medium"
                         >₹{{
-                          (
-                            item.Itemprices[0].showPrice * (item.ItmQty || 1)
-                          ).toFixed(2)
+                          (item.Itemprices[0].MRP * (item.ItmQty || 1)).toFixed(
+                            2
+                          )
                         }}</span
                       >
                     </li>
@@ -682,7 +712,9 @@
                   <span>₹{{ totalAmount.toFixed(2) }}</span>
                 </div>
                 <div class="mt-3 d-grid gap-2">
-                  <button class="btn" type="button" (click)="checkout()">Proceed to Checkout</button>
+                  <button class="btn" type="button" (click)="checkout()">
+                    Proceed to Checkout
+                  </button>
                   <button class="btn" (click)="closeCartModal()">
                     Continue Shopping
                   </button>

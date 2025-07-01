@@ -104,12 +104,26 @@ export class AuthService {
               userDetails?.UsrId?.toString() || ''
             );
             sessionStorage.setItem(
+              'UsrName',
+              userDetails?.UsrName?.toString() || ''
+            );
+            sessionStorage.setItem(
               'UsrLghId',
               userDetails?.UsrLghId?.toString() || ''
             );
             sessionStorage.setItem(
+              'UsrCtrlCmpId',
+              response.UserCtrlCmpId.toString()
+            );
+            sessionStorage.setItem(
               'UsrLinkAcmId',
               userDetails?.UsrLinkAcmId || ''
+            );
+            sessionStorage.setItem('UsrAddUser', userDetails?.UsrAddUser);
+
+            sessionStorage.setItem(
+              'UsrLinkAcmName',
+              userDetails?.UsrLinkAcmName?.toString() || ''
             );
             sessionStorage.setItem('UsrBrnId', userDetails?.UsrBrnId || 0);
 
@@ -215,7 +229,7 @@ export class AuthService {
     // localStorage.removeItem('userType');
     // localStorage.removeItem('UsrLghId');
     // this.router.navigate(['/login']);
-    sessionStorage.clear()
+    sessionStorage.clear();
     this.router.navigate(['/login']);
   }
 

@@ -40,17 +40,22 @@ export class NavbarComponent implements OnInit {
     this.sidebarService.sidebarVisible$.subscribe((visible) => {
       this.isSidebarVisible = visible;
     });
-    const hour = new Date().getHours();
+    // const hour = new Date().getHours();
 
-    if (hour < 12) {
-      this.greeting = 'Good Morning';
-    } else if (hour < 17) {
-      this.greeting = 'Good Afternoon';
-    } else {
-      this.greeting = 'Good Evening';
-    }
+    // if (hour < 12) {
+    //   this.greeting = 'Good Morning';
+    // } else if (hour < 17) {
+    //   this.greeting = 'Good Afternoon';
+    // } else {
+    //   this.greeting = 'Good Evening';
+    // }
 
-    this.greeting += `, ${this.capitalize(this.userType)}`;
+    // this.greeting += `, ${this.capitalize(this.userType)}`;
+    this.greeting = `Welcome to ${
+      sessionStorage.getItem('userType') || ''
+    } Portal, ${sessionStorage.getItem('UsrName')}`;
+
+    const brnId = Number(sessionStorage.getItem('UsrLinkAcmId') || '');
   }
 
   capitalize(text: string): string {
@@ -67,5 +72,4 @@ export class NavbarComponent implements OnInit {
       mobileMenu.classList.toggle('show');
     }
   }
-
 }

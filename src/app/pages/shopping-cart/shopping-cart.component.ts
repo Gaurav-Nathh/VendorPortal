@@ -11,8 +11,10 @@ import {
 import { FormsModule } from '@angular/forms';
 import { SharedService } from '../../services/shared/shared.service';
 import Swal from 'sweetalert2';
-import { FilterOptionTopService } from '../../services/shoppingCart-service/filter-option-top.service';
 import { ShoppingCartService } from '../../services/shoppingCart-service/shopping-cart.service';
+import { Router } from '@angular/router';
+import { PSOMain } from '../../Models/SalesOrder/SalesOrder';
+import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
 
 declare var bootstrap: any;
 
@@ -109,23 +111,28 @@ export class ShoppingCartComponent {
   //   'https://apptest-bng.s3.ap-south-1.amazonaws.com/Efacto%20Test/ITEM/';
   productImgUrl: string = 'https://apptest-bng.s3.ap-south-1.amazonaws.com/';
   products: any[] = [];
+  cart: any[] = [];
+  itemDetailsResponse: any[] = [];
+  salesOrder: PSOMain = {} as PSOMain;
+  isCartEditing = false;
 
   constructor(
-    private sharedService: SharedService,
-    private filterService: FilterOptionTopService,
     private shoppingCartService: ShoppingCartService,
-    private renderer: Renderer2
+    private salesOrderService: SalesOrderService,
+    private renderer: Renderer2,
+    private router: Router
   ) {
     this.filters.forEach((filter) => {
       this.selectedFilters[filter.title] = [];
     });
   }
 
-  // @HostListener('document:click', ['$event'])
-  // handleClickOutside(event: MouseEvent) {}
-
   ngOnInit() {
-    this.filterPayload.btpCode = this.shoppingCartService.getBtpCode() || '';
+    this.shoppingCartService.isEditing$.subscribe((flag) => {
+      if (flag === true) {
+        this.setEditableItems();
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -148,15 +155,15 @@ export class ShoppingCartComponent {
     switch (option.key) {
       case '103':
         this.products.sort((a, b) => {
-          const priceA = a?.Itemprices?.[0]?.showPrice ?? 0;
-          const priceB = b?.Itemprices?.[0]?.showPrice ?? 0;
+          const priceA = a?.Itemprices?.[0]?.ShowPrice ?? 0;
+          const priceB = b?.Itemprices?.[0]?.ShowPrice ?? 0;
           return priceB - priceA;
         });
         break;
       case '104':
         this.products.sort((a, b) => {
-          const priceA = a?.Itemprices?.[0]?.showPrice ?? 0;
-          const priceB = b?.Itemprices?.[0]?.showPrice ?? 0;
+          const priceA = a?.Itemprices?.[0]?.ShowPrice ?? 0;
+          const priceB = b?.Itemprices?.[0]?.ShowPrice ?? 0;
           return priceA - priceB;
         });
         break;
@@ -185,18 +192,7 @@ export class ShoppingCartComponent {
   }
 
   closeShoppingCart() {
-    Swal.fire({
-      title: 'Confirmation',
-      text: 'Are you sure you want to close the Cart?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.sharedService.toggleShoppingCartVisibility(false);
-      }
-    });
+    this.router.navigate(['/customer/sales-order']);
   }
 
   toggleSideFilterMobile() {
@@ -329,7 +325,7 @@ export class ShoppingCartComponent {
         items.forEach((item: any) => {
           const price = item?.Itemprices?.[0];
           if (price) {
-            price.showPrice = price.Costprice;
+            price.ShowPrice = price.MRP;
             price.Stock =
               price.UnitFactorType === '%'
                 ? price.Astock * price.UnitFactor
@@ -381,7 +377,7 @@ export class ShoppingCartComponent {
             items.forEach((item: any) => {
               const price = item?.Itemprices?.[0];
               if (price) {
-                price.showPrice = price.Costprice;
+                price.ShowPrice = price.MRP;
                 price.Stock =
                   price.UnitFactorType === '%'
                     ? price.Astock * price.UnitFactor
@@ -552,7 +548,7 @@ export class ShoppingCartComponent {
 
   filterPayload: {
     [key: string]: any;
-    brnId: number;
+    brnId: string;
     fyrId: number;
     wrhId: number;
     vdate: string;
@@ -578,7 +574,7 @@ export class ShoppingCartComponent {
     stockFilter: boolean;
     withImage: boolean;
   } = {
-    brnId: Number(sessionStorage.getItem('UsrBrnId')),
+    brnId: sessionStorage.getItem('UsrBrnId') || '',
     fyrId: 25,
     wrhId: 0,
     vdate: '',
@@ -589,12 +585,12 @@ export class ShoppingCartComponent {
     brnType: '',
     itemType: '',
     isWrhUnderIncl: false,
-    btpCode: 'PO',
+    btpCode: 'SO',
     getpriceCode: false,
     maxLength: 10,
     catType: '',
     catId: 0,
-    priceAt: 'Cost',
+    priceAt: 'MRP',
     searchType: '',
     searchValue: '',
     tempName: '',
@@ -643,7 +639,7 @@ export class ShoppingCartComponent {
         items.forEach((item: any) => {
           const price = item?.Itemprices?.[0];
           if (price) {
-            price.showPrice = price.Costprice;
+            price.ShowPrice = price.MRP;
             price.Stock =
               price.UnitFactorType === '%'
                 ? price.Astock * price.UnitFactor
@@ -684,8 +680,6 @@ export class ShoppingCartComponent {
     this.selectedSideFilter = filter;
   }
 
-  cart: any[] = [];
-
   addToCart(product: any) {
     try {
       const existing = this.cart.find((item) => item.ItmId === product.ItmId);
@@ -723,6 +717,16 @@ export class ShoppingCartComponent {
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
+    }
+  }
+
+  increaseItmCardQty(product: any): void {
+    product.ItmQty = (product.ItmQty || 1) + 1;
+  }
+
+  decreaseItmCardQty(product: any): void {
+    if (product.ItmQty && product.ItmQty > 1) {
+      product.ItmQty--;
     }
   }
 
@@ -801,8 +805,7 @@ export class ShoppingCartComponent {
 
   get totalAmount(): number {
     return this.cart.reduce(
-      (total, item) =>
-        total + item.Itemprices[0].showPrice * (item.ItmQty || 1),
+      (total, item) => total + item.Itemprices[0].MRP * (item.ItmQty || 1),
       0
     );
   }
@@ -817,16 +820,231 @@ export class ShoppingCartComponent {
       return;
     }
 
-    this.shoppingCartService.putCheckoutItems(this.cart);
-    this.closeCartModal();
-    this.sharedService.toggleShoppingCartVisibility(false);
+    const itemsCode = this.cart.map((item) => ({
+      code: item.ItmCode,
+      brnId: Number(sessionStorage.getItem('UsrBrnId')),
+    }));
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Checkout successful',
-      showConfirmButton: false,
-      timer: 1000,
+    this.salesOrderService.getItemsDetail(itemsCode).subscribe({
+      next: (response) => {
+        this.itemDetailsResponse = response;
+
+        this.itemDetailsResponse.forEach((itemResp: any) => {
+          const item = itemResp.itemdetail;
+          const cartMatch = this.cart.find(
+            (c) =>
+              c.ItmCode?.trim().toLowerCase() ===
+              item.ItmCode?.trim().toLowerCase()
+          );
+          item.ItmQty = cartMatch ? cartMatch.ItmQty : 1;
+          // item.itempricedetail.MRP = cartMatch ? cartMatch.Itemprices.MRP : 0;
+        });
+
+        if (this.isCartEditing) {
+          console.log(this.isCartEditing);
+          this.salesOrder = {
+            mKey: this.salesOrderService.getEditableItemIds().mKey,
+            modUser: sessionStorage.getItem('UsrAddUser') || '',
+            itmCount: this.itemDetailsResponse.length,
+            itmQty: this.itemDetailsResponse.reduce(
+              (sum, d) => sum + (d.itemdetail.ItmQty || 0),
+              0
+            ),
+            netAmount: this.itemDetailsResponse.reduce((sum, d) => {
+              const price = d.itempricedetail?.[0] || {};
+              return sum + (price.MRP || 0) * (d.itemdetail.ItmQty || 0);
+            }, 0),
+            psoItems: this.itemDetailsResponse.map((d) => {
+              const item = d.itemdetail;
+              const price = d.itempricedetail?.[0] || {};
+              return {
+                itmId: item.ItmId,
+                pack: price.Pack || '',
+                mrp: price.MRP || 0,
+                rate: price.Saleprice || 0,
+                qty: item.ItmQty,
+                untId: item.ItmUntId || 0,
+                unitFactor: price.UnitFactor || 1,
+                netAmount: (price.MRP || 0) * (item.ItmQty || 0),
+                stock: price.Stock || 0,
+                baseQty: (item.ItmQty || 0) * (price.UnitFactor || 1),
+                baseUnitId: item.ItmUntId || 0,
+                remarks: '',
+              };
+            }),
+          };
+
+          this.salesOrderService.updateSalesOrder(this.salesOrder).subscribe({
+            next: (res) => {
+              this.closeCartModal();
+              Swal.fire({
+                icon: 'success',
+                title: 'Checkout successful',
+                showConfirmButton: false,
+                timer: 1000,
+              });
+              this.salesOrderService.clearEditableItemIds();
+              this.router.navigate(['/customer/sales-order']);
+            },
+            error: (err) => {
+              Swal.fire({
+                toast: true,
+                icon: 'error',
+                title: 'We were not able to create your order.',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener('mouseenter', Swal.stopTimer);
+                  toast.addEventListener('mouseleave', Swal.resumeTimer);
+                },
+              });
+            },
+          });
+        } else {
+          this.salesOrder = {
+            cmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
+            brnId: Number(sessionStorage.getItem('UsrBrnId')),
+            acmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
+            vtype: 'POM',
+            itmCount: this.itemDetailsResponse.length,
+            itmQty: this.itemDetailsResponse.reduce(
+              (sum, d) => sum + (d.itemdetail.ItmQty || 0),
+              0
+            ),
+            netAmount: this.itemDetailsResponse.reduce((sum, d) => {
+              const price = d.itempricedetail?.[0] || {};
+              return sum + (price.Saleprice || 0) * (d.itemdetail.ItmQty || 0);
+            }, 0),
+            status: 'CREATED',
+            statusCode: 1,
+            addUser: sessionStorage.getItem('UsrAddUser') || '',
+            modUser: '',
+            psoItems: this.itemDetailsResponse.map((d) => {
+              const item = d.itemdetail;
+              const price = d.itempricedetail?.[0] || {};
+              return {
+                itmId: item.ItmId,
+                pack: price.Pack || '',
+                mrp: price.MRP || 0,
+                rate: price.Saleprice || 0,
+                qty: item.ItmQty,
+                untId: item.ItmUntId || 0,
+                unitFactor: price.UnitFactor || 1,
+                netAmount: (price.MRP || 0) * (item.ItmQty || 0),
+                stock: price.Stock || 0,
+                baseQty: (item.ItmQty || 0) * (price.UnitFactor || 1),
+                baseUnitId: item.ItmUntId || 0,
+                remarks: '',
+              };
+            }),
+          };
+
+          this.salesOrderService.postSalesOrder(this.salesOrder).subscribe({
+            next: (res) => {
+              this.closeCartModal();
+              Swal.fire({
+                icon: 'success',
+                title: 'Checkout successful',
+                showConfirmButton: false,
+                timer: 1000,
+              });
+              this.router.navigate(['/customer/sales-order']);
+            },
+            error: (err) => {
+              Swal.fire({
+                toast: true,
+                icon: 'error',
+                title: 'We were not able to create your order.',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener('mouseenter', Swal.stopTimer);
+                  toast.addEventListener('mouseleave', Swal.resumeTimer);
+                },
+              });
+            },
+          });
+        }
+      },
+
+      error: (err) => {
+        Swal.fire({
+          toast: true,
+          icon: 'error',
+          title: 'Failed to get item details.',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      },
     });
+  }
+
+  setEditableItems() {
+    const editableItem = this.salesOrderService.getEditableItemIds();
+    const itemsCode = editableItem.psoItems.map((item: any) => ({
+      code: item.itmCode,
+      brnId: Number(sessionStorage.getItem('UsrBrnId')),
+    }));
+
+    this.salesOrderService.getItemsDetail(itemsCode).subscribe({
+      next: (response) => {
+        const editableItemsDetail = response;
+        editableItemsDetail.forEach((item: any) => {
+          const matched = editableItem.psoItems.find(
+            (itm: any) => itm.itmId === item.itemdetail.ItmId
+          );
+          if (matched) {
+            item.itemdetail.ItmQty = matched.qty;
+          }
+        });
+        this.cart = editableItemsDetail.map((entry: any) => {
+          const item = entry.itemdetail;
+          const price = entry.itempricedetail[0] || {};
+          return {
+            ItmId: item.ItmId,
+            ItmName: item.ItmName,
+            ItmCode: item.ItmCode,
+            ItmQty: item.ItmQty || 1,
+            ItmPackUntCode: item.ItmPackUntCode,
+            Itemprices: [
+              {
+                // ShowPrice: price.ShowPrice || price.Saleprice || 0,
+                // Costprice: price.Costprice || 0,
+                // Stock: price.Stock || 0,
+                ...price,
+              },
+            ],
+          };
+        });
+      },
+    });
+
+    // const editableItem = this.salesOrderService.getEditableItemIds();
+    // this.cart = editableItem.map((entry: any) => {
+    //   const item = entry.itemdetail;
+    //   const price = entry.itempricedetail[0] || {};
+    //   return {
+    //     ItmId: item.ItmId,
+    //     ItmName: item.ItmName,
+    //     ItmCode: item.ItmCode,
+    //     ItmQty: item.ItmQty || 1,
+    //     ItmPackUntCode: item.ItmPackUntCode,
+    //     Itemprices: [
+    //       {
+    //         ShowPrice: price.ShowPrice || price.Saleprice || 0,
+    //         Costprice: price.Costprice || 0,
+    //         Stock: price.Stock || 0,
+    //         ...price,
+    //       },
+    //     ],
+    //   };
+    // });
   }
 
   filters: FilterCategory[] = [
@@ -854,7 +1072,7 @@ export class ShoppingCartComponent {
   onDropDownOpen(filter: any) {
     if (filter.options.length === 0) {
       filter.loading = true;
-      this.filterService.getFilterOptionsTop(filter.title).subscribe({
+      this.shoppingCartService.getFilterOptionsTop(filter.title).subscribe({
         next: (res: any) => {
           filter.options = res?.ShopCartCatgoryList || [];
           filter.loading = false;
