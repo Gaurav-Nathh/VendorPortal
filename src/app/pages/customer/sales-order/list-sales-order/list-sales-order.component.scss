@@ -78,11 +78,8 @@
     border-collapse: separate;
     border-spacing: 0;
 
-    .tr-div {
-      background-color: #6366f1;
-      width: 100%;
-    }
-    th {
+    th,
+    .th {
       background: var(--color-bg);
       color: #64748b;
       font-weight: 600;
@@ -104,6 +101,12 @@
 
     tr:hover {
       background: var(--color-hover);
+    }
+
+    .collapse-row {
+      &:hover {
+        background-color: transparent;
+      }
     }
 
     .order-number-wrapper {
