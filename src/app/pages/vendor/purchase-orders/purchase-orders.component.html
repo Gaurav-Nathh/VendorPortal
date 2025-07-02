@@ -1,5 +1,7 @@
 <div class="page-container">
-<div class="dashboard-container ">
+
+
+<div class="dashboard-container">
   <!-- Search & Filter -->
  <div class="container-fluid  border rounded shadow-sm p-3 ">
  <div class="row align-items-end justify-content-between">
@@ -8,17 +10,7 @@
   <div class="col-12 col-md-9">
     <div class="row g-3">
       <!-- Status Dropdown -->
-      <div class="col-12 col-md-3">
- 
-        <select 
-          class="form-select"
-          [(ngModel)]="status"
-          (ngModelChange)="applyFilters()"
-          aria-label="Select status">
-          <option value="All">All</option>
-          <option *ngFor="let state of statusArray" [value]="state">{{ state }}</option>
-        </select>
-      </div>
+     
 
       <!-- Search Input -->
       <div class="col-12 col-md-6">
@@ -31,24 +23,15 @@
             type="text" 
             class="form-control border-start-0"
             placeholder="Search by PO number or item..."
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="applyFilters()"
+           
             aria-label="Search items" />
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Right side: Refresh Button -->
-  <div class="col-12 col-md-1 text-md-end mt-3 mt-md-0">
-    <button 
-      type="button" 
-      class="bnt-pry w-100 w-md-auto"
-      (click)="getPoList()"
-      aria-label="Refresh data">
-      <i class="bi bi-arrow-clockwise me-2"></i>
-    </button>
-  </div>
+  
+ 
 
 </div>
 
@@ -56,26 +39,24 @@
 
 
   <!-- Desktop Table -->
-  
+ 
     <div class="orders-table-container">
-      <table class="orders-table w-100 ">
-        <thead  class="">
-          <tr class="bg-black">
-            <th class="py-3 px-3 fw-semibold">Order No.</th>
+   <table class="orders-table w-100">
+  <thead>
+    <tr>
+      <th class="py-3 px-3 fw-semibold">Order No.</th>
             <th class="py-3 px-3 fw-semibold">Date</th>
             <th class="py-3 px-3 fw-semibold">Item Count</th>
             <th class="py-3 px-3 fw-semibold">Value</th>
             <th class="py-3 px-3 fw-semibold">Print</th>
             <th class="py-3 px-3 fw-semibold">Status</th>
             <th class="py-3 px-3 fw-semibold">Ship To</th>
-          </tr>
-        </thead>
-        <tbody>
-          <ng-container *ngFor="let item of paginatedData; let i = index">
-            <!-- Main Table Row -->
-            <tr class="table-row" 
-                >
-            <td [attr.title]="item.PomVno" data-bs-toggle="tooltip">
+    </tr>
+  </thead>
+  <tbody  id="receipt-accordion">
+    <ng-container *ngFor="let item of paginatedData; let i = index">
+      <tr class=" " >
+       <td [attr.title]="item.PomVno" data-bs-toggle="tooltip">
         {{ item.PomVno }}
       </td>
 
@@ -84,17 +65,26 @@
       </td>
 
   <td class="text-center">
-  <button 
-    class="bg-transparent d-flex justify-content-around w-50" 
-    (click)="getPoDetails(item)"
-    data-bs-toggle="collapse"
-    [attr.data-bs-target]="'#collapse-' + item.PomMkey"
-    aria-expanded="false"
-    aria-controls="'collapse-' + item.PomMkey"
-    title="View Items">
-    {{ item.PomItems }} 
-   <i class="bi bi-eye text-primary"></i>
-  </button>
+ <button 
+  class="bg-transparent d-flex justify-content-around w-50"
+  title="View Items"
+  type="button"
+  (click)="openedRowIndex = openedRowIndex === i ? null : i"
+  data-bs-toggle="collapse"
+  [attr.data-bs-target]="'#collapse-' + i"
+  [attr.aria-expanded]="openedRowIndex === i"
+  [attr.aria-controls]="'collapse-' + i">
+  {{ item.PomItems }} 
+  <i 
+    class="bi" 
+    [ngClass]="{
+      'bi-eye text-primary': openedRowIndex !== i,
+      'bi-x-lg text-danger': openedRowIndex === i
+    }">
+  </i>
+</button>
+
+
 </td>
 
 
@@ -120,36 +110,32 @@
       <td [attr.title]="item.PomShpBrnName">
         {{ item.PomShpBrnName }}
       </td>
+      </tr>
 
-            </tr>
-
-            <!-- Dropdown Row - Appears below clicked row -->
-        <tr>
-  <td colspan="10" class="">
-    <div 
-      class="collapse " 
-      [id]="'collapse-' + item.PomMkey"
-      data-bs-parent="#orders-accordion">
-      
+      <!-- Optional dropdown/details row -->
+    <tr>
+  <td colspan="10" class="p-0">
+    <div
+      class="collapse row-dropdown-container"
+      [id]="'collapse-' + i" data-bs-parent="#receipt-accordion"
+    >
+      <div class="dropdown-body">
         <app-po-list 
           [po]="item" 
-          [close]="closeDropdown.bind(this)">
+          >
         </app-po-list>
       </div>
-    
+    </div>
   </td>
 </tr>
 
 
+    </ng-container>
+  </tbody>
+</table>
 
-          </ng-container>
-        </tbody>
-      </table>
     </div>
   </div>
- 
-
-</div>
 
 
  <div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
@@ -170,4 +156,5 @@
     (click)="goToNextPage()">
     Next
   </button>
+</div>
 </div>

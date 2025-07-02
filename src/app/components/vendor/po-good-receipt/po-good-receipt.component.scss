@@ -5,6 +5,7 @@
 }
 
 .po-header {
+  background-color: rgb(46, 46, 46);
   color: white;
   padding: 0.5rem 2rem;
 
@@ -27,7 +28,7 @@
 
 .table-wrapper {
   background: #ffffff;
-
+  
   .table-responsive {
     max-height: 60vh;
     overflow-y: auto;
@@ -92,11 +93,11 @@
   }
 
   .serial-number {
-    background: #4f46e5;
-    color: white;
+    text-align: start;
+    
     width: 32px;
     height: 32px;
-    border-radius: 50%;
+   
     display: flex;
     align-items: center;
     justify-content: center;

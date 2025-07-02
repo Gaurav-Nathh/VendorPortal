@@ -142,5 +142,12 @@ getAlignment(value: any): string {
 }
 
 
+openedRowIndex: number | null = null;
+
+toggleRow(index: number) {
+  this.openedRowIndex = this.openedRowIndex === index ? null : index;
+}
+
+
   
 }

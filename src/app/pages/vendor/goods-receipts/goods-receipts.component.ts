@@ -26,7 +26,7 @@ selectedItem:any = null;
   currentPage: number = 1;
 itemsPerPage: number = 10;
 
-expandDropdown(item: any) {
+/* expandDropdown(item: any) {
   if (this.expandedkey === item.GrmMkey) {
     console.log('Closing dropdown for:', item.GrmMkey);
     this.expandedkey = null;
@@ -36,6 +36,12 @@ expandDropdown(item: any) {
     this.expandedkey = item.GrmMkey;
     this.selectedItem = item; // Store the selected item for further use
   }
+} */
+
+openedRowKey: string | null = null;
+
+toggleRow(key: string) {
+  this.openedRowKey = this.openedRowKey === key ? null : key;
 }
 
 

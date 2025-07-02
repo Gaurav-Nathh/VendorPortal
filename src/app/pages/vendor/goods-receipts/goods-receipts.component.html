@@ -83,13 +83,24 @@
          
          <td >
         <button
-          class="bg-transparent d-flex justify-content-around w-50"
-          title="View Items"
-          data-bs-toggle="collapse"
-          [attr.data-bs-target]="'#row-' + item.GrmMkey"
-          type="button">
-          {{ item.GrmItems }} <i class="bi bi-eye text-primary"></i>
-        </button>
+  class="bg-transparent d-flex justify-content-around w-50"
+  title="View Items"
+  type="button"
+  (click)="toggleRow(item.GrmMkey)"
+  data-bs-toggle="collapse"
+  [attr.data-bs-target]="'#row-' + item.GrmMkey"
+  [attr.aria-expanded]="openedRowKey === item.GrmMkey"
+  [attr.aria-controls]="'row-' + item.GrmMkey">
+  {{ item.GrmItems }}
+  <i
+    class="bi"
+    [ngClass]="{
+      'bi-eye text-primary': openedRowKey !== item.GrmMkey,
+      'bi-x-lg text-danger': openedRowKey === item.GrmMkey
+    }">
+  </i>
+</button>
+
       
 
         </td>

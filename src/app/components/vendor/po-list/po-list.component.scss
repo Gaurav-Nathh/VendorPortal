@@ -1,11 +1,11 @@
 // Purchase Order Table Styles
 .po-table-container {
-  background: #ffffff;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+ 
   overflow: hidden;
 }
 
 .po-header {
+  background-color: rgb(46, 46, 46);
   color: white;
   padding: 0.5rem 2rem;
 
@@ -28,7 +28,7 @@
 
 .table-wrapper {
   background: #ffffff;
-
+  
   .table-responsive {
     max-height: 60vh;
     overflow-y: auto;
@@ -51,7 +51,7 @@
 
 .po-table {
   margin-bottom: 0;
-  font-size: 0.95rem;
+  
 
   // Vertical lines between columns
   th,
@@ -80,26 +80,24 @@
   }
 
   .table-row {
-    transition: background 0.2s;
+   
 
-    &:hover {
-      background: #f9fafb;
-    }
+   
 
     td {
       color: #1f2937;
       font-size: 0.925rem;
-      padding: 1rem 5px;
+      padding: 0px 15px;
       vertical-align: middle;
     }
   }
 
   .serial-number {
-    background: #4f46e5;
-    color: white;
+    text-align: start;
+    
     width: 32px;
     height: 32px;
-    border-radius: 50%;
+   
     display: flex;
     align-items: center;
     justify-content: center;
@@ -199,7 +197,7 @@
   }
 
   .po-table {
-    font-size: 0.85rem;
+  
 
     .serial-number {
       width: 20px;
