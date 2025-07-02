@@ -1,140 +1,180 @@
-.bnt-pry {
-  width: 10%;
-  background-color: #007bff;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-
-  &:disabled {
-    background-color: #b0d4ff;
-    cursor: not-allowed;
-  }
-}
-
-
-// Table Container Fixes
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  background-color: var(--color-bg);
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  margin: 20px 0;
-
-  .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  table {
-    width: 100%;
-    min-width: 800px; // Ensures table doesn't collapse on small screens
-    margin-bottom: 0;
-    border-collapse: separate;
-    
-
-    th, td {
-      white-space: nowrap;
-      &:first-child {
-        padding-left: 1.5rem;
-      }
-      &:last-child {
-        padding-right: 1.5rem;
-      }
-    }
-  }
-}
-
-// Table Row Styles
-.table-row {
-  cursor: pointer;
-  transition: all 0.3s ease;
+.page-container{
   position: relative;
-  background-color: white;
 
-  &:hover {
-    background-color: rgba(0, 123, 255, 0.05) !important;
-    transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  &.row-expanded {
-    background-color: rgba(0, 123, 255, 0.1) !important;
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
-    
-    td {
-      border-bottom: 2px solid #007bff;
-    }
-  }
 }
-
-// Dropdown Row Container
-.dropdown-row {
-  td {
-    border: none !important;
-    background: transparent !important;
-    padding: 0 !important;
-  }
-}
-
-.row-dropdown-container {
-  background: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  margin: 0;
-  overflow: hidden;
-  animation: slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  width: 100%;
-}
-
-// Responsive Adjustments
-@media (max-width: 992px) {
-  .table-container {
-    border-radius: 8px;
-    
-    table {
-      min-width: 900px; // Adjust as needed for your columns
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .search-containers {
-    flex-direction: column;
-    
-    .dropdown-wrapper, 
-    .search-input-group {
-      width: 100%;
-    }
-  }
+.pagination-container {
+  position: fixed;
+  bottom: 10px;
+  right: 0;
+  left: 0; /* This stretches it full width */
   
-  .table-container {
-    margin: 10px 0;
-    
-    table {
-      font-size: 0.9rem;
+  
+  z-index: 0; /* Optional: ensures it appears above other content */
+  
+}
+
+
+.dashboard-container {
+  padding: 1rem;
+  margin-right: 0.5rem;
+  background: var(--color-card);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-wrap-mode: nowrap;
+}
+
+.page-breadcrum {
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  color: var(--primary-text);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.view-selector {
+  .view-options {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .view-option {
+    padding: 0.5rem 0.8rem;
+    border: none;
+    background: #e6f9e7;
+    color: #64748b;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: #6366f1;
+      color: white;
+    }
+
+    &:hover:not(.active) {
+      background: #aeebb0;
     }
   }
 }
 
-@media (max-width: 576px) {
-  .table-container {
-    border-radius: 6px;
-    
-    table {
-      min-width: 600px; // Adjust as needed for your columns
-      font-size: 0.85rem;
+
+
+.orders-table-container {
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+
+  .orders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    th,
+    .th {
+      background: var(--color-bg);
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.6rem 1.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.4rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+      font-size: 0.86rem;
+    }
+
+    .active-row {
+      background-color: var(--color-hover);
+    }
+
+    tr:hover {
+      background: var(--color-hover);
+    }
+
+    .collapse-row {
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    .order-number-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .bi-file-text {
+        color: var(--color-blue);
+        font-size: 1.2rem;
+      }
+    }
+
+    .summary-container {
+      text-align: center;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+
+      &.billed {
+        background: #e6f9e7;
+        color: #95d497;
+      }
+
+      &.open {
+        background: #fef3c7;
+        color: #d97706;
+      }
+
+      &.created {
+        background: #f1f5f9;
+        color: #64748b;
+      }
+    }
+
+    .actions-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .action-btn {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+        color: #64748b;
+        background-color: transparent;
+        border: none;
+
+        &:hover {
+          background: #f1f5f9;
+        }
+        &.show,
+        .dropdown.show & {
+          background: #f1f5f9;
+        }
+      }
     }
   }
+}
+.bord {
+  border: 1px solid red !important;
 }

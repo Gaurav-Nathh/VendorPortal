@@ -1,4 +1,7 @@
-<div class="container-fluid item-mapping-container ">
+<div class="page-container">
+
+
+<div class="dashboard-container">
   <!-- Search & Filter -->
  <div class="container-fluid  border rounded shadow-sm p-3 ">
  <div class="row align-items-end justify-content-between">
@@ -36,9 +39,9 @@
 
 
   <!-- Desktop Table -->
-  <div class="table-container ">
-    <div class="table-responsive">
-   <table class="table table-hover mb-0 align-middle w-100 ">
+ 
+    <div class="orders-table-container">
+   <table class="orders-table w-100">
   <thead>
     <tr>
       <th class="py-3 px-3 fw-semibold">Branch</th>
@@ -53,9 +56,9 @@
       <th class="py-3 px-3 fw-semibold text-end">Net Payable</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody  id="receipt-accordion">
     <ng-container *ngFor="let item of paginatedData; let i = index">
-      <tr class="table-row " >
+      <tr class=" " >
         <td [attr.title]="item.PomShpBrnName" data-bs-toggle="tooltip">
           {{ item.GrmBrnName }}
         </td>
@@ -76,11 +79,19 @@
           {{ item.GrmRefDate | date:'dd/MM/yyyy' }}
         </td>
 
-        <td class="text-center">
+       
          
-          <button class="bg-transparent d-flex  justify-content-around w-50" title="View Items" (click)="expandDropdown(item)">
-          {{item.GrmItems}}  <i class="bi bi-eye text-primary"></i>
-          </button>
+         <td >
+        <button
+          class="bg-transparent d-flex justify-content-around w-50"
+          title="View Items"
+          data-bs-toggle="collapse"
+          [attr.data-bs-target]="'#row-' + item.GrmMkey"
+          type="button">
+          {{ item.GrmItems }} <i class="bi bi-eye text-primary"></i>
+        </button>
+      
+
         </td>
 
         <td class="text-end" [attr.title]="'₹' + item.PomNetAmt" data-bs-toggle="tooltip">
@@ -101,25 +112,29 @@
       </tr>
 
       <!-- Optional dropdown/details row -->
-        <tr *ngIf="expandedkey===item.GrmMkey" class="bg-dark">
-  <td colspan="10" class="p-0">
-    <div class="row-dropdown-container">
-      
-      <div class="dropdown-body ">
-     
-    <!--     <app-po-list [po]="selectedPoItem" [close]="closeDropdown.bind(this)"></app-po-list> -->
-         <app-po-good-receipt [data]="selectedItem" [close]="closeDropdown.bind(this)"></app-po-good-receipt>
-      </div>
-    </div>
-  </td>
-</tr>
+        <tr>
+      <td colspan="10" class="p-0">
+        <div
+          class="collapse row-dropdown-container"
+          [id]="'row-' + item.GrmMkey"
+          data-bs-parent="#receipt-accordion">
+          <div class="dropdown-body">
+            <app-po-good-receipt 
+              [data]="item" 
+              [close]="closeDropdown.bind(this)">
+            </app-po-good-receipt>
+          </div>
+        </div>
+      </td>
+    </tr>
+
     </ng-container>
   </tbody>
 </table>
 
     </div>
   </div>
-</div>
+
 
  <div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
   <button 
@@ -139,4 +154,5 @@
     (click)="goToNextPage()">
     Next
   </button>
+</div>
 </div>

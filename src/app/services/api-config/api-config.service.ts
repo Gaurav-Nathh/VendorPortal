@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ApiConfigService {
-  private apiUrl = 'https://efactoapidevelopment.efacto.cloud/api';
+  private apiUrl = 'https://efactoapitest.efacto.cloud/api';
   private apiKey = '140-9299-524-TEST';
 
   constructor() {}

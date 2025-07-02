@@ -1,5 +1,5 @@
 <div class="page-container">
-<div class="container-fluid item-mapping-container ">
+<div class="dashboard-container ">
   <!-- Search & Filter -->
  <div class="container-fluid  border rounded shadow-sm p-3 ">
  <div class="row align-items-end justify-content-between">
@@ -56,9 +56,9 @@
 
 
   <!-- Desktop Table -->
-  <div class="table-container">
-    <div class="table-responsive">
-      <table class="table table-hover mb-0 align-middle w-100 ">
+  
+    <div class="orders-table-container">
+      <table class="orders-table w-100 ">
         <thead  class="">
           <tr class="bg-black">
             <th class="py-3 px-3 fw-semibold">Order No.</th>
@@ -94,7 +94,7 @@
         ₹{{ item.PomNetAmt | number:'1.2-2' }}
       </td>
 
-     <td class="text-center">
+     <td class="">
   <button class="" (click)="downloadPdf(item.PomMkey)" title="Download PDF">
    <i class="bi bi-file-earmark-pdf-fill text-danger"></i>
 
@@ -155,5 +155,4 @@
     (click)="goToNextPage()">
     Next
   </button>
-</div>
 </div>

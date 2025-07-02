@@ -76,7 +76,7 @@ closeDropdown() {
 get paginatedData(){
   const start= (this.currentPage-1)*this.itemsPerPage;
   const end = start+ this.itemsPerPage;
-  return this.fullData.reverse().slice(start, end);
+  return this.fullData.slice(start, end);
 }
 get totalPages(): number {
   return Math.ceil(this.fullData.length / this.itemsPerPage);

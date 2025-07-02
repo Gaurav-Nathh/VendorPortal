@@ -1,54 +1,118 @@
-// Purchase Order Table Styles
-.po-table-container {
-  background: #ffffff;
+.orders-table-container {
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  overflow-x: auto;
 
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin: 1rem 0;
+  .orders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    th,
+    .th {
+      background: var(--color-bg);
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.6rem 1.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.4rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+      font-size: 0.86rem;
+    }
+
+    .active-row {
+      background-color: var(--color-hover);
+    }
+
+    tr:hover {
+      background: var(--color-hover);
+    }
+
+    .collapse-row {
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    .order-number-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .bi-file-text {
+        color: var(--color-blue);
+        font-size: 1.2rem;
+      }
+    }
+
+    .summary-container {
+      text-align: center;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+
+      &.billed {
+        background: #e6f9e7;
+        color: #95d497;
+      }
+
+      &.open {
+        background: #fef3c7;
+        color: #d97706;
+      }
+
+      &.created {
+        background: #f1f5f9;
+        color: #64748b;
+      }
+    }
+
+    .actions-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .action-btn {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+        color: #64748b;
+        background-color: transparent;
+        border: none;
+
+        &:hover {
+          background: #f1f5f9;
+        }
+        &.show,
+        .dropdown.show & {
+          background: #f1f5f9;
+        }
+      }
+    }
+  }
+}
+.bord {
+  border: 1px solid rgb(185, 181, 181) !important;
+  border-radius: 15px;
 }
 
-.po-header {
-  
-  color: white;
-  padding: 0.5rem 2rem;
-  border-bottom: 4px solid #4338ca;
-  .po-header th{
-    border-right: 1px solid #e5e7eb; // Light gray line between header columns
-  }
 
-  h2 {
-    font-size: 1.75rem;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-  }
 
-  .po-number {
-    font-size: 1rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.85);
-  }
-}
-
-.table-wrapper {
-  background: #ffffff;
-
-  .table-responsive {
-    max-height: 60vh;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f3f4f6;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, #6366f1, #7c3aed);
-      border-radius: 3px;
-    }
 
      tbody{
       tr {
@@ -64,202 +128,3 @@
           }
       }
      }
-  }
-}
-
-.po-table {
-  margin-bottom: 0;
-  font-size: 0.95rem;
-
-  .table-header {
-    th {
-      background: #f3f4f6;
-      color: #111827;
-      font-size: 0.875rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-  }
-
-  .table-row {
-    transition: background 0.2s;
-
-    &:hover {
-      background: #f9fafb;
-    }
-
-    td {
-      color: #1f2937;
-      font-size: 0.925rem;
-      padding: 1rem 5px;
-      vertical-align: middle;
-      
-       border-right: 1px solid #c3bfbf;
-
-
-    }
-  }
-
-  .serial-number {
-    background: #4f46e5;
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.85rem;
-    margin: 0 auto;
-  }
-
-  .item-code,
-  .my-item-code {
-   
-    background: #e0e7ff;
-    color: #3730a3;
-    padding: 0.35rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    
-  }
-
-  .item-name,
-  .my-item-name {
-    
-    color: #111827;
-    line-height: 1.4;
-  }
-
-  .qty-badge {
-    background: #22c55e;
-    color: white;
-    font-weight: 600;
-    padding: 0.4rem 0.75rem;
-    border-radius: 1rem;
-  }
-
-  .rate,
-  .amount {
-    font-weight: 600;
-    color: #111827;
-  }
-
-  .total-row {
-    background: #f9fafb;
-
-    .total-label {
-      font-weight: 600;
-      color: #374151;
-    }
-
-    .total-amount {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #4f46e5;
-    }
-  }
-}
-
-.po-summary {
-  background: #f9fafb;
-  padding: 2rem 1rem;
-
-  .summary-card {
-    span{
-      color: #111827;
-    }
-    background: #c7c7c7ae;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-    padding: 1.5rem;
-    
-
-    .summary-title {
-      color: #1f2937;
-      font-weight: 600;
-      border-bottom: 2px solid #6366f1;
-      padding-bottom: 0.5rem;
-      background-color: transparent;
-    }
-
-    .summary-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      font-size: 0.95rem;
-
-      .fw-bold {
-        color: #444444;
-      }
-    }
-  }
-}
-
-
-  
-@media (max-width: 768px) {
-  .po-header {
-    padding: 1.5rem;
-    h2 {
-      font-size: 1.5rem;
-    }
-  }
-
-  .po-table {
-    font-size: 0.85rem;
-
-    .table-header th,
-    .table-row td {
-      padding: 1rem 0.75rem;
-      font-size: 0.8rem;
-    }
-
-    .serial-number {
-      width: 28px;
-      height: 28px;
-      font-size: 0.8rem;
-    }
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .po-table-container,
-  .table-wrapper,
-  .summary-card {
-    background: #1f2937;
-    color: #e5e7eb;
-  }
-
-  .table-header th,
-  .summary-title {
-    background: #374151;
-    color: #e5e7eb;
-  }
-
-  .table-row:hover {
-    background: #111827;
-  }
-
-  .item-code,
-  .my-item-code {
-    background: #312e81;
-    color: #c7d2fe;
-  }
-
-  .total-label,
-  .fw-bold {
-    color: #d1d5db;
-  }
-
-  .total-amount {
-    color: #818cf8;
-  }
-}

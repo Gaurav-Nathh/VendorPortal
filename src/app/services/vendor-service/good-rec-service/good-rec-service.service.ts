@@ -26,7 +26,7 @@ export class GoodRecServiceService {
     const headers = this.config.getHeader();
 
     return this.http.get<any[]>(
-      `${this.config.getApiUrl}/api/GR/PortalGetItemList`,
+      `${this.config.getApiUrl()}/GR/PortalGetItemList`,
       {
         headers,
         params: { mkey, acmId: this.acmId },
