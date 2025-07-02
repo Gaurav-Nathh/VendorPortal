@@ -83,11 +83,20 @@
         {{ item.PomVdate | date:'dd/MM/yyyy' }}
       </td>
 
-     <td class="text-center">
-  <button class="bg-transparent d-flex justify-content-around w-50" (click)="getPoDetails(item)" title="View Items">
-   {{item.PomItems}} <i class="bi bi-eye text-primary"></i>
+  <td class="text-center">
+  <button 
+    class="bg-transparent d-flex justify-content-around w-50" 
+    (click)="getPoDetails(item)"
+    data-bs-toggle="collapse"
+    [attr.data-bs-target]="'#collapse-' + item.PomMkey"
+    aria-expanded="false"
+    aria-controls="'collapse-' + item.PomMkey"
+    title="View Items">
+    {{ item.PomItems }} 
+   <i class="bi bi-eye text-primary"></i>
   </button>
 </td>
+
 
 
       <td [attr.title]="item.PomNetAmt" data-bs-toggle="tooltip" class="text-end">
@@ -115,16 +124,22 @@
             </tr>
 
             <!-- Dropdown Row - Appears below clicked row -->
-         <tr *ngIf="expandedMkey === item.PomMkey" class="bg-transparent">
-  <td colspan="7" class="p-0">
-    <div class="row-dropdown-container">
+        <tr>
+  <td colspan="10" class="">
+    <div 
+      class="collapse " 
+      [id]="'collapse-' + item.PomMkey"
+      data-bs-parent="#orders-accordion">
       
-      <div class="dropdown-body ">
-        <app-po-list [po]="selectedPoItem" [close]="closeDropdown.bind(this)"></app-po-list>
+        <app-po-list 
+          [po]="item" 
+          [close]="closeDropdown.bind(this)">
+        </app-po-list>
       </div>
-    </div>
+    
   </td>
 </tr>
+
 
 
           </ng-container>

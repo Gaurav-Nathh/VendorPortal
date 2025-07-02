@@ -1,130 +1,254 @@
-.orders-table-container {
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  overflow-x: auto;
+// Purchase Order Table Styles
+.po-table-container {
+ 
+  overflow: hidden;
+}
 
-  .orders-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+.po-header {
+  color: white;
+  padding: 0.5rem 2rem;
 
-    th,
-    .th {
-      background: var(--color-bg);
-      color: #64748b;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 0.6rem 1.5rem;
-      border-bottom: 2px solid var(--border-color);
+
+  .po-header th {
+    border-right: 1px solid #e5e7eb;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 500;
+  }
+
+  .po-number {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.table-wrapper {
+  background: #ffffff;
+
+  .table-responsive {
+    max-height: 60vh;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
+
+    &::-webkit-scrollbar-track {
+      background: #f3f4f6;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #6366f1, #7c3aed);
+      border-radius: 3px;
+    }
+  }
+}
+
+.po-table {
+  margin-bottom: 0;
+  
+
+  // Vertical lines between columns
+  th,
+  td {
+    border-right: 1px solid #e5e7eb;
+  }
+
+  th:last-child,
+  td:last-child {
+    border-right: none;
+  }
+
+  .table-header {
+    th {
+      background: #f3f4f6;
+      color: #111827;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+  }
+
+  .table-row {
+   
+
+   
 
     td {
-      padding: 0.4rem 1rem;
-      border-bottom: 1px solid var(--border-color);
+      color: #1f2937;
+      font-size: 0.925rem;
+      padding: 0px 15px;
       vertical-align: middle;
-      font-size: 0.86rem;
     }
+  }
 
-    .active-row {
-      background-color: var(--color-hover);
-    }
+  .serial-number {
+    background: #4f46e5;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 0 auto;
+  }
 
-    tr:hover {
-      background: var(--color-hover);
-    }
+  .item-code,
+  .my-item-code {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
 
-    .collapse-row {
-      &:hover {
-        background-color: transparent;
-      }
-    }
+  .item-name,
+  .my-item-name {
+    color: #111827;
+    line-height: 1.4;
+  }
 
-    .order-number-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+  .qty-badge {
+    background: #22c55e;
+    color: white;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    border-radius: 1rem;
+  }
 
-      .bi-file-text {
-        color: var(--color-blue);
-        font-size: 1.2rem;
-      }
-    }
+  .rate,
+  .amount {
+    font-weight: 600;
+    color: #111827;
+  }
 
-    .summary-container {
-      text-align: center;
+  .total-row {
+    background: #f9fafb;
 
-      &:hover {
-        background-color: transparent;
-      }
-    }
-
-    .status-pill {
-      display: inline-block;
-      padding: 0.375rem 0.75rem;
-      border-radius: 1rem;
-      font-size: 0.75rem;
+    .total-label {
       font-weight: 600;
-      text-transform: capitalize;
-
-      &.billed {
-        background: #e6f9e7;
-        color: #95d497;
-      }
-
-      &.open {
-        background: #fef3c7;
-        color: #d97706;
-      }
-
-      &.created {
-        background: #f1f5f9;
-        color: #64748b;
-      }
+      color: #374151;
     }
 
-    .actions-container {
+    .total-amount {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #4f46e5;
+    }
+  }
+}
+
+.po-summary {
+  background: #f9fafb;
+  padding: 2rem 1rem;
+
+  .summary-card {
+    span {
+      color: #111827;
+    }
+
+    background: #c7c7c7ae;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    padding: 1.5rem;
+
+    .summary-title {
+      color: #1f2937;
+      font-weight: 600;
+      border-bottom: 2px solid #6366f1;
+      padding-bottom: 0.5rem;
+      background-color: transparent;
+    }
+
+    .summary-item {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      padding: 0.5rem 0;
+      font-size: 0.95rem;
 
-      .action-btn {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 0.5rem;
-        color: #64748b;
-        background-color: transparent;
-        border: none;
-
-        &:hover {
-          background: #f1f5f9;
-        }
-        &.show,
-        .dropdown.show & {
-          background: #f1f5f9;
-        }
+      .fw-bold {
+        color: #444444;
       }
     }
   }
 }
-.bord {
-  border: 1px solid rgb(185, 181, 181) !important;
-  border-radius: 15px;
+
+@media (max-width: 768px) {
+  .po-header {
+    padding: 1.5rem;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .po-table {
+  
+
+    .serial-number {
+      width: 20px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+  }
 }
 
+@media (prefers-color-scheme: dark) {
+  .po-table-container,
+  .table-wrapper,
+  .summary-card {
+    background: #1f2937;
+    color: #e5e7eb;
+  }
 
+  .table-header th,
+  .summary-title {
+    background: #374151;
+    color: #e5e7eb;
+  }
 
+  .table-row:hover {
+    background: #111827;
+  }
 
-     tbody{
-      tr {
+  .item-code,
+  .my-item-code {
+    background: #312e81;
+    color: #c7d2fe;
+  }
 
-          &.text-start {
-            text-align: left !important;
-          }
-          
-          &.text-end {
-            text-align: right !important;
-           
-            color: #111827;
-          }
-      }
-     }
+  .total-label,
+  .fw-bold {
+    color: #d1d5db;
+  }
+
+  .total-amount {
+    color: #818cf8;
+  }
+
+  // Dark mode vertical lines
+  .po-table {
+    th,
+    td {
+      border-right: 1px solid #374151;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: none;
+    }
+  }
+}

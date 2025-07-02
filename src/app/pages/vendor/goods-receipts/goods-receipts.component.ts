@@ -50,7 +50,7 @@ getGrList() {
         GrmVno: item.GrmVno, //vno
         GrmRefDate: item.GrmRefDate,//date
         GrmMkey: item.GrmMkey,
-        GrmBillDisAmt:item.GrmBillDisAmt,//bill value
+        GrmBillDisAmt:item.GrmNetAmt,//bill value
         GrmTdsAmt:item.GrmTdsAmt,//tds
         GrmAdjAmt:item.GrmAdjAmt,//adjustment
         GrmNetAmt: item.GrmNetAmt,// net amount
