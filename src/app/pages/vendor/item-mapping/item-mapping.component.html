@@ -1,12 +1,12 @@
-<div class="container-fluid item-mapping-container  pt-md-2">
+<div class="dashboard-container">
   <!-- Search & Filter -->
-  <div class="">
-    <div class="w-100">
-      <div class="position-relative flex-grow-1">
+  <div class="container-fluid  border rounded shadow-sm p-3">
+    
+      
  <div class="position-relative col-4 mb-3">
   <input
     type="text"
-    class="form-control ps-3 pe-5 rounded-pill"
+    class="form-control border-start-0"
     placeholder="Search items..."
     [(ngModel)]="searchText"
     (ngModelChange)="onSearchChange($event)"
@@ -17,15 +17,15 @@
 </div>
 
 
-      </div>
+    
      
-    </div>
+   
   </div>
 
   <!-- Desktop Table -->
  <!-- Enhanced Table with Column Lines and Row Gaps -->
-<div class="table-container">
-  <table class="table table-hover mb-0 align-middle text-center w-100">
+<div class="orders-table-container">
+  <table class="orders-table w-100">
     <thead>
       <tr>
         <th class="py-3 px-3 fw-semibold">Item Code</th>
@@ -36,7 +36,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of filteredItems" class="mb-2">
+      <tr *ngFor="let item of paginatedData" class="mb-2">
         <td 
           [attr.title]="item.ItmCode" 
           data-bs-toggle="tooltip"
@@ -90,4 +90,25 @@
       </tr>
     </tbody>
   </table>
+</div>
+</div>
+
+<div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
+  <button 
+    class="btn btn-sm btn-secondary me-2" 
+    [disabled]="currentPage === 1" 
+    (click)="goToPreviousPage()">
+    Prev
+  </button>
+
+  <span class="fw-semibold">
+    Page {{ currentPage }} of {{ totalPages }}
+  </span>
+
+  <button 
+    class="btn btn-sm btn-secondary ms-2" 
+    [disabled]="currentPage === totalPages" 
+    (click)="goToNextPage()">
+    Next
+  </button>
 </div>

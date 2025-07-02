@@ -86,9 +86,11 @@
       font-size: 0.9rem;
       padding: 0.6rem 1.5rem;
       border-bottom: 2px solid var(--border-color);
+        border-right: 1px solid #e2e8f0;
     }
 
     td {
+        border-right: 1px solid #e2e8f0;
       padding: 0.4rem 1rem;
       border-bottom: 1px solid var(--border-color);
       vertical-align: middle;
