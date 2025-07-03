@@ -20,7 +20,7 @@ export class PSODetail {
   mrp: number = 0;
   rate: number = 0;
   qty: number = 0;
-  untId: number = 0;
+  unitId: number = 0;
   unitFactor: number = 0;
   netAmount: number = 0;
   stock: number = 0;

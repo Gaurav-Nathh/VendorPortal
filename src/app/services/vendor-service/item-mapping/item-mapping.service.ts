@@ -23,7 +23,7 @@ export class ItemMappingService {
     const headers = this.config.getHeader();
 
     return this.http.get<ItemMappingResponse>(
-      `${this.config.getApiUrl}/Item/GetItemByVendorCustomer`,
+      `${this.config.getApiUrl()}/Item/GetItemByVendorCustomer`,
       {
         headers,
         params: { acmId: this.acmId },

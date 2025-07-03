@@ -533,7 +533,7 @@
               {{ product.ItmName }}
             </h6>
             <div class="d-flex justify-content-between my-3">
-              <small>Stock Id: {{ product.ItmCode }}</small>
+              <small>Item Code: {{ product.ItmCode }}</small>
               <small>Pack Unit: {{ product.ItmPackUntCode }}</small>
             </div>
             <div class="d-flex justify-content-between align-items-center">
@@ -545,11 +545,11 @@
               <small style="color: var(--color-red)"
                 >{{ product.Itemprices[0].Stock }} left</small
               >
-              } @else if (product.Itemprices[0].Stock === 0) {
+              } @else if (product.Itemprices[0].Stock <= 0) {
               <small style="color: var(--color-red)">Out of stock</small>
               } @else {
               <small style="color: var(--color-green)"
-                >{{ product.Itemprices[0].Stocks }} In stock</small
+                >{{ product.Itemprices[0].Stock }} In stock</small
               >
               }
             </div>
@@ -561,7 +561,9 @@
                 >
                   <i class="fa-solid fa-minus"></i>
                 </button>
-                <span>{{ product.ItmQty }}</span>
+                <div>
+                  <span>{{ product.ItmQty }}</span>
+                </div>
                 <button (click)="increaseItmCardQty(product)">
                   <i class="fa-solid fa-plus"></i>
                 </button>
@@ -575,25 +577,6 @@
                   ADD TO CART
                 </button>
               </div>
-              <!-- <div class="quantity-container">
-                <button>
-                  <i class="fa-solid fa-minus"></i>
-                </button>
-                <span>1</span>
-                <button>
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-              </div>
-              <div>
-                <button
-                  class=""
-                  style="background-color: var(--color-blue)"
-                  (click)="addToCart(product)"
-                >
-                  ADD TO CART
-                </button>
-              </div> -->
-              <!-- <button (click)="buyNow(product)" id="buyNowBtn">BUY NOW</button> -->
             </div>
           </div>
         </div>
@@ -619,6 +602,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="customModalLabel">Cart</h5>
+          <span class="ms-2">{{
+            isCartEditing ? "Edit Order" : "Create Order"
+          }}</span>
           <button
             type="button"
             class="btn-close"
@@ -649,7 +635,7 @@
                   <span>{{ item.ItmCode }}</span>
                 </div>
                 <div class="container-2">
-                  <span class="">₹{{ item.Itemprices[0].MRP }}</span>
+                  <span class="">₹{{ item.Itemprices[0].ShowPrice }}</span>
                   <div class="quantity-container">
                     <button (click)="decrementQty(item)">
                       <i class="fa-solid fa-minus"></i>

@@ -788,6 +788,17 @@
             background-color: var(--color-blue);
             color: white;
 
+            div {
+              background-color: white;
+              width: 1.8rem;
+              height: 1.8rem;
+              border-radius: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: var(--color-blue);
+            }
+
             button {
               font-size: 0.8rem;
               background-color: transparent;

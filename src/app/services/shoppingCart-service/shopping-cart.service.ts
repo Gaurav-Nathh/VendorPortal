@@ -13,6 +13,15 @@ export class ShoppingCartService {
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
+
+
+  enableEditing(): void {
+    this.editingSubject.next(true);
+  }
+
+  disableEditing(): void {
+    this.editingSubject.next(false);
+  }
   getFilterOptionsTop(categoryType: string): Observable<any[]> {
     const headers = this.config.getHeader();
     const params = new HttpParams().set('CatType', categoryType);
@@ -29,13 +38,5 @@ export class ShoppingCartService {
       filters,
       { headers }
     );
-  }
-
-  enableEditing(): void {
-    this.editingSubject.next(true);
-  }
-
-  disableEditing(): void {
-    this.editingSubject.next(false);
   }
 }

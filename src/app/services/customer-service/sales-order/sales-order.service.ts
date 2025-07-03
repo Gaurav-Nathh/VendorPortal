@@ -11,7 +11,7 @@ export class SalesOrderService {
   // private apiUrlLocal = 'http://localhost:5024/api';
   private apiUrlLocal = 'http://localhost:5252/api';
 
-  private editableItemId: any;
+  private editableItem: any;
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
@@ -25,13 +25,15 @@ export class SalesOrderService {
       );
   }
 
-  updateSalesOrder(updatedOrder: PSOMain): Observable<any> {
+  updateSalesOrder(updatedOrder: PSOMain): Observable<string> {
     return this.http
-      .post<any>(`${this.apiUrlLocal}/PSOMain/UpdatePSO`, updatedOrder)
+      .put<{ message: string }>(
+        `${this.apiUrlLocal}/PSOMain/UpdatePSO`,
+        updatedOrder
+      )
       .pipe(
-        catchError((error) => {
-          return throwError(() => error);
-        })
+        map((res) => res.message),
+        catchError((error) => throwError(() => error))
       );
   }
 
@@ -52,21 +54,30 @@ export class SalesOrderService {
       .pipe(map((response) => response.Detail || []));
   }
 
-  getOrderList(acmId: number): Observable<any[]> {
-    const headers = this.config.getHeader();
-    return this.http.get<any[]>(
+  getOrderList(
+    acmId: number,
+    pageNumber: number,
+    pageSize: number
+  ): Observable<any> {
+    return this.http.get<any>(
       `${this.apiUrlLocal}/PSOMain/GetPSOByAcmID/${acmId}`,
-      { headers }
+      {
+        params: {
+          pageNumber,
+          pageSize,
+        },
+      }
     );
   }
 
-  setEditableItemIds(items: any) {
-    this.editableItemId = items;
+  setEditableItem(items: any) {
+    this.editableItem = items;
+    console.log(items);
   }
-  getEditableItemIds(): any {
-    return this.editableItemId;
+  getEditableItem(): any {
+    return this.editableItem;
   }
-  clearEditableItemIds() {
-    this.editableItemId = [];
+  clearEditableItem() {
+    this.editableItem = [];
   }
 }

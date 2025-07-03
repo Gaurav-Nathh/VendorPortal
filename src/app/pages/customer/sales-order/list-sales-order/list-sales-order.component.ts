@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
   styleUrl: './list-sales-order.component.scss',
 })
 export class ListSalesOrderComponent implements OnInit {
+  Math = Math;
   viewOptions = [
     { label: 'Show All', value: 'all' },
     { label: 'Billed', value: 'billed' },
@@ -23,7 +24,12 @@ export class ListSalesOrderComponent implements OnInit {
   orders: any[] = [];
   filteredOrders: any[] = [];
   editableItems: any[] = [];
+  pageNumber: number = 1;
+  pageSize: number = 10;
+  totalRecords: number = 0;
+  pageSizes = [5, 10, 50, 100, 200];
   openCollapseIndex: number | null = null;
+  openIndexes = new Set<number>();
 
   constructor(
     private shoppingCartService: ShoppingCartService,
@@ -33,10 +39,6 @@ export class ListSalesOrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.getOrderList();
-  }
-
-  toggleDetails(index: number): void {
-    this.openCollapseIndex = this.openCollapseIndex === index ? null : index;
   }
 
   getStatusClass(status: string): string {
@@ -71,8 +73,10 @@ export class ListSalesOrderComponent implements OnInit {
     // this.router.navigate(['/customer/shopping-cart']);
     //   },
     // });
+    console.log(so);
     this.shoppingCartService.enableEditing();
-    this.salesOrderService.setEditableItemIds(so);
+    this.salesOrderService.setEditableItem(so);
+
     this.router.navigate(['/customer/shopping-cart']);
   }
 
@@ -136,16 +140,63 @@ export class ListSalesOrderComponent implements OnInit {
     return items.reduce((sum, item) => sum + Number(item.netamount || 0), 0);
   }
 
-  getOrderList() {
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
-    this.salesOrderService.getOrderList(acmId).subscribe({
-      next: (orders) => {
-        this.orders = orders;
-      },
-      error: (err) => {},
-    });
+  toggleDetails(index: number): void {
+    if (this.openIndexes.has(index)) {
+      this.openIndexes.delete(index);
+    } else {
+      this.openIndexes.add(index);
+    }
   }
 
+  isOpen(index: number): boolean {
+    return this.openIndexes.has(index);
+  }
+
+  getOrderList() {
+    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
+    this.salesOrderService
+      .getOrderList(acmId, this.pageNumber, this.pageSize)
+      .subscribe({
+        next: (response) => {
+          this.orders = response.data;
+          this.totalRecords = response.totalRecords;
+        },
+        error: (err) => {
+          console.error('Failed to fetch orders:', err);
+        },
+      });
+  }
+
+  changePageSize(newSize: number): void {
+    this.pageSize = newSize;
+    this.pageNumber = 1; // reset to first page
+    this.getOrderList();
+  }
+
+  totalPages(): number {
+    return Math.ceil(this.totalRecords / this.pageSize);
+  }
+
+  nextPage(): void {
+    if (this.pageNumber < this.totalPages()) {
+      this.pageNumber++;
+      this.getOrderList();
+    }
+  }
+
+  prevPage(): void {
+    if (this.pageNumber > 1) {
+      this.pageNumber--;
+      this.getOrderList();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.pageNumber = page;
+      this.getOrderList();
+    }
+  }
   updateView(view: string): void {
     // this.currentView = view;
     // this.filteredOrders = this.orders.filter((po) =>

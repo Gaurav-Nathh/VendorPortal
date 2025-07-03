@@ -29,8 +29,8 @@
           <th>Order No.</th>
           <th class="text-center">Date</th>
           <th class="text-center">Item Count</th>
-          <th class="text-center">Item Count</th>
-          <th class="text-center">Net Amount</th>
+          <th class="text-center">Item Quantity</th>
+          <th class="text-end">Net Amount</th>
           <th class="text-center">Status</th>
           <th></th>
         </tr>
@@ -40,7 +40,7 @@
           <!-- Main Row -->
           <tr class="align-middle">
             <td>
-              <span>{{ so.forBranch }}</span>
+              <span>{{ so.branchName }}</span>
             </td>
             <td>
               <div class="order-number-wrapper">
@@ -48,7 +48,7 @@
                 <span class="po-number">{{ so.mkey }}</span>
               </div>
             </td>
-            <td>
+            <td class="text-center">
               <span>{{ so.vDate | date : "dd MMM yyyy" }}</span>
             </td>
             <td class="text-center">
@@ -73,16 +73,15 @@
                 type="button"
                 (click)="toggleDetails(i)"
                 data-bs-toggle="collapse"
-                [attr.aria-expanded]="openCollapseIndex === i"
+                [attr.aria-expanded]="isOpen(i)"
                 [attr.data-bs-target]="'#collapse' + i"
-                aria-expanded="false"
                 [attr.aria-controls]="'collapse' + i"
               >
                 <i
                   class="bi"
                   [ngClass]="{
-                    'bi-eye-fill': openCollapseIndex !== i,
-                    'bi-eye-slash-fill': openCollapseIndex === i
+                    'bi-eye-fill': !isOpen(i),
+                    'bi-eye-slash-fill': isOpen(i)
                   }"
                 ></i>
               </button>
@@ -101,7 +100,11 @@
                 >
                   <i class="bi bi-three-dots"></i>
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <ul
+                  class="dropdown-menu"
+                  aria-labelledby="dropdownMenuButton"
+                  style="z-index: 99"
+                >
                   <li>
                     <a class="dropdown-item" (click)="editSO(so)">
                       <i class="bi bi-pencil-square me-2"></i> Edit
@@ -142,32 +145,33 @@
                         <tr>
                           <th>Item Code</th>
                           <th>Item Name</th>
-                          <th>Quantity</th>
-                          <th>MRP</th>
-                          <th>Rate</th>
-                          <th>Amount</th>
+                          <th class="text-center">Quantity</th>
+                          <th class="text-end">MRP</th>
+                          <th class="text-end">Rate</th>
+                          <th class="text-end">Amount</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr
-                          *ngFor="let item of so.psoItems"
-                          class="text-center"
-                        >
+                        <tr *ngFor="let item of so.psoItems">
                           <td class="text-nowrap">{{ item.itmCode }}</td>
                           <td>{{ item.itmName }}</td>
-                          <td>{{ item.qty }}</td>
-                          <td>{{ item.mrp | currency : "INR" }}</td>
-                          <td>{{ item.rate | currency : "INR" }}</td>
-                          <td class="fw-semibold text-success">
+                          <td class="text-center">{{ item.qty }}</td>
+                          <td class="text-end">
+                            {{ item.mrp | currency : "INR" }}
+                          </td>
+                          <td class="text-end">
+                            {{ item.rate | currency : "INR" }}
+                          </td>
+                          <td class="fw-semibold text-success text-end">
                             {{ item.netamount | currency : "INR" }}
                           </td>
                         </tr>
                         <!-- Total Row -->
                       </tbody>
                       <thead>
-                        <tr class="text-center">
-                          <th colspan="2">Total</th>
-                          <th>
+                        <tr class="text-end">
+                          <th colspan="2" class="text-center">Total</th>
+                          <th class="text-center">
                             {{ getTotalQty(so.psoItems) }}
                           </th>
                           <th></th>
@@ -188,5 +192,40 @@
         </ng-container>
       </tbody>
     </table>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div>
+      <label for="pageSize" class="me-2">Page Size:</label>
+      <select
+        id="pageSize"
+        class="form-select d-inline-block w-auto"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)"
+      >
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <button
+        class="btn btn-sm btn-secondary me-2"
+        (click)="prevPage()"
+        [disabled]="pageNumber === 1"
+      >
+        Previous
+      </button>
+
+      <span>Page {{ pageNumber }} of {{ totalPages() }}</span>
+
+      <button
+        class="btn btn-sm btn-secondary ms-2"
+        (click)="nextPage()"
+        [disabled]="pageNumber >= totalPages()"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </div>
