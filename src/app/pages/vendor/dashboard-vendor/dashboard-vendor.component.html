@@ -10,7 +10,7 @@
             </div>
             <div class="card-content">
                 <div class="card-title">
-                    <i class="bi bi-clock"></i>
+                    <i class="bi bi-clock  text-black"></i>
                     Pending Payment
                 </div>
                 <div class="card-value">₹9,999.99</div>
@@ -72,7 +72,7 @@
         <a href="#" class="view-all">View All</a>
       </div>
       <div class="table-responsive">
-        <table class="table">
+        <table class="table  ">
           <thead>
             <tr>
               <th>Date</th>
@@ -81,7 +81,7 @@
        <!--        <th>Status</th> -->
             </tr>
           </thead>
-          <tbody>
+          <tbody class="">
             <tr *ngFor="let sale of recentSales">
               <td>{{ sale.date | date:'shortDate' }}</td>
               <td><a href="#" class="invoice-link">{{ sale.invoiceNo }}</a></td>
@@ -106,19 +106,19 @@
       <div class="profile-details">
         <div class="detail-row">
           <span class="detail-label">Name:</span>
-          <span class="detail-value">ABC Enterprises</span>
+          <span class="detail-value">{{dashService.userDetails.Name}}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">GSTIN:</span>
-          <span class="detail-value">22ABCDE1234F1Z5</span>
+          <span class="detail-value">{{dashService.userDetails.gstin}}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Phone:</span>
-          <span class="detail-value">+91 9876543210</span>
+          <span class="detail-value">{{dashService.userDetails.phone}}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Email:</span>
-          <span class="detail-value">contactabcent.com</span>
+            {{ dashService.userDetails.email ? dashService.userDetails.email : 'Email not available' }}
         </div>
       </div>
     </div>
@@ -131,28 +131,32 @@
       </div>
       <div class="address-section">
         <h4>Shipping Address</h4>
-        <p>123 Business Park, Sector 45<br>
-        Gurugram, Haryana 122003</p>
+      <p class="d-flex flex-column">{{ dashService.userDetails.AclLocation }} {{ dashService.userDetails.AclAddress1}},
+       <span >{{dashService.userDetails.AclAddress2}},{{dashService.userDetails.AclPinCode}}</span> 
+      </p>
+
+        
      
       </div>
     </div>
 
-    <div class="bank-container">
+    <div class="bank-container" *ngFor="let bank of dashService.userDetails.bank">
       <h3>Bank Details</h3>
       <div class="bank-details">
         <div class="detail-row">
           <span class="detail-label">Account No.:</span>
-          <span class="detail-value">123456789012</span>
+          <span class="detail-value">{{bank.AcbAccountNo}}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Bank:</span>
-          <span class="detail-value">State Bank of India</span>
+          <span class="detail-value">{{bank.AcbBank}}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">IFSC:</span>
-          <span class="detail-value">SBIN0001234</span>
+          <span class="detail-value">{{bank.AcbIfsc}}</span>
         </div>
       </div>
     </div>
+    
   </div>
 </div>

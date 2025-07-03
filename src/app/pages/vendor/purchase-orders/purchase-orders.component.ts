@@ -11,44 +11,7 @@ import { PoListComponent } from "../../../components/vendor/po-list/po-list.comp
 
 
 
-export interface Acm {
-  ACMCODE: string;
-  ACMNAME: string;
-  TDS_ID: number;
-  GSTTYPE: string;
-  GSTID: number;
-  PAN: string;
-  STATUS: string;
-  TDSCODE: string | null;
-  TDSID: number;
-  EXEMPTAMT: number;
-  TDSRATE: number;
-  CESSRATE: number;
-  GSTINNO: string;
-  HSNCODE: string;
-  GST_CATEGORY: string | null;
-  ACT_ID: number;
-  CNTID: number;
-  EMPID: number | null;
-  EMPNAME: string;
-  STAGSTCODE: string | null;
-  STANAME: string | null;
-  PAYMODE: string;
-  SHPMETHOD: string;
-  SHIPPER: string;
-  SHIPPERID: number;
-  GSTSTATUS: string;
-}
-export interface TDSResponse {
-  ACM: Acm[];
-  ISCOSTCENTER: boolean;
-  PartyTds: any[];
-  PartyTcs: any[];
-  TdsDetail: any[];
-}
-interface TableItem {
- 
-}
+
 
 
 
@@ -176,6 +139,13 @@ closeDropdown() {
 
 getAlignment(value: any): string {
   return typeof value === 'number' ? 'text-end' : 'text-start';
+}
+
+
+openedRowIndex: number | null = null;
+
+toggleRow(index: number) {
+  this.openedRowIndex = this.openedRowIndex === index ? null : index;
 }
 
 

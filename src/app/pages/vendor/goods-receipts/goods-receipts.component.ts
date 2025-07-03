@@ -26,7 +26,7 @@ selectedItem:any = null;
   currentPage: number = 1;
 itemsPerPage: number = 10;
 
-expandDropdown(item: any) {
+/* expandDropdown(item: any) {
   if (this.expandedkey === item.GrmMkey) {
     console.log('Closing dropdown for:', item.GrmMkey);
     this.expandedkey = null;
@@ -36,6 +36,12 @@ expandDropdown(item: any) {
     this.expandedkey = item.GrmMkey;
     this.selectedItem = item; // Store the selected item for further use
   }
+} */
+
+openedRowKey: string | null = null;
+
+toggleRow(key: string) {
+  this.openedRowKey = this.openedRowKey === key ? null : key;
 }
 
 
@@ -50,7 +56,7 @@ getGrList() {
         GrmVno: item.GrmVno, //vno
         GrmRefDate: item.GrmRefDate,//date
         GrmMkey: item.GrmMkey,
-        GrmBillDisAmt:item.GrmBillDisAmt,//bill value
+        GrmBillDisAmt:item.GrmNetAmt,//bill value
         GrmTdsAmt:item.GrmTdsAmt,//tds
         GrmAdjAmt:item.GrmAdjAmt,//adjustment
         GrmNetAmt: item.GrmNetAmt,// net amount
@@ -76,7 +82,7 @@ closeDropdown() {
 get paginatedData(){
   const start= (this.currentPage-1)*this.itemsPerPage;
   const end = start+ this.itemsPerPage;
-  return this.fullData.reverse().slice(start, end);
+  return this.fullData.slice(start, end);
 }
 get totalPages(): number {
   return Math.ceil(this.fullData.length / this.itemsPerPage);

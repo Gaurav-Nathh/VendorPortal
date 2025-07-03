@@ -1,0 +1,495 @@
+<section id="sales-order-container" class="">
+  <section id="sales-order-form" class="">
+    <form
+      #purchaseOrderForm="ngForm"
+      (ngSubmit)="onSubmit(purchaseOrderForm)"
+      class="mb-4 m-3"
+      id="form-purchase-order"
+    >
+      <!-- Vendor Info -->
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="row">
+            <div class="col-lg-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"
+                        >Vourcher Type <span>*</span></label
+                      >
+                      <select
+                        class="form-select"
+                        name="vendorName"
+                        [(ngModel)]="form.vendorName"
+                        required
+                      >
+                        <option value="" selected>Purchase Order</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Type <span>*</span></label>
+                      <select
+                        class="form-select"
+                        name="vendorName"
+                        [(ngModel)]="form.vendorName"
+                        required
+                      >
+                        <option value="" selected>Purchase</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Number</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="referenceNumber"
+                        [(ngModel)]="form.referenceNumber"
+                      />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Date</label>
+                      <input type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-lg-12 col-xl-12 mb-3">
+                      <label for="" class="form-label"
+                        >Vendor <span>*</span></label
+                      >
+                      <input type="text" class="form-control" name="vendor" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Delivery Info -->
+            <div class="col-lg-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-6 col-lg-12 mb-3">
+                      <label for="" class="form-label"
+                        >Purchase Representative</label
+                      >
+                      <input type="text" class="form-control" name="vendor" />
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label for="">Mobile No.</label>
+                      <input type="text" class="form-control" name="" />
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label for="">Email Id</label>
+                      <input type="text" class="form-control" name="" />
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label for="">Against</label>
+                      <select class="form-select" name="" required>
+                        <option value="" selected>Direct</option>
+                      </select>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label for="">Number</label>
+                      <input type="text" class="form-control" name="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PO Details -->
+            <div class="col-lg-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label class="form-label">Reference #</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="referenceNumber"
+                        [(ngModel)]="form.referenceNumber"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label class="form-label">Date</label>
+                      <input
+                        type="date"
+                        class="form-control"
+                        name="date"
+                        [(ngModel)]="form.date"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label class="form-label">Delivery By</label>
+                      <select class="form-select" name="" required>
+                        <option value="" selected>Date</option>
+                        <option value="">SCHEDULE</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-12 col-md-6 mb-3">
+                      <label class="form-label">Delivery Date</label>
+                      <input
+                        type="date"
+                        class="form-control"
+                        name="deliveryDate"
+                        [(ngModel)]="form.deliveryDate"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Ship To</label>
+                      <select
+                        class="form-select"
+                        name="shipTo"
+                        [(ngModel)]="form.shipmentPreference"
+                      >
+                        <option value="" selected>Branch</option>
+                        <option>Party</option>
+                        <option>store</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item Table -->
+      <div class="col-12 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold mb-3">Item Table</h5>
+
+            <table class="table table-bordered text-center">
+              <thead class="bg-light">
+                <tr>
+                  <th>Item Details</th>
+                  <th>Account</th>
+                  <th>Quantity</th>
+                  <th>Rate</th>
+                  <th>Amount</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of items; let i = index">
+                  <td>
+                    <input
+                      class="form-control form-control-sm"
+                      name="itemName{{ i }}"
+                      [(ngModel)]="item.itemName"
+                      required
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="form-control form-control-sm"
+                      name="account{{ i }}"
+                      [(ngModel)]="item.account"
+                      required
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      name="quantity{{ i }}"
+                      [(ngModel)]="item.quantity"
+                      (input)="updateAmount(item)"
+                      required
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      name="rate{{ i }}"
+                      [(ngModel)]="item.rate"
+                      (input)="updateAmount(item)"
+                      required
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      [value]="item.amount"
+                      readonly
+                    />
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      type="button"
+                      (click)="removeItem(i)"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <button class="btn btn-primary" type="button" (click)="addItem()">
+              Add Row
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row for Customer Notes and Totals -->
+      <div>
+        <div class="row mb-4">
+          <!-- Customer Notes -->
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-semibold">Customer Notes</h5>
+                <textarea
+                  class="form-control"
+                  rows="5"
+                  name="customerNotes"
+                  [(ngModel)]="form.customerNotes"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Totals -->
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Sub Total</span><span>₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Discount</span>
+                  <div class="input-group input-group-sm" style="width: 120px">
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="discount"
+                      [(ngModel)]="form.discount"
+                    />
+                    <span class="input-group-text">%</span>
+                    <span class="input-group-text">₹0.00</span>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>TDS</span><span>-</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>TCS</span><span>₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span>Adjustment</span><span>₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2">
+                  <span class="fw-bold">Total (₹)</span
+                  ><span class="fw-bold">₹0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Row for Terms & Conditions and Attach Files -->
+      <div>
+        <div class="row mb-4">
+          <!-- Terms & Conditions -->
+          <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-semibold">Terms & Conditions</h5>
+                <textarea
+                  class="form-control"
+                  rows="5"
+                  name="terms"
+                  [(ngModel)]="form.terms"
+                  placeholder="Enter the terms and conditions of your business to be displayed in your transaction"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attach Files -->
+          <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-semibold">
+                  Attach File(s) to Purchase Order
+                </h5>
+
+                <div class="upload-container d-flex mb-3">
+                  <label class="upload-button me-2">
+                    <span class="upload-icon">↑</span>
+                    Upload File
+                    <input
+                      type="file"
+                      multiple
+                      (change)="onFileSelected($event)"
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                      hidden
+                    />
+                  </label>
+                  <button class="dropdown-button">
+                    <span>▼</span>
+                  </button>
+                </div>
+
+                <div
+                  class="upload-info-card p-3 mb-3 text-muted bg-light border rounded"
+                >
+                  <small>You can upload a maximum of 10 files, 10MB each</small>
+                </div>
+
+                <div class="file-list" *ngIf="attachedFiles.length > 0">
+                  <div
+                    class="file-item border rounded p-2 mb-2 d-flex justify-content-between align-items-center"
+                    *ngFor="let file of attachedFiles; let i = index"
+                  >
+                    <div>
+                      <div class="file-name fw-semibold">{{ file.name }}</div>
+                      <div class="file-size small text-muted">
+                        {{ formatFileSize(file.size) }}
+                      </div>
+                    </div>
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="removeFile(i)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Form Actions -->
+      <div class="col-12 d-flex justify-content-end gap-3">
+        <button
+          class="btn btn-outline-secondary px-4"
+          type="button"
+          [routerLink]="'/master/purchase/purchase-order'"
+        >
+          Cancel
+        </button>
+        <button class="btn btn-primary px-4" type="submit">Save Draft</button>
+        <button class="btn btn-success px-4" type="submit">
+          Create Purchase OOrder
+        </button>
+      </div>
+    </form>
+
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Item Code</th>
+          <th>Item Name</th>
+          <th>MRP</th>
+          <th>Quantity</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tempCheckoutItems; let i = index">
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              [readonly]="editingIndex !== i"
+              [(ngModel)]="item.ItmCode"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              [readonly]="editingIndex !== i"
+              [(ngModel)]="item.ItmName"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              class="form-control"
+              [readonly]="editingIndex !== i"
+              [(ngModel)]="item.Itemprices[0].MRP"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              class="form-control"
+              [readonly]="editingIndex !== i"
+              [(ngModel)]="item.Itemprices[0].Qty"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              class="form-control"
+              [readonly]="editingIndex !== i"
+              [(ngModel)]="item.Rate"
+            />
+          </td>
+          <td>{{ item.Quantity * item.Rate }}</td>
+          <td>
+            <button
+              *ngIf="editingIndex !== i"
+              class="btn btn-sm btn-primary me-1"
+              (click)="onEditItem(i)"
+            >
+              Edit
+            </button>
+            <button
+              *ngIf="editingIndex === i"
+              class="btn btn-sm btn-success me-1"
+              (click)="onSaveItem(i)"
+            >
+              Save
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="onDelete(i)">
+              Delete
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="tempCheckoutItems.length === 0">
+          <td colspan="6" class="text-center">No items in checkout</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <button
+    id="shopping-cart-btn"
+    class="position-fixed"
+    (click)="toggleShoppingCart()"
+    [class.hide]="isShopingCartOpen"
+  >
+    <i class="fa-solid fa-cart-shopping"></i>
+  </button>
+  <section id="shopping-cart-overlay" [class.show]="isShopingCartOpen">
+    <app-shopping-cart *ngIf="isShopingCartOpen"></app-shopping-cart>
+  </section>
+</section>

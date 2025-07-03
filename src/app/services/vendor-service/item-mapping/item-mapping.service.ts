@@ -57,7 +57,7 @@ export class ItemMappingService {
     const headers = this.config.getHeader();
 
     return this.http.post<any>(
-      `${this.config.getApiUrl}/Item/PostItemVendor`,
+      `${this.config.getApiUrl()}/Item/PostItemVendor`,
       this.itemMapping, // JSON body
       { headers }
     );

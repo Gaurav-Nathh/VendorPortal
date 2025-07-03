@@ -32,6 +32,32 @@ export class ItemMappingComponent {
 //variables
   searchTimeout: any; // To hold the timeout ID for search delay
 
+   currentPage: number = 1;
+itemsPerPage: number = 10;
+
+
+
+get paginatedData(){
+  const start= (this.currentPage-1)*this.itemsPerPage;
+  const end = start+ this.itemsPerPage;
+  return this.filteredItems.slice(start, end);
+}
+get totalPages(): number {
+  return Math.ceil(this.filteredItems.length / this.itemsPerPage);
+}
+
+goToPreviousPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+goToNextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
   isNaN = isNaN
 
   itemMapping: ItemMapping = new ItemMapping();

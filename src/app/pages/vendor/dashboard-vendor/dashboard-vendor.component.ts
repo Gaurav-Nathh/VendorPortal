@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { CommonModule } from '@angular/common';
+import { DashboardServiceService } from '../../../services/shared/dashboard-service/dashboard-service.service';
 
 @Component({
   selector: 'app-dashboard-vendor',
@@ -23,12 +24,13 @@ export class DashboardVendorComponent {
     { date: new Date('2025-05-28'), invoiceNo: 'INV-2025-0528', amount: 22000.00, status: 'Overdue' }
   ];
 
-  constructor() {
+  constructor(public dashService:DashboardServiceService ) {
     Chart.register(...registerables);
   }
 
   ngOnInit(): void {
     // Initialization logic
+    this.getDetails();
   }
 
   ngAfterViewInit(): void {
@@ -114,4 +116,36 @@ export class DashboardVendorComponent {
       }
     });
   }
+
+getDetails() {
+  this.dashService.getDshbrd().subscribe({
+    next: (data:any) => {
+      console.log(data);
+      this.fillDetails(data.Acm);
+    },
+    error: (err) => {
+      console.error('Error fetching dashboard data:', err);
+      // Optionally show user-friendly error or alert
+      alert('Something went wrong while fetching data. Please try again.');
+    }
+  });
+}
+
+fillDetails(data:any){
+this.dashService.userDetails.Name=data.AcmName;
+this.dashService.userDetails.email=data.AcmEmail;
+this.dashService.userDetails.gstin=data.AcmGstin;
+this.dashService.userDetails.phone=data.AcmMobileNo;
+this.dashService.userDetails.bank=data.AcmBanks;
+this.dashService.userDetails.AclLocation=data.AcmLocations[0].AclLocation;
+this.dashService.userDetails.AclAddress1=data.AcmLocations[0].AclAddress1;
+this.dashService.userDetails.AclAddress2=data.AcmLocations[0].AclAddress2;
+this.dashService.userDetails.AclPinCode=data.AcmLocations[0].AclPinCode
+
+console.log(this.dashService.userDetails.bank);
+
+
+}
+
+
 }

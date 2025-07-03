@@ -23,7 +23,7 @@ export interface POItem {
 })
 export class PoListComponent {
 @Input() po!: any;
-@Input() close!: () => void;
+
 
 
 
