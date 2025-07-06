@@ -1,15 +1,15 @@
 <div class="page-container">
 
 
-<div class="dashboard-container">
+
   <!-- Search & Filter -->
- <div class="container-fluid  border rounded shadow-sm p-3 ">
+ <div class=" rounded shadow-sm p-3 search-container">
 
 
   
      
        
-        <div class="input-group w-25">
+        <div class="input-group w-25 ">
           <span class="input-group-text bg-white border-end-0">
             <i class="bi bi-search text-muted"></i>
           </span>
@@ -21,23 +21,17 @@
             aria-label="Search items" />
         </div>
       
-    
-  
-
-  
- 
-
 
 </div>
-
+<div class="dashboard-container">
 
   <!-- Desktop Table -->
  
-    <div class="orders-table-container">
-   <table class="orders-table w-100">
-  <thead>
-    <tr>
-      <th class="py-3 px-3 fw-semibold">Order No.</th>
+    <div class="orders-table-container ">
+   <table class="orders-table w-100 ">
+  <thead >
+    <tr >
+      <th class="py-3 px-3 fw-semibold ">Order No.</th>
             <th class="py-3 px-3 fw-semibold text-center">Date</th>
             <th class="py-3 px-3 fw-semibold text-center">Item Count</th>
             <th class="py-3 px-3 fw-semibold text-end">Value</th>
@@ -46,7 +40,7 @@
             <th class="py-3 px-3 fw-semibold">Ship To</th>
     </tr>
   </thead>
-  <tbody  id="receipt-accordion">
+  <tbody  id="receipt-accordion" >
     <ng-container *ngFor="let item of paginatedData; let i = index">
       <tr class=" " >
        <td [attr.title]="item.PomVno" data-bs-toggle="tooltip">
@@ -130,8 +124,10 @@
     </div>
   </div>
 
+<div class="pagination-container">
 
- <div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
+
+ <div class="d-flex justify-content-end align-items-center mt-3 ">
   <button 
     class="btn btn-sm btn-secondary me-2" 
     [disabled]="currentPage === 1" 
@@ -149,5 +145,5 @@
     (click)="goToNextPage()">
     Next
   </button>
-</div>
+</div></div>
 </div>

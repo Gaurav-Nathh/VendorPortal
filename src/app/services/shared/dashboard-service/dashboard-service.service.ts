@@ -27,6 +27,24 @@ export class DashboardServiceService {
         }
       );
     }
-    
+  getDashbrdOtsnd() {
+  const headers = this.config.getHeader();
+
+  const params = {
+    AcmId: 596,
+    FyrId: 25,
+    BrnId: 4,
+    Vdate: '2025-07-03' // Replace with dynamic date if needed
+  };
+
+  return this.http.get<any>(
+    `${this.config.getApiUrl()}/Common/GetAcmOutstanding`,
+    {
+      headers,
+      params
+    }
+  );
+}
+
 
 }

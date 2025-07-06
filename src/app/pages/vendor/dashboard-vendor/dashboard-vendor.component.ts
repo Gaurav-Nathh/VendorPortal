@@ -31,11 +31,14 @@ export class DashboardVendorComponent {
   ngOnInit(): void {
     // Initialization logic
     this.getDetails();
+    this.getDetailOtSnd();
   }
 
   ngAfterViewInit(): void {
     this.initSalesChart();
   }
+
+pendAmt!:number;
 
   initSalesChart(): void {
     const ctx = this.salesChartRef.nativeElement.getContext('2d');
@@ -130,6 +133,21 @@ getDetails() {
     }
   });
 }
+
+
+getDetailOtSnd()
+{
+  this.dashService.getDashbrdOtsnd().subscribe({
+    next: (data:any) =>{
+      console.log(data);
+      this.pendAmt=data.OUTSTANDINGAMT;
+    },error:(err)=>{
+      console.error('Error fetching dashboard data:', err);
+    }
+  })
+}
+
+
 
 fillDetails(data:any){
 this.dashService.userDetails.Name=data.AcmName;

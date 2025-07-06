@@ -1,9 +1,10 @@
-<div class="dashboard-container">
+<div class="page-container">
+
   <!-- Search & Filter -->
-  <div class="container-fluid  border rounded shadow-sm p-3">
+  <div class="rounded shadow-sm p-3 search-container">
     
       
- <div class="position-relative col-4 mb-3">
+ <div class="input-group w-25 ">
   <input
     type="text"
     class="form-control border-start-0"
@@ -21,12 +22,12 @@
      
    
   </div>
-
+<div class="dashboard-container">
   <!-- Desktop Table -->
  <!-- Enhanced Table with Column Lines and Row Gaps -->
 <div class="orders-table-container">
   <table class="orders-table w-100">
-    <thead>
+    <thead >
       <tr>
         <th class="py-3 px-3 fw-semibold">Item Code</th>
         <th class="py-3 px-3 fw-semibold">Item Name</th>
@@ -93,6 +94,8 @@
 </div>
 </div>
 
+
+<div class="pagination-container">
 <div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
   <button 
     class="btn btn-sm btn-secondary me-2" 
@@ -111,4 +114,6 @@
     (click)="goToNextPage()">
     Next
   </button>
+</div>
+</div>
 </div>

@@ -34,7 +34,7 @@ export class PurchaseOrdersComponent {
    expandedMkey: string | null = null;
   
   currentPage: number = 1;
-itemsPerPage: number = 10;
+itemsPerPage: number = 20;
 
 
   statusArray: string[] = [

@@ -1,0 +1,129 @@
+<div class="page-container">
+
+
+
+  <!-- Search & Filter -->
+ <div class=" rounded shadow-sm p-3 search-container">
+
+
+  
+     
+       
+       <div class="d-flex justify-content-between align-items-center w-100">
+  <div class="input-group w-25">
+    <!-- search input here -->
+  </div>
+
+  <div>
+    <button class="btn btn-outline-secondary me-2">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+    <button class="btn btn-outline-primary">
+      <i class="bi bi-box-arrow-up"></i> Export
+    </button>
+  </div>
+</div>
+
+      
+
+</div>
+<div class="dashboard-container">
+
+  <!-- Desktop Table -->
+ 
+    <div class="orders-table-container ">
+   <table class="orders-table w-100 ">
+  <thead >
+    <tr >
+      <th class="py-3 px-3 fw-semibold ">Date</th>
+            <th class="py-3 px-3 fw-semibold text-center">Vtype</th>
+            <th class="py-3 px-3 fw-semibold text-center">No.</th>
+            <th class="py-3 px-3 fw-semibold text-center">Particular</th>
+            <th class="py-3 px-3 fw-semibold text-end">Debit</th>
+            <th class="py-3 px-3 fw-semibold text-center">Credit</th>
+            <th class="py-3 px-3 fw-semibold">Narration</th>
+            <th class="py-3 px-3 fw-semibold">Trn. No.</th>
+            <th class="py-3 px-3 fw-semibold">Trn. Date</th>
+            
+    </tr>
+  </thead>
+  <tbody  id="receipt-accordion" >
+    <ng-container *ngFor="let item of data; let i = index">
+      <tr class=" " >
+       <td [attr.title]="item.Date" data-bs-toggle="tooltip">
+        {{ item.Date | date: 'dd-MM-yyyy' }}
+      </td>
+      <td [attr.title]="item.Vtype" data-bs-toggle="tooltip">
+        {{ item.Vtype}}
+      </td>
+      <td [attr.title]="item['No.']" data-bs-toggle="tooltip">
+        {{ item['No.']}}
+      </td>
+      <td [attr.title]="item.Particular" data-bs-toggle="tooltip">
+        {{ item.Particular}}
+      </td>
+       <td [attr.title]="item.Debit" data-bs-toggle="tooltip">
+        {{ item.Debit}}
+      </td>
+      <td [attr.title]="item.Credit" data-bs-toggle="tooltip">
+        {{ item.Credit}}
+      </td>
+      <td [attr.title]="item.Narration" data-bs-toggle="tooltip">
+        {{ item.Narration}}
+      </td>
+       <td [attr.title]="item['Trn. No.']" data-bs-toggle="tooltip">
+        {{ item['Trn. No.']}}
+      </td>
+       <td [attr.title]="item['Trn. Date']" data-bs-toggle="tooltip">
+        {{ item['Trn. Date']}}
+      </td>
+      
+      
+      
+
+      
+
+
+
+
+      
+
+    
+
+
+      
+
+      
+      </tr>
+
+    
+
+
+    </ng-container>
+  </tbody>
+</table>
+
+    </div>
+  </div>
+
+<div class="pagination-container">
+
+
+ <div class="d-flex justify-content-end align-items-center mt-3 ">
+  <button 
+    class="btn btn-sm btn-secondary me-2" 
+   >
+    Prev
+  </button>
+
+  <span class="fw-semibold">
+    Page 0 of 0
+  </span>
+
+  <button 
+    class="btn btn-sm btn-secondary ms-2" 
+   >
+    Next
+  </button>
+</div></div>
+</div>

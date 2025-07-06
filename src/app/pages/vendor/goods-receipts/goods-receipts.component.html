@@ -1,10 +1,9 @@
 <div class="page-container">
 
 
-<div class="dashboard-container">
+
   <!-- Search & Filter -->
- <div class="container-fluid  border rounded shadow-sm p-3 ">
- <div class="row align-items-end justify-content-between">
+ <div class="rounded shadow-sm p-3 search-container">
 
   <!-- Left side: Status + Search -->
  
@@ -13,7 +12,7 @@
      
 
       <!-- Search Input -->
-      <div class=" col-md-6 w-25">
+      <div class="input-group w-25">
        
         <div class="input-group">
           <span class="input-group-text bg-white border-end-0">
@@ -28,7 +27,7 @@
         </div>
       
     
-  </div>
+
 
   
  
@@ -39,7 +38,7 @@
 
 
   <!-- Desktop Table -->
- 
+ <div class="dashboard-container">
     <div class="orders-table-container">
    <table class="orders-table w-100">
   <thead>
@@ -146,7 +145,7 @@
     </div>
   </div>
 
-
+<div class="pagination-container">
  <div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
   <button 
     class="btn btn-sm btn-secondary me-2" 
@@ -165,5 +164,6 @@
     (click)="goToNextPage()">
     Next
   </button>
+</div>
 </div>
 </div>

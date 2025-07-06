@@ -98,6 +98,21 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard],
       },
+      {
+        path: 'payment-pending',
+        pathMatch: 'full',
+        loadComponent: () =>import('./pages/vendor/payment/payment-pending/payment-pending.component').then(
+          (c)=>c.PaymentPendingComponent
+        ),canActivate:[authGuard]
+      },
+      {
+        path: 'payment-history',
+        pathMatch: 'full',
+        loadComponent: () =>import('./pages/vendor/payment/payment-history/payment-history.component').then(
+          (c)=>c.PaymentHistoryComponent
+        ),
+        canActivate:[authGuard]
+      }
     ],
   },
   {
