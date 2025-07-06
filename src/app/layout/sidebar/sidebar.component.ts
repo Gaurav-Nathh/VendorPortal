@@ -137,22 +137,17 @@ export class SidebarComponent {
     },
     {
       text: 'Sales Order',
-      icon: 'fa-solid fa-rectangle-list',
+      icon: 'fa-solid fa-cart-shopping',
       route: '/customer/sales-order',
     },
-    // {
-    //   text: 'Shoping Cart',
-    //   icon: 'fa-solid fa-money-bill-trend-up',
-    //   route: '/customer/shopping-cart',
-    // },
     {
       text: 'My Orders',
-      icon: 'fa-solid fa-money-bill-trend-up',
+      icon: 'bi bi-file-earmark-check-fill',
       route: '/customer/my-orders',
     },
     {
       text: 'Invoice',
-      icon: 'fa-solid fa-cart-shopping',
+      icon: 'fa-solid fa-file-invoice-dollar',
       route: '/customer/invoice',
     },
     {

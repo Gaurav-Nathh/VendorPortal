@@ -1,1 +1,233 @@
-<p>my-orders works!</p>
+<div class="dashboard-container">
+  <div class="main-container flex-fill overflow-auto">
+    <div class="">
+      <div class="page-breadcrum">
+        <span>My Orders</span>
+      </div>
+    </div>
+
+    <div class="flex-fill orders-table-container mt-3">
+      <table class="orders-table w-100">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Branch</th>
+            <th>Order No.</th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Ref. No.</th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Item Count</th>
+            <th class="text-end">Net Value</th>
+            <th class="text-center">Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let so of soList; let i = index">
+            <tr
+              class="align-middle"
+              [ngClass]="{
+              'primary-row': isOpen(i),
+            }"
+            >
+              <td>{{ i + 1 }}</td>
+              <td>
+                <span>{{ so.SomBrnName }}</span>
+              </td>
+              <td>
+                <div class="order-number-wrapper">
+                  <i class="bi bi-file-text"></i>
+                  <span class="so-number">{{ so.SomVno }}</span>
+                </div>
+              </td>
+              <td class="text-center text-nowrap">
+                <span>{{ so.SomVdate | date : "dd MMM yyyy" }}</span>
+              </td>
+              <td>
+                <span>{{ so.SomRefNo }}</span>
+              </td>
+              <td class="text-center text-nowrap">
+                <span>{{ so.SomRefDate | date : "dd MMM yyyy" }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ so.SomItems }}</span>
+              </td>
+              <td class="text-end">
+                <span>{{
+                  so.SomNetAmt | currency : "INR" : "symbol" : "1.2-2"
+                }}</span>
+              </td>
+              <td class="text-center">
+                <span class="status-open">
+                  {{ so.SomStatus }}
+                </span>
+              </td>
+              <td class="actions-container">
+                <button
+                  class="action-btn"
+                  type="button"
+                  (click)="toggleDetails(i)"
+                  data-bs-toggle="collapse"
+                  [attr.aria-expanded]="isOpen(i)"
+                  [attr.data-bs-target]="'#collapse' + i"
+                  [attr.aria-controls]="'collapse' + i"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="{
+                      'bi-eye-fill': !isOpen(i),
+                      'bi-eye-slash-fill': isOpen(i)
+                    }"
+                  ></i>
+                </button>
+                <button class="action-btn">
+                  <i class="bi bi-printer-fill"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr class="collapse-row">
+              <td colspan="10" [ngClass]="{ 'row-open': isOpen(i) }">
+                <div [id]="'collapse' + i" class="collapse collapse-container">
+                  <div *ngIf="fetchedDetails.get(i); else loadingOrders">
+                    <div class="mb-3 mx-4">
+                      <div
+                        class="d-flex justify-content-between align-items-center px-1 py-3"
+                      >
+                        <h6
+                          class="mb-0 fw-bold text-center"
+                          style="color: var(--color-blue)"
+                        >
+                          <i class="bi bi-receipt-cutoff me-2"></i>Order Summary
+                        </h6>
+                        <span
+                          class="badge"
+                          style="background-color: var(--color-blue)"
+                        >
+                          {{ fetchedDetails.get(i)?.length }} items
+                        </span>
+                      </div>
+
+                      <div class="">
+                        <table class="w-100 collapse-table">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Item Code</th>
+                              <th>Item Name</th>
+                              <th>Unit</th>
+                              <th class="text-center">Quantity</th>
+                              <th class="text-center text-nowrap">
+                                Base Quantity
+                              </th>
+                              <th class="text-end">Rate</th>
+                              <th class="text-end">Gross</th>
+                              <th class="text-end">Discount</th>
+                              <th class="text-center">GST</th>
+                              <th class="text-end">Net</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr
+                              *ngFor="
+                                let item of fetchedDetails.get(i);
+                                let j = index
+                              "
+                            >
+                              <td>{{ j + 1 }}</td>
+                              <td>{{ item.ItmCode }}</td>
+                              <td class="text-nowrap">{{ item.ItmName }}</td>
+                              <td>{{ item.UnitName }}</td>
+                              <td class="text-center">
+                                {{ item.Qty }}
+                              </td>
+                              <td class="text-center">
+                                {{ item.BaseQty }}
+                              </td>
+                              <td class="text-end">
+                                {{ item.Rate | currency : "INR" }}
+                              </td>
+                              <td class="text-end">
+                                {{ item.Amount | currency : "INR" }}
+                              </td>
+                              <td class="text-end">
+                                {{ item.DisAmt | currency : "INR" }}
+                              </td>
+                              <td class="text-center">{{ item.GstName }}</td>
+                              <td class="fw-semibold text-success text-end">
+                                {{ item.GrossAmt | currency : "INR" }}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #loadingOrders>
+                    <div class="d-flex justify-content-center py-4">
+                      <div
+                        class="spinner-border spinner-border-sm text-primary"
+                        role="status"
+                      ></div>
+                    </div>
+                  </ng-template>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+      <div
+        class="d-flex align-items-center justify-content-center"
+        style="height: 95%"
+        *ngIf="soList.length == 0"
+      >
+        <div
+          class="d-flex flex-column align-items-center justify-content-center"
+        >
+          <i class="bi bi-file-earmark-text-fill fs-2"></i>
+          <span>No records found</span>
+          <small>There is no Sales Order created yet.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="soList.length >= 1"
+    class="footer-container d-flex justify-content-between align-items-center mt-3"
+  >
+    <!-- <div>
+      <label for="pageSize" class="me-2">Page Size:</label>
+      <select
+        id="pageSize"
+        class="form-select d-inline-block w-auto"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)"
+      >
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <button
+        class="btn btn-sm btn-secondary me-2"
+        (click)="prevPage()"
+        [disabled]="pageNumber === 1"
+      >
+        Previous
+      </button>
+
+      <span>Page {{ pageNumber }} of {{ totalPages() }}</span>
+
+      <button
+        class="btn btn-sm btn-secondary ms-2"
+        (click)="nextPage()"
+        [disabled]="pageNumber >= totalPages()"
+      >
+        Next
+      </button>
+    </div> -->
+  </div>
+</div>

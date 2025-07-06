@@ -1,199 +1,241 @@
 <div class="dashboard-container">
-  <div class="page-breadcrum">
-    <span>Sales Order / List </span>
-  </div>
-  <div class="dashboard-header">
-    <div class="view-selector">
-      <div class="view-options">
-        <button
-          *ngFor="let option of viewOptions"
-          class="view-option"
-          [class.active]="currentView === option.value"
-          (click)="updateView(option.value)"
-        >
-          {{ option.label }}
-        </button>
+  <div class="main-container flex-fill overflow-auto">
+    <div class="">
+      <div class="page-breadcrum">
+        <span>Sales Order / List </span>
+      </div>
+      <div class="dashboard-header">
+        <div class="view-selector">
+          <div class="view-options">
+            <button
+              *ngFor="let option of viewOptions"
+              class="view-option"
+              [class.active]="currentView === option.value"
+              (click)="updateView(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+        <div class="d-flex gap-1">
+          <input type="text" class="search" placeholder="Order No..." />
+          <button class="btn create-btn" (click)="createSO()">
+            <i class="bi bi-plus-lg"></i> Create New PO
+          </button>
+        </div>
       </div>
     </div>
-    <button class="btn create-btn" (click)="createSO()">
-      <i class="bi bi-plus-lg"></i> Create New PO
-    </button>
-  </div>
 
-  <!-- Orders Table -->
-  <div class="orders-table-container">
-    <table class="orders-table w-100">
-      <thead>
-        <tr>
-          <th>For Branch</th>
-          <th>Order No.</th>
-          <th class="text-center">Date</th>
-          <th class="text-center">Item Count</th>
-          <th class="text-center">Item Quantity</th>
-          <th class="text-end">Net Amount</th>
-          <th class="text-center">Status</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let so of orders; let i = index">
-          <!-- Main Row -->
-          <tr class="align-middle">
-            <td>
-              <span>{{ so.branchName }}</span>
-            </td>
-            <td>
-              <div class="order-number-wrapper">
-                <i class="bi bi-file-text"></i>
-                <span class="po-number">{{ so.mkey }}</span>
-              </div>
-            </td>
-            <td class="text-center">
-              <span>{{ so.vDate | date : "dd MMM yyyy" }}</span>
-            </td>
-            <td class="text-center">
-              <span>{{ so.itmCount }}</span>
-            </td>
-            <td class="text-center">
-              <span>{{ so.itmQty }}</span>
-            </td>
-            <td class="text-end">
-              <span>{{
-                so.netAmount | currency : "INR" : "symbol" : "1.2-2"
-              }}</span>
-            </td>
-            <td class="text-center">
-              <span class="status-pill" [ngClass]="getStatusClass(so.status)">
-                {{ so.status }}
-              </span>
-            </td>
-            <td class="actions-container">
-              <button
-                class="action-btn"
-                type="button"
-                (click)="toggleDetails(i)"
-                data-bs-toggle="collapse"
-                [attr.aria-expanded]="isOpen(i)"
-                [attr.data-bs-target]="'#collapse' + i"
-                [attr.aria-controls]="'collapse' + i"
-              >
-                <i
-                  class="bi"
-                  [ngClass]="{
-                    'bi-eye-fill': !isOpen(i),
-                    'bi-eye-slash-fill': isOpen(i)
-                  }"
-                ></i>
-              </button>
-
-              <button class="action-btn">
-                <i class="bi bi-printer-fill"></i>
-              </button>
-
-              <div class="dropdown">
+    <!-- Orders Table -->
+    <div class="flex-fill orders-table-container">
+      <table class="orders-table w-100">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>For Branch</th>
+            <th>Order No.</th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Item Count</th>
+            <th class="text-center">Item Quantity</th>
+            <th class="text-end">Net Amount</th>
+            <th class="text-center">Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let so of orders; let i = index">
+            <!-- Main Row -->
+            <tr
+              class="align-middle"
+              [ngClass]="{
+              'primary-row': isOpen(i),
+            }"
+            >
+              <td>{{ i + 1 }}</td>
+              <td>
+                <span>{{ so.branchName }}</span>
+              </td>
+              <td>
+                <div class="order-number-wrapper">
+                  <i class="bi bi-file-text"></i>
+                  <span class="po-number">{{ so.mkey }}</span>
+                </div>
+              </td>
+              <td class="text-center">
+                <span>{{ so.vDate | date : "dd MMM yyyy" }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ so.itmCount }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ so.itmQty }}</span>
+              </td>
+              <td class="text-end">
+                <span>{{
+                  so.netAmount | currency : "INR" : "symbol" : "1.2-2"
+                }}</span>
+              </td>
+              <td class="text-center">
+                <span class="status-pill" [ngClass]="getStatusClass(so.status)">
+                  {{ so.status }}
+                </span>
+              </td>
+              <td class="actions-container">
                 <button
                   class="action-btn"
                   type="button"
-                  id="dropdownMenuButton"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+                  (click)="toggleDetails(i)"
+                  data-bs-toggle="collapse"
+                  [attr.aria-expanded]="isOpen(i)"
+                  [attr.data-bs-target]="'#collapse' + i"
+                  [attr.aria-controls]="'collapse' + i"
                 >
-                  <i class="bi bi-three-dots"></i>
+                  <i
+                    class="bi"
+                    [ngClass]="{
+                      'bi-eye-fill': !isOpen(i),
+                      'bi-eye-slash-fill': isOpen(i)
+                    }"
+                  ></i>
                 </button>
-                <ul
-                  class="dropdown-menu"
-                  aria-labelledby="dropdownMenuButton"
-                  style="z-index: 99"
-                >
-                  <li>
-                    <a class="dropdown-item" (click)="editSO(so)">
-                      <i class="bi bi-pencil-square me-2"></i> Edit
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item text-danger" (click)="deleteSO(so)">
-                      <i class="bi bi-trash me-2"></i> Delete
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </td>
-          </tr>
 
-          <!-- Collapsible Row -->
-          <tr class="collapse-row">
-            <td colspan="8" class="p-0">
-              <div [id]="'collapse' + i" class="collapse">
-                <div class="m-3 orders-table-container">
-                  <div
-                    class="d-flex justify-content-between align-items-center px-3 py-2"
+                <button class="action-btn">
+                  <i class="bi bi-printer-fill"></i>
+                </button>
+
+                <div class="dropdown">
+                  <button
+                    class="action-btn"
+                    type="button"
+                    id="dropdownMenuButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                   >
-                    <h6
-                      class="mb-0 fw-bold text-center"
-                      style="color: var(--color-blue)"
-                    >
-                      <i class="bi bi-receipt-cutoff me-2"></i>Order Summary
-                    </h6>
-                    <span class="badge bg-secondary">
-                      {{ so.psoItems.length }} items
-                    </span>
-                  </div>
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul
+                    class="dropdown-menu"
+                    aria-labelledby="dropdownMenuButton"
+                    style="z-index: 99"
+                  >
+                    <li>
+                      <a class="dropdown-item" (click)="editSO(so)">
+                        <i class="bi bi-pencil-square me-2"></i> Edit
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item text-danger"
+                        (click)="deleteSO(so)"
+                      >
+                        <i class="bi bi-trash me-2"></i> Delete
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
 
-                  <div class="table-responsive">
-                    <table class="orders-table w-100">
-                      <thead class="border-bottom">
-                        <tr>
-                          <th>Item Code</th>
-                          <th>Item Name</th>
-                          <th class="text-center">Quantity</th>
-                          <th class="text-end">MRP</th>
-                          <th class="text-end">Rate</th>
-                          <th class="text-end">Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let item of so.psoItems">
-                          <td class="text-nowrap">{{ item.itmCode }}</td>
-                          <td>{{ item.itmName }}</td>
-                          <td class="text-center">{{ item.qty }}</td>
-                          <td class="text-end">
-                            {{ item.mrp | currency : "INR" }}
-                          </td>
-                          <td class="text-end">
-                            {{ item.rate | currency : "INR" }}
-                          </td>
-                          <td class="fw-semibold text-success text-end">
-                            {{ item.netamount | currency : "INR" }}
-                          </td>
-                        </tr>
-                        <!-- Total Row -->
-                      </tbody>
-                      <thead>
-                        <tr class="text-end">
-                          <th colspan="2" class="text-center">Total</th>
-                          <th class="text-center">
-                            {{ getTotalQty(so.psoItems) }}
-                          </th>
-                          <th></th>
-                          <th>
-                            {{ getTotalRate(so.psoItems) | currency : "INR" }}
-                          </th>
-                          <th>
-                            {{ getTotalAmount(so.psoItems) | currency : "INR" }}
-                          </th>
-                        </tr>
-                      </thead>
-                    </table>
+            <!-- Collapsible Row -->
+            <tr class="collapse-row">
+              <td colspan="9" [ngClass]="{ 'row-open': isOpen(i) }">
+                <div [id]="'collapse' + i" class="collapse collapse-container">
+                  <div class="mb-3 mx-4">
+                    <div
+                      class="d-flex justify-content-between align-items-center px-4 py-3"
+                    >
+                      <h6
+                        class="mb-0 fw-bold text-center"
+                        style="color: var(--color-blue)"
+                      >
+                        <i class="bi bi-receipt-cutoff me-2"></i>Order Summary
+                      </h6>
+                      <span
+                        class="badge"
+                        style="background-color: var(--color-blue)"
+                      >
+                        {{ so.psoItems.length }} items
+                      </span>
+                    </div>
+
+                    <div class="">
+                      <table class="w-100 collapse-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-end">MRP</th>
+                            <th class="text-end">Rate</th>
+                            <th class="text-end">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of so.psoItems; let j = index">
+                            <td>{{ j + 1 }}</td>
+                            <td class="text-nowrap">{{ item.itmCode }}</td>
+                            <td>{{ item.itmName }}</td>
+                            <td class="text-center">{{ item.qty }}</td>
+                            <td class="text-end">
+                              {{ item.mrp | currency : "INR" }}
+                            </td>
+                            <td class="text-end">
+                              {{ item.rate | currency : "INR" }}
+                            </td>
+                            <td class="fw-semibold text-success text-end">
+                              {{ item.netamount | currency : "INR" }}
+                            </td>
+                          </tr>
+                        </tbody>
+                        <thead>
+                          <tr
+                            class="text-end"
+                            style="background-color: #e6f9e7"
+                          >
+                            <th colspan="3" class="text-center">Total</th>
+                            <th class="text-center">
+                              {{ getTotalQty(so.psoItems) }}
+                            </th>
+                            <th></th>
+                            <th>
+                              {{ getTotalRate(so.psoItems) | currency : "INR" }}
+                            </th>
+                            <th>
+                              {{
+                                getTotalAmount(so.psoItems) | currency : "INR"
+                              }}
+                            </th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+      <div
+        class="d-flex align-items-center justify-content-center"
+        style="height: 95%"
+        *ngIf="orders.length == 0"
+      >
+        <div
+          class="d-flex flex-column align-items-center justify-content-center"
+        >
+          <i class="bi bi-file-earmark-text-fill fs-2"></i>
+          <span>No records found</span>
+          <small>There is no Sales Order created yet.</small>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="d-flex justify-content-between align-items-center mt-3">
+  <div
+    *ngIf="orders.length >= 1"
+    class="footer-container d-flex justify-content-between align-items-center mt-3"
+  >
     <div>
       <label for="pageSize" class="me-2">Page Size:</label>
       <select

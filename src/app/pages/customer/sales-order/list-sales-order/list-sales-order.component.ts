@@ -15,9 +15,10 @@ import Swal from 'sweetalert2';
 export class ListSalesOrderComponent implements OnInit {
   Math = Math;
   viewOptions = [
-    { label: 'Show All', value: 'all' },
-    { label: 'Billed', value: 'billed' },
+    { label: 'View All', value: 'all' },
+    { label: 'Created', value: 'created' },
     { label: 'Open', value: 'open' },
+    { label: 'Billed', value: 'billed' },
   ];
 
   currentView = 'all';
@@ -28,7 +29,6 @@ export class ListSalesOrderComponent implements OnInit {
   pageSize: number = 10;
   totalRecords: number = 0;
   pageSizes = [5, 10, 50, 100, 200];
-  openCollapseIndex: number | null = null;
   openIndexes = new Set<number>();
 
   constructor(
@@ -51,29 +51,6 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   editSO(so: any) {
-    // const itemsCode = so.psoItems.map((item: any) => ({
-    //   code: item.itmCode,
-    //   brnId: Number(sessionStorage.getItem('UsrBrnId')),
-    // }));
-
-    // this.salesOrderService.getItemsDetail(itemsCode).subscribe({
-    //   next: (response) => {
-    //     this.editableItems = response;
-    //     this.editableItems.forEach((item: any) => {
-    //       const matched = so.psoItems.find(
-    //         (itm: any) => itm.itmId === item.itemdetail.ItmId
-    //       );
-    //       if (matched) {
-    //         item.itemdetail.ItmQty = matched.qty;
-    //       }
-    //     });
-    //     this.salesOrderService.setEditableItemIds(this.editableItems);
-
-    // this.shoppingCart.enableEditing();
-    // this.router.navigate(['/customer/shopping-cart']);
-    //   },
-    // });
-    console.log(so);
     this.shoppingCartService.enableEditing();
     this.salesOrderService.setEditableItem(so);
 
@@ -96,7 +73,6 @@ export class ListSalesOrderComponent implements OnInit {
               toast: true,
               icon: 'success',
               title: 'Deleted',
-              // text: 'Please add items to the cart before proceeding.',
               position: 'top-end',
               showConfirmButton: false,
               timer: 2000,
@@ -112,7 +88,6 @@ export class ListSalesOrderComponent implements OnInit {
               toast: true,
               icon: 'error',
               title: 'Error deleting the order.',
-              // text: 'Please add items to the cart before proceeding.',
               position: 'top-end',
               showConfirmButton: false,
               timer: 2000,
