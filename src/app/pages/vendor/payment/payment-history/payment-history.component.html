@@ -37,10 +37,10 @@
     <tr >
       <th class="py-3 px-3 fw-semibold ">Date</th>
             <th class="py-3 px-3 fw-semibold text-center">Vtype</th>
-            <th class="py-3 px-3 fw-semibold text-center">No.</th>
-            <th class="py-3 px-3 fw-semibold text-center">Particular</th>
+            <th class="py-3 px-3 fw-semibold text-start">No.</th>
+            <th class="py-3 px-3 fw-semibold text-start">Particular</th>
             <th class="py-3 px-3 fw-semibold text-end">Debit</th>
-            <th class="py-3 px-3 fw-semibold text-center">Credit</th>
+            <th class="py-3 px-3 fw-semibold text-end">Credit</th>
             <th class="py-3 px-3 fw-semibold">Narration</th>
             <th class="py-3 px-3 fw-semibold">Trn. No.</th>
             <th class="py-3 px-3 fw-semibold">Trn. Date</th>
@@ -59,7 +59,7 @@
       <td [attr.title]="item['No.']" data-bs-toggle="tooltip">
         {{ item['No.']}}
       </td>
-      <td [attr.title]="item.Particular" data-bs-toggle="tooltip">
+      <td [attr.title]="item.Particular" data-bs-toggle="tooltip"  class="text-truncate" style="max-width: 150px;">
         {{ item.Particular}}
       </td>
        <td [attr.title]="item.Debit" data-bs-toggle="tooltip">
@@ -68,9 +68,10 @@
       <td [attr.title]="item.Credit" data-bs-toggle="tooltip">
         {{ item.Credit}}
       </td>
-      <td [attr.title]="item.Narration" data-bs-toggle="tooltip">
-        {{ item.Narration}}
-      </td>
+      <td [attr.title]="item.Narration" data-bs-toggle="tooltip" class="text-truncate" style="max-width: 150px;">
+  {{ item.Narration }}
+</td>
+
        <td [attr.title]="item['Trn. No.']" data-bs-toggle="tooltip">
         {{ item['Trn. No.']}}
       </td>

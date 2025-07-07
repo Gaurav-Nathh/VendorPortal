@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, QueryList,ViewChildren,AfterViewInit } from '@angular/core';
 import { PaymentServiceService } from '../../../../services/vendor-service/payment/payment-service.service';
 import { CommonModule } from '@angular/common';
+import { Tooltip } from 'bootstrap';
 
 
 
@@ -35,6 +36,17 @@ export interface AccountTransaction {
   styleUrl: './payment-history.component.scss'
 })
 export class PaymentHistoryComponent {
+
+
+
+  @ViewChildren('tooltipRef') tooltips!: QueryList<ElementRef>;
+
+ngAfterViewInit() {
+  this.tooltips.forEach((tooltipEl: ElementRef) => {
+    new Tooltip(tooltipEl.nativeElement);
+  });
+}
+
 
 
   constructor(public statementService:PaymentServiceService){
