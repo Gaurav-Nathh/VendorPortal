@@ -11,29 +11,87 @@ $transition: all 0.3s ease;
 
 
 
-.page-container{
+/* Global custom scrollbar styles (optional) */
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e1 #f1f5f9; /* Firefox */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 2px solid #f1f5f9;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #f1f5f9;
+}
+
+/* Remove scrollbar from page container */
+.page-container {
+  display: flex;
+  flex-direction: column;
+ 
   position: relative;
-
+  height: 90vh; /* Fixed height */
+  overflow: hidden; /* Prevent any scrolling */
+  max-height: 100vh;
+  padding: 0; /* Remove any padding */
+  margin: 0; /* Remove any margin */
 }
+
+/* Search container - now relative positioned */
+.search-container {
+  position: relative; /* Changed from fixed */
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #cbd5e1;
+  flex-shrink: 0; /* Don't shrink */
+  z-index: 100;
+}
+
+/* Pagination container - now relative positioned */
 .pagination-container {
-  position: fixed;
-  bottom: 10px;
-  right: 0;
-  left: 0; /* This stretches it full width */
-  
-  
-  z-index: 0; /* Optional: ensures it appears above other content */
-  
+  position: fixed; /* Changed from fixed */
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  padding: 10px 20px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 0;
+  flex-shrink: 0; /* Don't shrink */
+  width: 100%;
+  bottom: 0;
+  left:0;
+  /* Remove margin-top: auto to prevent it from pushing beyond viewport */
 }
-
 
 .dashboard-container {
-  padding: 1rem;
   margin-right: 0.5rem;
   background: var(--color-card);
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   text-wrap-mode: nowrap;
+  flex: 1; /* Take remaining space */
+  overflow: hidden; /* Prevent overflow */
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex children */
+  margin-bottom: 0; /* Remove bottom margin */
 }
 
 .page-breadcrum {
@@ -49,6 +107,7 @@ $transition: all 0.3s ease;
   gap: 1rem;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-shrink: 0; /* Don't shrink */
 }
 
 .view-selector {
@@ -58,7 +117,6 @@ $transition: all 0.3s ease;
   }
 
   .view-option {
-   
     border: none;
     background: #e6f9e7;
     color: #64748b;
@@ -78,33 +136,59 @@ $transition: all 0.3s ease;
   }
 }
 
+.bnt-pry {
+  background-color: #6366f1;
+  color: #ffffff;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 
+  &:hover {
+    background-color: #4f46e5;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  }
 
+  &:active {
+    background-color: #4338ca;
+    box-shadow: 0 2px 6px rgba(67, 56, 202, 0.4);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+  }
+}
 
 .orders-table-container {
+  margin-top: 0; /* Removed margin-top */
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
-  overflow-x: auto;
+  overflow: auto; /* Enable scrolling for the table content only */
+  flex: 1; /* Take remaining space */
+  max-height: calc(100vh - 200px);
 
   .orders-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
 
-    th,
-    .th {
-      background: var(--color-bg);
+    th {
       color: #64748b;
       font-weight: 600;
       font-size: 0.9rem;
-      padding: 0.6rem 1.5rem;
       border-bottom: 2px solid var(--border-color);
-       border-right: 1px solid $border-color;
-         border-right: 1px solid #e2e8f0;
+      position: sticky; /* Make header sticky */
+      top: 0;
+      background: white;
+      z-index: 10;
     }
 
     td {
-      border-right: 1px solid $border-color;
+      border-right: 1px solid #e2e8f0;
       padding: 0.4rem 1rem;
       border-bottom: 1px solid var(--border-color);
       vertical-align: middle;
@@ -192,11 +276,25 @@ $transition: all 0.3s ease;
     }
   }
 }
+
+/* Ensure the container-fluid doesn't add extra margin */
+.container-fluid {
+  margin-bottom: 0; /* Remove margin */
+  flex-shrink: 0; /* Don't shrink when space is limited */
+}
+
+/* Additional styles for better collapse handling */
+.row-dropdown-container {
+  border-top: 1px solid var(--border-color);
+}
+
+.dropdown-body {
+  padding: 15px;
+}
+
 .bord {
   border: 1px solid red !important;
 }
-
-
 
 
 .input-des {
