@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { PaymentServiceService } from '../../../../services/vendor-service/payment/payment-service.service';
 import { CommonModule } from '@angular/common';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 
 
@@ -54,6 +56,35 @@ this.paymentService.pendingPaymentList().subscribe({
       
     })
   }
+
+
+exportToExcel(): void {
+  const exportData = this.data.map((item: any) => ({
+    'Date': item.BILLDATE,
+    'Type': item.BILLTYPE,
+    'Ref No.': item.BILLNO,
+    'Invoice': item.BILLAMT,
+    'Payment': item.PAYAMT,
+    'Adjustment': item.ADJAMT,
+    'Balance': item.BALANCE,
+    'Due Date': item.DUEDATE,
+    'Over Due': item.OVERDUE
+  }));
+
+  const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook: XLSX.WorkBook = {
+    Sheets: { 'Outstanding': worksheet },
+    SheetNames: ['Outstanding'],
+  };
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+
+  const blobData = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  FileSaver.saveAs(blobData, 'Outstanding_Report.xlsx');
+}
+
 
 
 }
