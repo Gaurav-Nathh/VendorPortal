@@ -2,7 +2,7 @@
   <div class="main-container flex-fill overflow-auto">
     <div class="">
       <div class="page-title">
-        <span>My Orders</span>
+        <span>Invoices</span>
       </div>
     </div>
 
@@ -12,18 +12,16 @@
           <tr>
             <th>#</th>
             <th>Branch</th>
-            <th>Order No.</th>
-            <th class="text-center">Date</th>
-            <th class="text-center">Ref. No.</th>
+            <th>Invoice No.</th>
             <th class="text-center">Date</th>
             <th class="text-center">Item Count</th>
+            <th class="text-center">Quantity</th>
             <th class="text-end">Net Value</th>
-            <th class="text-center">Status</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let so of soList; let i = index">
+          <ng-container *ngFor="let sin of salesInvoice; let i = index">
             <tr
               class="align-middle"
               [ngClass]="{
@@ -32,35 +30,27 @@
             >
               <td>{{ i + 1 }}</td>
               <td>
-                <span>{{ so.SomBrnName }}</span>
+                <span>{{ sin.SlmBrnName }}</span>
               </td>
               <td>
                 <div class="order-number-wrapper">
                   <i class="bi bi-file-text"></i>
-                  <span class="so-number">{{ so.SomVno }}</span>
+                  <span class="so-number">{{ sin.SlmVno }}</span>
                 </div>
               </td>
               <td class="text-center text-nowrap">
-                <span>{{ so.SomVdate | date : "dd MMM yyyy" }}</span>
-              </td>
-              <td>
-                <span>{{ so.SomRefNo }}</span>
-              </td>
-              <td class="text-center text-nowrap">
-                <span>{{ so.SomRefDate | date : "dd MMM yyyy" }}</span>
+                <span>{{ sin.SlmVdate | date : "dd MMM yyyy" }}</span>
               </td>
               <td class="text-center">
-                <span>{{ so.SomItems }}</span>
+                <span>{{ sin.SlmItems }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ sin.SlmQty }}</span>
               </td>
               <td class="text-end">
                 <span>{{
-                  so.SomNetAmt | currency : "INR" : "symbol" : "1.2-2"
+                  sin.SlmNetAmt | currency : "INR" : "symbol" : "1.2-2"
                 }}</span>
-              </td>
-              <td class="text-center">
-                <span class="status-open">
-                  {{ so.SomStatus }}
-                </span>
               </td>
               <td class="actions-container">
                 <button
@@ -89,7 +79,7 @@
             <tr class="collapse-row">
               <td colspan="10" [ngClass]="{ 'row-open': isOpen(i) }">
                 <div [id]="'collapse' + i" class="collapse collapse-container">
-                  <div *ngIf="fetchedDetails.get(i); else loadingOrders">
+                  <div *ngIf="fetchedInvoices.get(i); else loadingOrders">
                     <div class="mb-3 mx-4">
                       <div
                         class="d-flex justify-content-between align-items-center px-1 py-3"
@@ -104,7 +94,7 @@
                           class="badge"
                           style="background-color: var(--color-blue)"
                         >
-                          {{ fetchedDetails.get(i)?.length }} items
+                          {{ fetchedInvoices.get(i)?.length }} items
                         </span>
                       </div>
 
@@ -130,7 +120,7 @@
                           <tbody>
                             <tr
                               *ngFor="
-                                let item of fetchedDetails.get(i);
+                                let item of fetchedInvoices.get(i);
                                 let j = index
                               "
                             >
@@ -180,7 +170,7 @@
       <div
         class="d-flex align-items-center justify-content-center"
         style="height: 95%"
-        *ngIf="soList.length == 0"
+        *ngIf="salesInvoice.length == 0"
       >
         <div
           class="d-flex flex-column align-items-center justify-content-center"

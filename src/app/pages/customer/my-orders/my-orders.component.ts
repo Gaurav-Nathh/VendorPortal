@@ -20,7 +20,6 @@ export class MyOrdersComponent implements OnInit {
   constructor(private myOrdersService: MyOrdersService) {}
 
   ngOnInit(): void {
-    console.log('here');
     this.getPortalSOList();
   }
 
@@ -65,14 +64,6 @@ export class MyOrdersComponent implements OnInit {
       this.openIndexes.add(index);
     }
   }
-
-  // toggleDetails(index: number): void {
-  //   if (this.openIndexes.has(index)) {
-  //     this.openIndexes.delete(index);
-  //   } else {
-  //     this.openIndexes.add(index);
-  //   }
-  // }
 
   isOpen(index: number): boolean {
     return this.openIndexes.has(index);

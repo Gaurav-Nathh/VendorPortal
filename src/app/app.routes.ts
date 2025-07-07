@@ -16,7 +16,7 @@ export const routes: Routes = [
   {
     path: 'forget-password',
     loadComponent: () =>
-      import('./pages/reset-password/reset-password.component').then(
+      import('./components/reset-password/reset-password.component').then(
         (c) => c.ResetPasswordComponent
       ),
   },
@@ -75,7 +75,7 @@ export const routes: Routes = [
         path: 'update-password',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/update-password/update-password.component').then(
+          import('./components/update-password/update-password.component').then(
             (c) => c.UpdatePasswordComponent
           ),
         canActivate: [authGuard],
@@ -84,7 +84,7 @@ export const routes: Routes = [
         path: 'update-profile',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/update-profile/update-profile.component').then(
+          import('./components/update-profile/update-profile.component').then(
             (c) => c.UpdateProfileComponent
           ),
         canActivate: [authGuard],
@@ -119,7 +119,7 @@ export const routes: Routes = [
         path: 'update-profile',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/update-profile/update-profile.component').then(
+          import('./components/update-profile/update-profile.component').then(
             (c) => c.UpdateProfileComponent
           ),
         canActivate: [authGuard],
@@ -128,7 +128,7 @@ export const routes: Routes = [
         path: 'update-password',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/update-password/update-password.component').then(
+          import('./components/update-password/update-password.component').then(
             (c) => c.UpdatePasswordComponent
           ),
         canActivate: [authGuard],
@@ -157,6 +157,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/customer/my-orders/my-orders.component').then(
             (c) => c.MyOrdersComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'invoice',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/customer/sales-invoice/sales-invoice.component').then(
+            (c) => c.SalesInvoiceComponent
           ),
         canActivate: [authGuard],
       },
