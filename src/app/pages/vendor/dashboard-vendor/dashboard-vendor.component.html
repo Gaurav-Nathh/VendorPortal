@@ -101,7 +101,7 @@
     <div class="profile-container">
       <div class="profile-header">
         <h3>My Profile</h3>
-        <button class="btn btn-edit">Edit Profile</button>
+       
       </div>
       <div class="profile-details">
         <div class="detail-row">
@@ -126,8 +126,8 @@
     <div class="address-container">
       <div class="address-section">
         <h4>Billing Address</h4>
-        <p>123 Business Park, Sector 45<br>
-        Gurugram, Haryana 122003</p>
+        <p>{{ dashService.userDetails.AcmAddress1 }}<br>
+        {{dashService.userDetails.AcmAddress2}}</p>
       </div>
       <div class="address-section">
         <h4>Shipping Address</h4>

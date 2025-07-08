@@ -3,26 +3,33 @@
 
 
   <!-- Search & Filter -->
- <div class=" rounded shadow-sm p-3 search-container">
-
-
-  
-     
-       
-        <div class="input-group w-25 ">
-          <span class="input-group-text bg-white border-end-0">
-            <i class="bi bi-search text-muted"></i>
-          </span>
-          <input 
-            type="text" 
-            class="form-control border-start-0"
-            placeholder="Search by PO number or item..."
-           
-            aria-label="Search items" />
-        </div>
+  <div class="rounded shadow-sm p-3 search-container d-flex justify-content-between">
+    
       
-
+ <div class="custom-search-bar">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search items..."
+    
+  />
+  <i class="bi bi-search search-icon"></i>
 </div>
+
+<!-- [(ngModel)]="searchText"
+    (ngModelChange)="onSearchChange($event)" -->
+
+
+        <div class="button-group">
+                
+                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>
+     
+   
+  </div>
+
 <div class="dashboard-container">
 
   <!-- Desktop Table -->
@@ -33,11 +40,13 @@
     <tr >
       <th class="py-3 px-3 fw-semibold ">Order No.</th>
             <th class="py-3 px-3 fw-semibold text-center">Date</th>
-            <th class="py-3 px-3 fw-semibold text-center">Item Count</th>
+        
             <th class="py-3 px-3 fw-semibold text-end">Value</th>
-            <th class="py-3 px-3 fw-semibold text-center">Print</th>
+          
             <th class="py-3 px-3 fw-semibold">Status</th>
             <th class="py-3 px-3 fw-semibold">Ship To</th>
+            <th class="py-3 px-3 fw-semibold text-center">Item Count</th>
+                 <th class="py-3 px-3 fw-semibold text-center">Print</th>
     </tr>
   </thead>
   <tbody  id="receipt-accordion" >
@@ -51,7 +60,28 @@
         {{ item.PomVdate | date:'dd/MM/yyyy' }}
       </td>
 
-  <td class="text-center">
+
+
+
+
+      <td [attr.title]="item.PomNetAmt" data-bs-toggle="tooltip" class="text-end">
+        ₹{{ item.PomNetAmt | number:'1.2-2' }}
+      </td>
+
+    
+
+
+      <td [attr.title]="item.PomStatus" data-bs-toggle="tooltip">
+        <span class="badge bg-info text-dark">
+          {{ item.PomStatus }}
+        </span>
+      </td>
+
+      <td [attr.title]="item.PomShpBrnName">
+        {{ item.PomShpBrnName }}
+      </td>
+
+       <td class="text-center">
  <button 
   class="bg-transparent d-flex justify-content-around w-50"
   title="View Items"
@@ -74,29 +104,12 @@
 
 </td>
 
-
-
-      <td [attr.title]="item.PomNetAmt" data-bs-toggle="tooltip" class="text-end">
-        ₹{{ item.PomNetAmt | number:'1.2-2' }}
-      </td>
-
-     <td class="text-center align-middle">
+ <td class="text-center align-middle">
   <button class="bg-transparent text-center" (click)="downloadPdf(item.PomMkey)" title="Download PDF">
    <i class="bi bi-file-earmark-pdf-fill text-danger " ></i>
 
   </button>
 </td>
-
-
-      <td [attr.title]="item.PomStatus" data-bs-toggle="tooltip">
-        <span class="badge bg-info text-dark">
-          {{ item.PomStatus }}
-        </span>
-      </td>
-
-      <td [attr.title]="item.PomShpBrnName">
-        {{ item.PomShpBrnName }}
-      </td>
       </tr>
 
       <!-- Optional dropdown/details row -->

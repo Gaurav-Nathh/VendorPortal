@@ -10,14 +10,25 @@
      
        
        <div class="d-flex justify-content-between align-items-center w-100">
-  <div class="input-group w-25">
-    <!-- search input here -->
-  </div>
+  
+    <div class="custom-search-bar">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search items..."
+    
+  />
+  <i class="bi bi-search search-icon"></i>
+</div>
+ 
 
-  <div>
-    <button class="btn btn-outline-secondary me-2">
-      <i class="bi bi-arrow-clockwise"></i> Refresh
-    </button>
+  <div class="d-flex gap-4">
+    <div class="button-group">
+                
+                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>
     <button class="btn btn-outline-primary" (click)="exportToExcel()">
       <i class="bi bi-box-arrow-up"></i> Export
     </button>
@@ -39,15 +50,15 @@
             <th class="py-3 px-3 fw-semibold text-center">Type</th>
             <th class="py-3 px-3 fw-semibold text-center">Ref No.</th>
             <th class="py-3 px-3 fw-semibold text-end">Invoice</th>
-            <th class="py-3 px-3 fw-semibold text-center">Payment</th>
-            <th class="py-3 px-3 fw-semibold">Adjustment</th>
-            <th class="py-3 px-3 fw-semibold">Balance</th>
-            <th class="py-3 px-3 fw-semibold">Due Date</th>
-            <th class="py-3 px-3 fw-semibold">Over Due</th>
+            <th class="py-3 px-3 fw-semibold text-end">Payment</th>
+            <th class="py-3 px-3 fw-semibold text-end">Adjustment</th>
+            <th class="py-3 px-3 fw-semibold text-end">Balance</th>
+            <th class="py-3 px-3 fw-semibold text-center">Due Date</th>
+            <th class="py-3 px-3 fw-semibold text-end">Over Due</th>
     </tr>
   </thead>
   <tbody  id="receipt-accordion" >
-    <ng-container *ngFor="let item of data; let i = index"><!-- paginatedData -->
+    <ng-container *ngFor="let item of paginatedData; let i = index"><!-- paginatedData -->
       <tr class=" " >
        <td [attr.title]="item.BILLDATE" data-bs-toggle="tooltip">
         {{ item.BILLDATE }}
@@ -58,22 +69,22 @@
      <td [attr.title]="item.BILLNO" data-bs-toggle="tooltip">
         {{ item.BILLNO }}
       </td>
-      <td [attr.title]="item.BALANCE" data-bs-toggle="tooltip">
+      <td [attr.title]="item.BALANCE" data-bs-toggle="tooltip" class="text-end">
         {{ item.BALANCE}}
       </td>
-       <td [attr.title]="item.PAYAMT" data-bs-toggle="tooltip">
+       <td [attr.title]="item.PAYAMT" data-bs-toggle="tooltip" class="text-end">
         {{ item.PAYAMT}}
       </td>
-          <td [attr.title]="item.ADJAMT" data-bs-toggle="tooltip">
+          <td [attr.title]="item.ADJAMT" data-bs-toggle="tooltip" class="text-end">
         {{ item.ADJAMT}}
       </td>
-          <td [attr.title]="item.BALANCE" data-bs-toggle="tooltip">
+          <td [attr.title]="item.BALANCE" data-bs-toggle="tooltip" class="text-end">
         {{ item.BALANCE}}
       </td>
-       <td [attr.title]="item.DUEDATE" data-bs-toggle="tooltip">
+       <td [attr.title]="item.DUEDATE" data-bs-toggle="tooltip" class="text-center">
         {{ item.DUEDATE}}
       </td>
-       <td [attr.title]="item.OVERDUE" data-bs-toggle="tooltip">
+       <td [attr.title]="item.OVERDUE" data-bs-toggle="tooltip" class="text-end">
         {{ item.OVERDUE}}
       </td>
 
@@ -92,29 +103,51 @@
 
     </ng-container>
   </tbody>
+
 </table>
 
     </div>
+
+   <!-- Totals Row Below the Table -->
+<!-- Totals Table -->
+<table class="w-100 total ">
+  <tbody>
+    <tr class="fw-semibold text-dark border-top">
+      <td colspan="3"></td> <!-- Skips: Date, Type, Ref No. -->
+      <td class="text-end">{{ totalInvoice | number:'1.2-2' }}</td> <!-- Invoice -->
+      <td class="text-end">{{ totalPayment | number:'1.2-2' }}</td> <!-- Payment -->
+      <td class="text-end">{{ totalAdjustment | number:'1.2-2' }}</td> <!-- Adjustment -->
+      <td class="text-end">{{ totalBalance | number:'1.2-2' }}</td> <!-- Balance -->
+      <td colspan="2"></td> <!-- Due Date, Over Due -->
+    </tr>
+  </tbody>
+</table>
+
+
+
   </div>
 
 <div class="pagination-container">
 
-
- <div class="d-flex justify-content-end align-items-center mt-3 ">
+<div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
   <button 
     class="btn btn-sm btn-secondary me-2" 
-   >
+    [disabled]="currentPage === 1" 
+    (click)="goToPreviousPage()">
     Prev
   </button>
 
   <span class="fw-semibold">
-    Page 0 of 0
+    Page {{ currentPage }} of {{ totalPages }}
   </span>
 
   <button 
     class="btn btn-sm btn-secondary ms-2" 
-   >
+    [disabled]="currentPage === totalPages" 
+    (click)="goToNextPage()">
     Next
   </button>
-</div></div>
+</div>
+ 
+</div>
 </div>

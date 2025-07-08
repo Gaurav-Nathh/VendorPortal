@@ -84,7 +84,9 @@ goToNextPage() {
 }
 
 
-
+referseData(){
+  
+}
 
   getPoList() {
   this.poListService.vendorPoList().subscribe((data: any) => {

@@ -8,6 +8,9 @@ export class user{
     AclAddress1!:string;
     AclAddress2!:string;
     AclPinCode!:string;
+    AcmAddress1?:string;
+    AcmAddress2?:string;
+
 }
 
 export interface Bankdet{

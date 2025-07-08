@@ -1,24 +1,29 @@
 <div class="page-container">
 
   <!-- Search & Filter -->
-  <div class="rounded shadow-sm p-3 search-container">
+  <div class="rounded shadow-sm p-3 search-container d-flex justify-content-between">
     
       
- <div class="input-group w-25 ">
+ <div class="custom-search-bar">
   <input
     type="text"
-    class="form-control border-start-0"
+    class="search-input"
     placeholder="Search items..."
     [(ngModel)]="searchText"
     (ngModelChange)="onSearchChange($event)"
   />
-  
-  <!-- Search Icon -->
-  <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+  <i class="bi bi-search search-icon"></i>
 </div>
 
 
-    
+
+
+        <div class="button-group">
+                
+                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>
      
    
   </div>

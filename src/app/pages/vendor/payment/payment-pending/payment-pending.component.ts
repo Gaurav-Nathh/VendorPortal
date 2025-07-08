@@ -34,6 +34,13 @@ export interface OutstandingBill {
 export class PaymentPendingComponent {
 
  data: OutstandingBill[] = [];
+ totalInvoice: number = 0;
+totalPayment: number = 0;
+totalAdjustment: number = 0;
+totalBalance: number = 0;
+currentPage: number = 1;
+itemsPerPage: number = 16;
+  filteredItems: OutstandingBill[] = [];
   
 
 
@@ -52,6 +59,8 @@ this.paymentService.pendingPaymentList().subscribe({
       next: (response:any) =>{
         console.log(response);
         this.data=response.ReportData;
+        this.filteredItems=response.ReportData.reverse();
+         this.calculateTotals();
       }
       
     })
@@ -87,4 +96,36 @@ exportToExcel(): void {
 
 
 
+calculateTotals() {
+  this.totalInvoice = this.data.reduce((sum, item) => sum + (item.BALANCE ?? 0), 0);
+  this.totalPayment = this.data.reduce((sum, item) => sum + (item.PAYAMT ?? 0), 0);
+  this.totalAdjustment = this.data.reduce((sum, item) => sum + (item.ADJAMT ?? 0), 0);
+  this.totalBalance = this.data.reduce((sum, item) => sum + (item.BALANCE ?? 0), 0);
+}
+
+
+get paginatedData(){
+  const start= (this.currentPage-1)*this.itemsPerPage;
+  const end = start+ this.itemsPerPage;
+  return this.filteredItems.slice(start, end);
+}
+get totalPages(): number {
+  return Math.ceil(this.filteredItems.length / this.itemsPerPage);
+}
+
+goToPreviousPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+goToNextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
+referseData(){
+
+}
 }

@@ -35,7 +35,7 @@
   flex-direction: column;
  
   position: relative;
-  height: 90vh; /* Fixed height */
+  height: 88vh; /* Fixed height */
   overflow: hidden; /* Prevent any scrolling */
   max-height: 100vh;
   padding: 0; /* Remove any padding */
@@ -79,6 +79,7 @@
   flex-direction: column;
   min-height: 0; /* Important for flex children */
   margin-bottom: 0; /* Remove bottom margin */
+  height: 100vh;
 }
 
 .page-breadcrum {
@@ -156,7 +157,8 @@
   border-radius: 0.75rem;
   overflow: auto; /* Enable scrolling for the table content only */
   flex: 1; /* Take remaining space */
-  max-height: calc(100vh - 200px);
+  
+
 
   .orders-table {
     width: 100%;
@@ -281,4 +283,106 @@
 
 .bord {
   border: 1px solid red !important;
+}
+
+.orders-table-container {
+  
+  overflow-y: auto;
+}
+
+
+
+.orders-table-container table,
+.summary-table-container table {
+  table-layout: fixed;
+}
+
+.summary-table-container table tbody td{
+  background-color: #aeebb0;
+}
+
+
+
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+
+  .refresh-btn {
+    background: linear-gradient(135deg, #3a56d4 0%, #506ef5 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      animation: none;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      background: linear-gradient(135deg, #5f7af1 0%, #748af0 100%);
+      i {
+        animation: spin 0.6s linear;
+      }
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.4);
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+
+.custom-search-bar {
+  position: relative;
+  width: 350px;
+  transition: all 0.3s ease;
+
+  .search-input {
+    width: 100%;
+    padding: 10px 40px 10px 14px;
+    border: 1.5px solid #ccc;
+    border-radius: 30px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+
+    &:focus {
+      border-color: #4facfe;
+      box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+      outline: none;
+      background-color: white;
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #999;
+    pointer-events: none;
+    transition: color 0.2s;
+  }
 }

@@ -2,6 +2,9 @@ import { Component, ElementRef, QueryList,ViewChildren,AfterViewInit } from '@an
 import { PaymentServiceService } from '../../../../services/vendor-service/payment/payment-service.service';
 import { CommonModule } from '@angular/common';
 import { Tooltip } from 'bootstrap';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+
 
 
 
@@ -53,6 +56,7 @@ ngAfterViewInit() {
 
   }
 data:AccountTransaction[]=[];
+tble:any[]=[];
 
  ngOnInit(){
     this.AcntStament();
@@ -65,9 +69,45 @@ data:AccountTransaction[]=[];
     this.statementService.accountStatement().subscribe({
       next: (response:any) =>{
         console.log(response);
-        this.data=response.ReportData.Table;
+        this.data=response.ReportData.Table.reverse();
+        this.tble=response.ReportData.Table1;
       }
       
     })
   }
+
+
+
+  exportToExcel(): void {
+    const exportData = this.data.map((item: any) => ({
+      'Date': item.Date,
+      'Type': item.Vtype,
+      'No.': item['No.'],
+      'Particular': item.Particular,
+      'Debit': item.Debit,
+      'Credit': item.Credit,
+      'Narration': item.Narration,
+      'Trn. No.': item['Trn. No.'],
+      'Trn. Date': item['Trn. Date'],
+
+    }));
+  
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Outstanding': worksheet },
+      SheetNames: ['Outstanding'],
+    };
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+  
+    const blobData = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blobData, 'AccountStatement_Report.xlsx');
+  }
+
+  referseData(){
+    
+  }
+
 }

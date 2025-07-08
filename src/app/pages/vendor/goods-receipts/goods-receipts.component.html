@@ -3,38 +3,32 @@
 
 
   <!-- Search & Filter -->
- <div class="rounded shadow-sm p-3 search-container">
-
-  <!-- Left side: Status + Search -->
- 
- 
-      <!-- Status Dropdown -->
-     
-
-      <!-- Search Input -->
-      <div class="input-group w-25">
-       
-        <div class="input-group">
-          <span class="input-group-text bg-white border-end-0">
-            <i class="bi bi-search text-muted"></i>
-          </span>
-          <input 
-            type="text" 
-            class="form-control border-start-0"
-            placeholder="Search by PO number or item..."
-           
-            aria-label="Search items" />
-        </div>
-      
+  <div class="rounded shadow-sm p-3 search-container d-flex justify-content-between">
     
-
-
-  
- 
-
+      
+ <div class="custom-search-bar">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search items..."
+    
+  />
+  <i class="bi bi-search search-icon"></i>
 </div>
 
-</div>
+<!-- [(ngModel)]="searchText"
+    (ngModelChange)="onSearchChange($event)" -->
+
+
+        <div class="button-group">
+                
+                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>
+     
+   
+  </div>
 
 
   <!-- Desktop Table -->
@@ -48,11 +42,12 @@
       <th class="py-3 px-3 fw-semibold">Date</th>
       <th class="py-3 px-3 fw-semibold">V. No.</th>
       <th class="py-3 px-3 fw-semibold">Date</th>
-      <th class="py-3 px-3 fw-semibold">Item Count | View</th>
+   
       <th class="py-3 px-3 fw-semibold text-end">Bill Value</th>
       <th class="py-3 px-3 fw-semibold text-end">TDS</th>
       <th class="py-3 px-3 fw-semibold text-end">Adjustment</th>
-      <th class="py-3 px-3 fw-semibold text-end">Net Payable</th>
+      <th class="py-3 px-3 fw-semibold text-end">Net Payable</th>   
+      <th class="py-3 px-3 fw-semibold">Item Count | View</th>
     </tr>
   </thead>
   <tbody  id="receipt-accordion">
@@ -80,7 +75,24 @@
 
        
          
-         <td >
+     
+
+        <td class="text-end" [attr.title]="'₹' + item.PomNetAmt" data-bs-toggle="tooltip">
+          ₹{{ item.GrmBillDisAmt | number:'1.2-2' }}
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomTds" data-bs-toggle="tooltip">
+          ₹{{ item.GrmTdsAmt | number:'1.2-2' }}
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomAdjAmt" data-bs-toggle="tooltip">
+          ₹{{ item.GrmAdjAmt | number:'1.2-2' }}
+        </td>
+
+        <td class="text-end" [attr.title]="'₹' + item.PomNetPayable" data-bs-toggle="tooltip">
+          ₹{{ item.GrmNetAmt | number:'1.2-2' }}
+        </td>
+            <td >
         <button
   class="bg-transparent d-flex justify-content-around w-50"
   title="View Items"
@@ -102,22 +114,6 @@
 
       
 
-        </td>
-
-        <td class="text-end" [attr.title]="'₹' + item.PomNetAmt" data-bs-toggle="tooltip">
-          ₹{{ item.GrmBillDisAmt | number:'1.2-2' }}
-        </td>
-
-        <td class="text-end" [attr.title]="'₹' + item.PomTds" data-bs-toggle="tooltip">
-          ₹{{ item.GrmTdsAmt | number:'1.2-2' }}
-        </td>
-
-        <td class="text-end" [attr.title]="'₹' + item.PomAdjAmt" data-bs-toggle="tooltip">
-          ₹{{ item.GrmAdjAmt | number:'1.2-2' }}
-        </td>
-
-        <td class="text-end" [attr.title]="'₹' + item.PomNetPayable" data-bs-toggle="tooltip">
-          ₹{{ item.GrmNetAmt | number:'1.2-2' }}
         </td>
       </tr>
 

@@ -10,15 +10,24 @@
      
        
        <div class="d-flex justify-content-between align-items-center w-100">
-  <div class="input-group w-25">
-    <!-- search input here -->
-  </div>
+   <div class="custom-search-bar">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search items..."
+    
+  />
+  <i class="bi bi-search search-icon"></i>
+</div>
 
-  <div>
-    <button class="btn btn-outline-secondary me-2">
-      <i class="bi bi-arrow-clockwise"></i> Refresh
-    </button>
-    <button class="btn btn-outline-primary">
+  <div class="d-flex gap-4">
+      <div class="button-group">
+                
+                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>
+    <button class="btn btn-outline-primary" (click)=" exportToExcel()">
       <i class="bi bi-box-arrow-up"></i> Export
     </button>
   </div>
@@ -35,65 +44,52 @@
    <table class="orders-table w-100 ">
   <thead >
     <tr >
-      <th class="py-3 px-3 fw-semibold ">Date</th>
-            <th class="py-3 px-3 fw-semibold text-center">Vtype</th>
+      <th class="py-3 px-3 fw-semibold  text-center">Date</th>
+            <th class="py-3 px-3 fw-semibold text-start">Vtype</th>
             <th class="py-3 px-3 fw-semibold text-start">No.</th>
             <th class="py-3 px-3 fw-semibold text-start">Particular</th>
             <th class="py-3 px-3 fw-semibold text-end">Debit</th>
             <th class="py-3 px-3 fw-semibold text-end">Credit</th>
             <th class="py-3 px-3 fw-semibold">Narration</th>
-            <th class="py-3 px-3 fw-semibold">Trn. No.</th>
-            <th class="py-3 px-3 fw-semibold">Trn. Date</th>
+            <th class="py-3 px-3 fw-semibold" class="text-end">Trn. No.</th>
+            <th class="py-3 px-3 fw-semibold"  class="text-center">Trn. Date</th>
             
     </tr>
   </thead>
   <tbody  id="receipt-accordion" >
     <ng-container *ngFor="let item of data; let i = index">
       <tr class=" " >
-       <td [attr.title]="item.Date" data-bs-toggle="tooltip">
+       <td [attr.title]="item.Date" data-bs-toggle="tooltip" class="text-center">
         {{ item.Date | date: 'dd-MM-yyyy' }}
       </td>
-      <td [attr.title]="item.Vtype" data-bs-toggle="tooltip">
+      <td [attr.title]="item.Vtype" data-bs-toggle="tooltip" class="text-start">
         {{ item.Vtype}}
       </td>
-      <td [attr.title]="item['No.']" data-bs-toggle="tooltip">
+      <td [attr.title]="item['No.']" data-bs-toggle="tooltip" class="text-truncate" style="max-width: 150px;">
         {{ item['No.']}}
       </td>
       <td [attr.title]="item.Particular" data-bs-toggle="tooltip"  class="text-truncate" style="max-width: 150px;">
         {{ item.Particular}}
       </td>
-       <td [attr.title]="item.Debit" data-bs-toggle="tooltip">
+       <td [attr.title]="item.Debit" data-bs-toggle="tooltip" class="text-end">
         {{ item.Debit}}
       </td>
-      <td [attr.title]="item.Credit" data-bs-toggle="tooltip">
+      <td [attr.title]="item.Credit" data-bs-toggle="tooltip" class="text-end">
         {{ item.Credit}}
       </td>
       <td [attr.title]="item.Narration" data-bs-toggle="tooltip" class="text-truncate" style="max-width: 150px;">
   {{ item.Narration }}
 </td>
 
-       <td [attr.title]="item['Trn. No.']" data-bs-toggle="tooltip">
+       <td [attr.title]="item['Trn. No.']" data-bs-toggle="tooltip" class="text-end">
         {{ item['Trn. No.']}}
       </td>
-       <td [attr.title]="item['Trn. Date']" data-bs-toggle="tooltip">
-        {{ item['Trn. Date']}}
+       <td [attr.title]="item['Trn. Date']" data-bs-toggle="tooltip" class="text-center">
+        {{ item['Trn. Date'] | date: 'dd-MM-yyyy'}}
       </td>
       
       
-      
-
-      
-
-
-
-
-      
-
-    
-
-
-      
-
+  
       
       </tr>
 
@@ -105,7 +101,43 @@
 </table>
 
     </div>
-  </div>
+ 
+ <div class="summary-table-container">
+  <table class="w-100 table table-bordered bg-light text-dark">
+    <tbody>
+      <!-- Opening Balance -->
+      <tr class="fw-semibold">
+        <td class="fw-bold">Opening Balance:</td> <!-- Label under Date -->
+        <td colspan="4"></td> <!-- Vtype, No., Particular, Debit -->
+        <td class="text-end fw-bold">{{ tble[0].OPCREDIT | number:'1.2-2' }}</td> <!-- Credit -->
+        <td colspan="3"></td> <!-- Narration, Trn. No., Trn. Date -->
+      </tr>
+
+      <!-- Current Total -->
+      <tr class="fw-semibold">
+        <td class="fw-bold">Current Total:</td> <!-- Label under Date -->
+        <td colspan="3"></td> <!-- Vtype, No., Particular -->
+        <td class="text-end fw-bold">{{ tble[0].DEBIT | number:'1.2-2' }}</td> <!-- Debit -->
+        <td class="text-end fw-bold">{{ tble[0].CREDIT | number:'1.2-2' }}</td> <!-- Credit -->
+        <td colspan="3"></td> <!-- Narration, Trn. No., Trn. Date -->
+      </tr>
+
+      <!-- Closing Balance -->
+      <tr class="fw-semibold">
+        <td class="fw-bold">Closing Balance:</td> <!-- Label under Date -->
+        <td colspan="4"></td> <!-- Vtype, No., Particular, Debit -->
+        <td class="text-end fw-bold">{{ tble[0].BALCREDIT | number:'1.2-2' }}</td> <!-- Credit -->
+        <td colspan="3"></td> <!-- Narration, Trn. No., Trn. Date -->
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+
+
+
 
 <div class="pagination-container">
 

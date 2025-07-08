@@ -26,17 +26,6 @@ selectedItem:any = null;
   currentPage: number = 1;
 itemsPerPage: number = 10;
 
-/* expandDropdown(item: any) {
-  if (this.expandedkey === item.GrmMkey) {
-    console.log('Closing dropdown for:', item.GrmMkey);
-    this.expandedkey = null;
-    this.selectedItem = null; // Clear the selected item when closing the dropdown
-  } else {
-    console.log('Opening dropdown for:', item.GrmMkey);
-    this.expandedkey = item.GrmMkey;
-    this.selectedItem = item; // Store the selected item for further use
-  }
-} */
 
 openedRowKey: string | null = null;
 
@@ -44,7 +33,9 @@ toggleRow(key: string) {
   this.openedRowKey = this.openedRowKey === key ? null : key;
 }
 
-
+referseData(){
+  
+}
 
 getGrList() {
   this.grService.goodRecList().subscribe((data: any) => {

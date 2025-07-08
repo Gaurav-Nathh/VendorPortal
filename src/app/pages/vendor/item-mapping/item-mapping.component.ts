@@ -63,7 +63,20 @@ goToNextPage() {
   itemMapping: ItemMapping = new ItemMapping();
   constructor(private itemMappingService: ItemMappingService) {}
   ngOnInit() {
-  this.itemMappingService.getMappingItems().subscribe({
+  this.getData();
+  }
+
+  items: any[] = [];
+  filteredItems: any[] = [];
+  searchText: string = '';
+
+  enableEditing(item: any) {
+  this.items.forEach(i => i.isEditing = false); // optional: allow only one at a time
+  item.isEditing = true;
+}
+
+getData(){
+this.itemMappingService.getMappingItems().subscribe({
     next: (data: ItemMappingResponse) => {
       this.items = data.ItemList;
       this.filteredItems = [...this.items]; // Initialize filteredItems
@@ -78,15 +91,11 @@ goToNextPage() {
       console.error('Error fetching mapping items:', error);
     },
   });
-  }
+}
 
-  items: any[] = [];
-  filteredItems: any[] = [];
-  searchText: string = '';
 
-  enableEditing(item: any) {
-  this.items.forEach(i => i.isEditing = false); // optional: allow only one at a time
-  item.isEditing = true;
+referseData(){
+  this.getData();
 }
 
 saveItem(item: any) {
