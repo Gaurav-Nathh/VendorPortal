@@ -1,12 +1,12 @@
 export class OutstandingStatementParams {
 BrnLevel: string = 'BO';
-  BrnId: number = 86;
+  BrnId?: number;
   AsOnDate?: string = '';           // optional, not provided
   PayDate?: string = '';            // optional, not provided
-  User: string = 'Rohan';
-  FyrId: number = 25;
+  User?: string ;
+  FyrId?: number;
   WiseType: string = 'PARTY';
-  WiseDesc: string = 'CENTRAL WARE HOUSING CORP.LTD.'; // decoded
+  WiseDesc?: string;// decoded
   OutsType: string = 'UNCLEARED';
   DateType: string = 'REF DATE';    // decoded
   OutsRefType: string = 'ALL';

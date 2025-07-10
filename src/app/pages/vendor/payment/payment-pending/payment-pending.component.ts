@@ -3,6 +3,7 @@ import { PaymentServiceService } from '../../../../services/vendor-service/payme
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -22,7 +23,7 @@ export interface OutstandingBill {
 
 @Component({
   selector: 'app-payment-pending',
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './payment-pending.component.html',
   styleUrl: './payment-pending.component.scss'
 })
@@ -42,7 +43,7 @@ currentPage: number = 1;
 itemsPerPage: number = 16;
   filteredItems: OutstandingBill[] = [];
   
-
+  searchText: string = '';
 
   constructor(public paymentService:PaymentServiceService){
 
@@ -52,6 +53,18 @@ itemsPerPage: number = 16;
   ngOnInit(){
     this.paymentFun();
   }
+
+
+
+applySearch() {
+  const text = this.searchText.toLowerCase();
+  this.filteredItems = this.data.filter(item =>
+    item.BILLTYPE?.toLowerCase().includes(text) ||
+    item.BILLNO?.toLowerCase().includes(text)
+  );
+  this.currentPage = 1;
+}
+
  
   paymentFun()
   {

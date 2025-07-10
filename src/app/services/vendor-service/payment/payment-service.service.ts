@@ -10,12 +10,22 @@ import { AccountStatementParams } from '../../../Models/Vendor/AcntStatment';
 })
 export class PaymentServiceService {
 
+   private acmName = sessionStorage.getItem('UsrLinkAcmName') || '';
+   private UseBrnId =sessionStorage.getItem('UsrBrnId')
+private fryId = sessionStorage.getItem('fryId')
+private UsrCode=sessionStorage.getItem('UsrCode');
   constructor(private config: ApiConfigService, private http: HttpClient) { }
 
+  dateNum:number=0;
 paymentModel = new OutstandingStatementParams();
 acntModel = new AccountStatementParams();
 
  pendingPaymentList(): Observable<any[]> {
+  this.paymentModel.WiseDesc=this.acmName;
+this.paymentModel.BrnId = this.UseBrnId ? +this.UseBrnId : undefined;
+this.paymentModel.FyrId=this.fryId ?+this.fryId : undefined;
+this.paymentModel.User = this.UsrCode ?? '';
+
   const headers = this.config.getHeader();
 
   // Convert object to HttpParams
@@ -35,6 +45,10 @@ acntModel = new AccountStatementParams();
   );
 }
 accountStatement():Observable<any[]>{
+  this.acntModel.TypeValue=this.acmName;
+  this.acntModel.BrnId=this.UseBrnId ? +this.UseBrnId : undefined;
+  this.acntModel.FyrId=this.fryId ?+this.fryId : undefined;
+  this.acntModel.UserId=this.UsrCode ?? '';
   const headers = this.config.getHeader();
   let params = new HttpParams();
   Object.entries(this.acntModel).forEach(([KeyboardEvent,value])=>{

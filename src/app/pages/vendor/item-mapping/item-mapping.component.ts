@@ -33,7 +33,7 @@ export class ItemMappingComponent {
   searchTimeout: any; // To hold the timeout ID for search delay
 
    currentPage: number = 1;
-itemsPerPage: number = 10;
+itemsPerPage: number = 20;
 
 
 
@@ -126,14 +126,13 @@ onSearchChange(value: string) {
   }, 500); // Delay in milliseconds
 }
 
-  applySearch() {
-  const text = this.searchText.toLowerCase();
+applySearch() {
+  const text = this.searchText.toLowerCase().trim();
   this.filteredItems = this.items.filter(item =>
     item.ItmCode?.toLowerCase().includes(text) ||
     item.ItmName?.toLowerCase().includes(text)
   );
-
-  console.log('Filtered items:', this.filteredItems);
+  this.currentPage = 1; // Reset to page 1 after search
 }
 
  /*  openFilterModal() {

@@ -1,15 +1,15 @@
 export class AccountStatementParams {
-  BrnId: number = 86;
-  UserId: string = 'Rohan'; // decoded from %20Rohan
+  BrnId?: number;
+  UserId?: string; // decoded from %20Rohan
   Wise: string = 'DETAIL';
   ViewType: string = 'SINGLE';
   Status?: string = ''; // optional, not provided
   FromDate?: string = ''; // was "undefined"
   ToDate?: string = '';   // was "undefined"
-  FyrId: number = 25;
+  FyrId?: number;
   BrnLevel: string = 'BO';
   Type: string = 'PARTICULAR';
-  TypeValue: string = 'CENTRAL WARE HOUSING CORP.LTD.'; // decoded
+  TypeValue?: string; // decoded
   Vtype?: string = '';         // not provided
   DebitOpr?: string = '';      // not provided
   DebitAmt?: number;           // not provided

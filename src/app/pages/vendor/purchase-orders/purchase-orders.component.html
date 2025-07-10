@@ -5,19 +5,33 @@
   <!-- Search & Filter -->
   <div class="rounded shadow-sm p-3 search-container d-flex justify-content-between">
     
-      
+     <div class="d-flex gap-4">
  <div class="custom-search-bar">
   <input
-    type="text"
-    class="search-input"
-    placeholder="Search items..."
-    
-  />
-  <i class="bi bi-search search-icon"></i>
-</div>
+  type="text"
+  class="search-input"
+  placeholder="Search items..."
+  [(ngModel)]="searchTerm"
+  (ngModelChange)="applyFilters()" 
+/>
 
-<!-- [(ngModel)]="searchText"
-    (ngModelChange)="onSearchChange($event)" -->
+  <i class="bi bi-search search-icon"></i>
+
+  
+</div>
+<select
+  id="statusSelect"
+  class="form-select form-select-sm w-auto shadow-sm"
+  [(ngModel)]="status"
+  (ngModelChange)="applyFilters()"
+  aria-label="Filter by status"
+>
+  <option value="All">All</option>
+  <option *ngFor="let item of statusArray" [value]="item">{{ item }}</option>
+</select>
+</div> 
+
+
 
 
         <div class="button-group">

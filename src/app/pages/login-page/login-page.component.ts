@@ -59,6 +59,11 @@ export class LoginPageComponent {
     }, 3000);
   }
 
+ngOnInit(){
+  
+}
+
+
   @ViewChild('loginForm', { static: true }) loginForm!: NgForm;
 
   nextStep() {

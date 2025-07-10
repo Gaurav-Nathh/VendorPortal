@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Tooltip } from 'bootstrap';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -34,7 +35,7 @@ export interface AccountTransaction {
 
 @Component({
   selector: 'app-payment-history',
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.scss'
 })
@@ -58,23 +59,65 @@ ngAfterViewInit() {
 data:AccountTransaction[]=[];
 tble:any[]=[];
 
+searchText: string = '';
+filteredItems: AccountTransaction[] = [];
+currentPage: number = 1;
+itemsPerPage: number = 10;
+
+
  ngOnInit(){
     this.AcntStament();
   }
 
 
 
-  AcntStament()
-  {
-    this.statementService.accountStatement().subscribe({
-      next: (response:any) =>{
-        console.log(response);
-        this.data=response.ReportData.Table.reverse();
-        this.tble=response.ReportData.Table1;
-      }
-      
-    })
+
+
+  
+
+
+AcntStament() {
+  this.statementService.accountStatement().subscribe({
+    next: (response: any) => {
+      this.data = response.ReportData.Table.reverse();
+      this.tble = response.ReportData.Table1;
+      this.filteredItems = [...this.data]; // initialize filtered data
+    }
+  });
+}
+
+applySearch() {
+  const text = this.searchText.toLowerCase();
+  this.filteredItems = this.data.filter(item =>
+    item.Particular?.toLowerCase().includes(text) ||
+    item['No.']?.toLowerCase().includes(text) ||
+    item.Vtype?.toLowerCase().includes(text)
+  );
+  this.currentPage = 1;
+}
+
+get paginatedData() {
+  const start = (this.currentPage - 1) * this.itemsPerPage;
+  const end = start + this.itemsPerPage;
+  return this.filteredItems.slice(start, end);
+}
+
+get totalPages(): number {
+  return Math.ceil(this.filteredItems.length / this.itemsPerPage);
+}
+
+goToPreviousPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
   }
+}
+
+goToNextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
 
 
 

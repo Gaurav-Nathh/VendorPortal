@@ -12,11 +12,13 @@
        <div class="d-flex justify-content-between align-items-center w-100">
    <div class="custom-search-bar">
   <input
-    type="text"
-    class="search-input"
-    placeholder="Search items..."
-    
-  />
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchText"
+  (ngModelChange)="applySearch()"
+/>
+
   <i class="bi bi-search search-icon"></i>
 </div>
 
@@ -57,7 +59,7 @@
     </tr>
   </thead>
   <tbody  id="receipt-accordion" >
-    <ng-container *ngFor="let item of data; let i = index">
+    <ng-container *ngFor="let item of paginatedData; let i = index">
       <tr class=" " >
        <td [attr.title]="item.Date" data-bs-toggle="tooltip" class="text-center">
         {{ item.Date | date: 'dd-MM-yyyy' }}
@@ -142,21 +144,26 @@
 <div class="pagination-container">
 
 
- <div class="d-flex justify-content-end align-items-center mt-3 ">
+ <div class="d-flex justify-content-end align-items-center mt-3">
   <button 
     class="btn btn-sm btn-secondary me-2" 
-   >
+    [disabled]="currentPage === 1" 
+    (click)="goToPreviousPage()">
     Prev
   </button>
 
   <span class="fw-semibold">
-    Page 0 of 0
+    Page {{ currentPage }} of {{ totalPages }}
   </span>
 
   <button 
     class="btn btn-sm btn-secondary ms-2" 
-   >
+    [disabled]="currentPage === totalPages" 
+    (click)="goToNextPage()">
     Next
   </button>
-</div></div>
+</div>
+
+
+</div>
 </div>

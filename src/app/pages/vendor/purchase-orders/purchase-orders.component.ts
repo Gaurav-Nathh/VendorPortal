@@ -34,7 +34,7 @@ export class PurchaseOrdersComponent {
    expandedMkey: string | null = null;
   
   currentPage: number = 1;
-itemsPerPage: number = 20;
+itemsPerPage: number = 10;
 
 
   statusArray: string[] = [
@@ -54,12 +54,21 @@ filteredData: any[]=[]
 
   }
 
-  applyFilters() {
+applyFilters() {
+  const statusFilter = this.status.toLowerCase();
+  const search = this.searchTerm.toLowerCase();
+
   this.filteredData = this.fullData.filter(item => {
-    const matchesStatus = this.status === 'All' || item.PomStatus?.toLowerCase() === this.status.toLowerCase();
-    const matchesSearch = this.searchTerm === '' || item.PomVno?.toLowerCase().includes(this.searchTerm.toLowerCase());
+    const itemStatus = item.PomStatus?.toLowerCase() || '';
+    const itemVno = item.PomVno?.toLowerCase() || '';
+
+    const matchesStatus = statusFilter === 'all' || itemStatus === statusFilter;
+    const matchesSearch = search === '' || itemVno.includes(search);
+
     return matchesStatus && matchesSearch;
   });
+
+  this.currentPage = 1; // Reset to first page after filtering
 }
 
 get paginatedData(){
@@ -83,10 +92,13 @@ goToNextPage() {
   }
 }
 
-
-referseData(){
-  
+referseData() {
+ /*  this.searchTerm = '';
+  this.status = 'All';
+  this.currentPage = 1; */
+  this.applyFilters();
 }
+
 
   getPoList() {
   this.poListService.vendorPoList().subscribe((data: any) => {

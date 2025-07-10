@@ -19,6 +19,7 @@ interface LoginPayload {
 export class AuthService {
   private apiUrl = 'https://efactoapidevelopment.efacto.cloud/api';
   private apiKey = '140-9299-524-TEST';
+   currentYearShort = new Date().getFullYear().toString().slice(-2);
 
   constructor(
     private router: Router,
@@ -39,7 +40,9 @@ export class AuthService {
       .pipe(
         switchMap((response: any) => {
           const userDetails = response.UserDetails;
-          console.log(userDetails);
+          
+          console.log("userdataaa",userDetails);
+
           if (response.IsLogin === true) {
             this.loaderAuthService.hide();
             return from(
@@ -120,15 +123,19 @@ export class AuthService {
               userDetails?.UsrLinkAcmId || ''
             );
             sessionStorage.setItem('UsrAddUser', userDetails?.UsrAddUser);
+            sessionStorage.setItem('fryId',this.currentYearShort);
 
             sessionStorage.setItem(
               'UsrLinkAcmName',
               userDetails?.UsrLinkAcmName?.toString() || ''
             );
             sessionStorage.setItem('UsrBrnId', userDetails?.UsrBrnId || 0);
+            sessionStorage.setItem("UsrCode",userDetails?.UsrCode || '');
+
 
             // If userService.setUserType stores internally or in another storage, update accordingly
             this.userService.setUserType(userDetails?.UsrType?.toString());
+            
 
             return of({ success: true });
           }

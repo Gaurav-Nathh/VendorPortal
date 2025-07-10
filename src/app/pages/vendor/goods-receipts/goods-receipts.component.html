@@ -7,12 +7,13 @@
     
       
  <div class="custom-search-bar">
-  <input
-    type="text"
-    class="search-input"
-    placeholder="Search items..."
-    
-  />
+ <input
+  type="text"
+  class="search-input"
+  placeholder="Search items..."
+  [(ngModel)]="searchText"
+  (ngModelChange)="onSearchChange($event)"
+/>
   <i class="bi bi-search search-icon"></i>
 </div>
 
