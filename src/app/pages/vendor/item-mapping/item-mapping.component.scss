@@ -445,3 +445,12 @@ $transition: all 0.3s ease;
     transition: color 0.2s;
   }
 }
+
+
+.orders-table tbody tr:nth-child(odd) {
+  background-color: #ffffff; // Light gray
+}
+
+.orders-table tbody tr:nth-child(even) {
+  background-color: #e0dede77; // White (optional, for contrast)
+}

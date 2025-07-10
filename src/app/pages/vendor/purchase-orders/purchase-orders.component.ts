@@ -32,6 +32,7 @@ export class PurchaseOrdersComponent {
    status: string = 'All';
   searchTerm: string = '';
    expandedMkey: string | null = null;
+   
   
   currentPage: number = 1;
 itemsPerPage: number = 10;
@@ -83,12 +84,14 @@ get totalPages(): number {
 goToPreviousPage() {
   if (this.currentPage > 1) {
     this.currentPage--;
+     this.openedRowIndex = null;
   }
 }
 
 goToNextPage() {
   if (this.currentPage < this.totalPages) {
     this.currentPage++;
+     this.openedRowIndex = null;
   }
 }
 

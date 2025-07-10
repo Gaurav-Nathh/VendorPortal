@@ -5,6 +5,7 @@ import { Tooltip } from 'bootstrap';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { FormsModule } from '@angular/forms';
+import * as ExcelJS from 'exceljs';
 
 
 
@@ -63,6 +64,8 @@ searchText: string = '';
 filteredItems: AccountTransaction[] = [];
 currentPage: number = 1;
 itemsPerPage: number = 10;
+private acmName = sessionStorage.getItem('UsrLinkAcmName') || '';
+  private UsrName = sessionStorage.getItem('UsrName') || '';
 
 
  ngOnInit(){
@@ -122,32 +125,108 @@ goToNextPage() {
 
 
   exportToExcel(): void {
-    const exportData = this.data.map((item: any) => ({
-      'Date': item.Date,
-      'Type': item.Vtype,
-      'No.': item['No.'],
-      'Particular': item.Particular,
-      'Debit': item.Debit,
-      'Credit': item.Credit,
-      'Narration': item.Narration,
-      'Trn. No.': item['Trn. No.'],
-      'Trn. Date': item['Trn. Date'],
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Account Statement');
 
-    }));
-  
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'Outstanding': worksheet },
-      SheetNames: ['Outstanding'],
+  // Merge and Centered Heading Rows
+  const heading = [
+    ['Archies Test Company'],
+    ['509-511 Gagandeep Building, Rajendra Place, New Delhi 110008 | 110008'],
+    ['Dehradun'],
+    ['Rajpur Rd, Opposite Osho, Chander Lok Colony, Hathibarkala Salwala | Uttarakhand | Dehradun'],
+    [`Ledger - ${this.acmName}`]
+  ];
+
+  heading.forEach((row, index) => {
+    const headingRow = worksheet.addRow(row);
+    worksheet.mergeCells(`A${index + 1}:I${index + 1}`);
+    headingRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    headingRow.font = { bold: true, size: 12 };
+  });
+
+  // Filters Row
+  const today = new Date();
+  const formattedDate = today.toDateString();
+  const filterRow = worksheet.addRow([
+    `${formattedDate} DETAIL | SINGLE`
+  ]);
+  worksheet.mergeCells(`A6:I6`);
+  filterRow.alignment = { vertical: 'middle', horizontal: 'center' };
+  filterRow.font = { bold: true };
+
+  // Table Header
+  const header = [
+    'Date',
+    'Type',
+    'No.',
+    'Particular',
+    'Debit',
+    'Credit',
+    'Narration',
+    'Trn. No.',
+    'Trn. Date'
+  ];
+  worksheet.addRow(header);
+  const headerRow = worksheet.getRow(7);
+  headerRow.font = { bold: true };
+  headerRow.alignment = { horizontal: 'center' };
+  headerRow.eachCell(cell => {
+    cell.border = {
+      top: { style: 'thin' },
+      bottom: { style: 'thin' },
+      left: { style: 'thin' },
+      right: { style: 'thin' }
     };
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
+  });
+
+  // Data Rows
+  this.data.forEach((item: any) => {
+    worksheet.addRow([
+      item.Date,
+      item.Vtype,
+      item['No.'],
+      item.Particular,
+      item.Debit,
+      item.Credit,
+      item.Narration,
+      item['Trn. No.'],
+      item['Trn. Date']
+    ]);
+  });
+
+  // Summary rows from `tble[0]`
+  worksheet.addRow([]);
+  worksheet.addRow(['Opening Balance:', '', '', '', '', this.tble[0].OPCREDIT, '', '', '']);
+  worksheet.addRow(['Current Total:', '', '', '', this.tble[0].DEBIT, this.tble[0].CREDIT, '', '', '']);
+  worksheet.addRow(['Closing Balance:', '', '', '', '', this.tble[0].BALCREDIT, '', '', '']);
+
+  // Apply center alignment for all cells
+  worksheet.eachRow(row => {
+    row.alignment = { horizontal: 'center' };
+  });
+
+  // Auto width
+ worksheet.columns.forEach((col: Partial<ExcelJS.Column>) => {
+  let maxLength = 10; // Start with a reasonable minimum width
+
+  col.eachCell?.({ includeEmpty: true }, (cell) => {
+    const value = cell.value ? cell.value.toString() : '';
+    maxLength = Math.max(maxLength, value.length);
+  });
+
+  // Cap the width to avoid extremely wide columns
+  col.width = Math.min(maxLength + 2, 30); // Adjust '30' as your max width
+});
+
+
+  // Export logic
+  workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
+    const blob = new Blob([data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
-  
-    const blobData = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(blobData, 'AccountStatement_Report.xlsx');
-  }
+    FileSaver.saveAs(blob, `AccountStatement_Report.xlsx`);
+  });
+}
 
   referseData(){
     

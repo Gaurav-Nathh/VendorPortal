@@ -96,15 +96,11 @@
       </td>
 
        <td class="text-center">
- <button 
+<button 
   class="bg-transparent d-flex justify-content-around w-50"
   title="View Items"
   type="button"
-  (click)="openedRowIndex = openedRowIndex === i ? null : i"
-  data-bs-toggle="collapse"
-  [attr.data-bs-target]="'#collapse-' + i"
-  [attr.aria-expanded]="openedRowIndex === i"
-  [attr.aria-controls]="'collapse-' + i">
+  (click)="toggleRow(i)">
   {{ item.PomItems }} 
   <i 
     class="bi" 
@@ -114,6 +110,7 @@
     }">
   </i>
 </button>
+
 
 
 </td>
@@ -127,21 +124,16 @@
       </tr>
 
       <!-- Optional dropdown/details row -->
-    <tr>
+    <tr *ngIf="openedRowIndex === i">
   <td colspan="10" class="p-0">
-    <div
-      class="collapse row-dropdown-container"
-      [id]="'collapse-' + i" data-bs-parent="#receipt-accordion"
-    >
+    <div class="row-dropdown-container animate-dropdown">
       <div class="dropdown-body">
-        <app-po-list 
-          [po]="item" 
-          >
-        </app-po-list>
+        <app-po-list [po]="item"></app-po-list>
       </div>
     </div>
   </td>
 </tr>
+
 
 
     </ng-container>

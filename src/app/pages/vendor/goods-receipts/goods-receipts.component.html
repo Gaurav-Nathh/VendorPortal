@@ -94,24 +94,19 @@
           ₹{{ item.GrmNetAmt | number:'1.2-2' }}
         </td>
             <td >
-        <button
-  class="bg-transparent d-flex justify-content-around w-50"
-  title="View Items"
-  type="button"
-  (click)="toggleRow(item.GrmMkey)"
-  data-bs-toggle="collapse"
-  [attr.data-bs-target]="'#row-' + item.GrmMkey"
-  [attr.aria-expanded]="openedRowKey === item.GrmMkey"
-  [attr.aria-controls]="'row-' + item.GrmMkey">
-  {{ item.GrmItems }}
-  <i
-    class="bi"
-    [ngClass]="{
-      'bi-eye text-primary': openedRowKey !== item.GrmMkey,
-      'bi-x-lg text-danger': openedRowKey === item.GrmMkey
-    }">
-  </i>
-</button>
+       <button
+      class="bg-transparent d-flex justify-content-around w-50"
+      title="View Items"
+      type="button"
+      (click)="toggleRow(item.GrmMkey)">
+      {{ item.GrmItems }}
+      <i class="bi"
+         [ngClass]="{
+           'bi-eye text-primary': openedRowKey !== item.GrmMkey,
+           'bi-x-lg text-danger': openedRowKey === item.GrmMkey
+         }"></i>
+    </button>
+
 
       
 
@@ -119,21 +114,20 @@
       </tr>
 
       <!-- Optional dropdown/details row -->
-        <tr>
-      <td colspan="10" class="p-0">
-        <div
-          class="collapse row-dropdown-container"
-          [id]="'row-' + item.GrmMkey"
-          data-bs-parent="#receipt-accordion">
-          <div class="dropdown-body">
-            <app-po-good-receipt 
-              [data]="item" 
-              [close]="closeDropdown.bind(this)">
-            </app-po-good-receipt>
-          </div>
-        </div>
-      </td>
-    </tr>
+<tr *ngIf="openedRowKey === item.GrmMkey">
+  <td colspan="10" class="p-0">
+    <div class="row-dropdown-container show" [id]="'row-' + item.GrmMkey">
+      <div class="dropdown-body">
+        <app-po-good-receipt 
+          [data]="item" 
+          [close]="closeDropdown.bind(this)">
+        </app-po-good-receipt>
+      </div>
+    </div>
+  </td>
+</tr>
+
+
 
     </ng-container>
   </tbody>

@@ -31,9 +31,21 @@ searchTimeout: any;
 
 openedRowKey: string | null = null;
 
-toggleRow(key: string) {
+/* toggleRow(key: string) {
   this.openedRowKey = this.openedRowKey === key ? null : key;
+} */
+
+
+toggleRow(key: string) {
+  if (this.openedRowKey === key) {
+    this.openedRowKey = null; // close if same
+  } else {
+    this.openedRowKey = key; // open new
+  }
 }
+
+
+
 
 referseData(){
   
@@ -85,10 +97,12 @@ get totalPages(): number {
 
 goToPreviousPage() {
   if (this.currentPage > 1) this.currentPage--;
+   this.openedRowKey = null; // Close any open dropdown
 }
 
 goToNextPage() {
   if (this.currentPage < this.totalPages) this.currentPage++;
+   this.openedRowKey = null; // Close any open dropdown
 }
 
 

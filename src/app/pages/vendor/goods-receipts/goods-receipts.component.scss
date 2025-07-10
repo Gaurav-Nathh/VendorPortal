@@ -271,13 +271,12 @@
 }
 
 /* Additional styles for better collapse handling */
-.row-dropdown-container {
-  border-top: 1px solid var(--border-color);
-}
+
 
 .dropdown-body {
-  padding: 15px;
+  padding-bottom: 2px;
 }
+
 
 .bord {
   border: 1px solid red !important;
@@ -366,4 +365,28 @@
     pointer-events: none;
     transition: color 0.2s;
   }
+}
+
+
+.row-dropdown-container {
+  animation: dropdownFade 0.3s ease-in-out;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.orders-table tbody tr:nth-child(odd) {
+  background-color: #ffffff; // Light gray
+}
+
+.orders-table tbody tr:nth-child(even) {
+  background-color: #e0dede77; // White (optional, for contrast)
 }
