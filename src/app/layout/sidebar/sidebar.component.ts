@@ -141,6 +141,11 @@ export class SidebarComponent {
       route: '/customer/sales-order',
     },
     {
+      text: 'Catalouge',
+      icon: 'fa-solid fa-box',
+      route: '/customer/catalouge',
+    },
+    {
       text: 'My Orders',
       icon: 'bi bi-file-earmark-check-fill',
       route: '/customer/my-orders',

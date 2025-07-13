@@ -68,6 +68,19 @@
   }
 }
 
+.catalouge-dropdown {
+  position: relative;
+  width: 13rem;
+  .catalouge-dropdown-menu {
+    position: absolute;
+    margin-top: 0.2rem;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: var(--color-bg);
+    z-index: 9999;
+  }
+}
+
 #search-section {
   padding: 0.2rem;
   width: 35rem;
@@ -160,6 +173,11 @@
   @media (min-width: 768px) {
     display: none;
   }
+}
+
+#item-Catalouge {
+  padding-inline: 0.8rem;
+  padding-block: 0.6rem;
 }
 
 .category-btn-section {

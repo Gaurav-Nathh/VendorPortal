@@ -14,6 +14,11 @@ import { SaleOrderDetail } from '../../../Models/interface/SaleOrderDetail.inter
 })
 export class MyOrdersComponent implements OnInit {
   soList: SalesOrder[] = [];
+  pagedSOList: any[] = [];
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
+  pageSize: number = 10;
+  currentPage: number = 1;
+  totalPages: number = 0;
   fetchedDetails = new Map<number, SaleOrderDetail[]>();
   openIndexes = new Set<number>();
 
@@ -21,6 +26,7 @@ export class MyOrdersComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPortalSOList();
+    this.paginate();
   }
 
   getPortalSOList() {
@@ -49,17 +55,19 @@ export class MyOrdersComponent implements OnInit {
     } else {
       const row = this.soList[index];
       if (!this.fetchedDetails.has(index)) {
-        this.myOrdersService.getPortalSODetail(row.SomAcmId, row.SomMkey).subscribe({
-          next: (response) => {
-            this.fetchedDetails.set(
-              index,
-              response?.PortalItemDetailListSO ?? []
-            );
-          },
-          error: (err) => {
-            console.error('Error fetching details', err);
-          },
-        });
+        this.myOrdersService
+          .getPortalSODetail(row.SomAcmId, row.SomMkey)
+          .subscribe({
+            next: (response) => {
+              this.fetchedDetails.set(
+                index,
+                response?.PortalItemDetailListSO ?? []
+              );
+            },
+            error: (err) => {
+              console.error('Error fetching details', err);
+            },
+          });
       }
       this.openIndexes.add(index);
     }
@@ -67,5 +75,26 @@ export class MyOrdersComponent implements OnInit {
 
   isOpen(index: number): boolean {
     return this.openIndexes.has(index);
+  }
+
+  paginate(): void {
+    this.totalPages = Math.ceil(this.soList.length / this.pageSize);
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.pagedSOList = this.soList.slice(startIndex, endIndex);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.paginate();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.paginate();
+    }
   }
 }

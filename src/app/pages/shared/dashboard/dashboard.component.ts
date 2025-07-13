@@ -1,16 +1,15 @@
-import { Component, ViewChild, NgModule } from '@angular/core';
-import { Chart, registerables } from 'chart.js';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Chart, registerables } from 'chart.js';
 import { DashboardServiceService } from '../../../services/shared/dashboard-service/dashboard-service.service';
 
 @Component({
-  selector: 'app-dashboard-vendor',
-  standalone: true,
+  selector: 'app-dashboard',
   imports: [CommonModule],
-  templateUrl: './dashboard-vendor.component.html',
-  styleUrls: ['./dashboard-vendor.component.scss'],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
-export class DashboardVendorComponent {
+export class DashboardComponent {
   @ViewChild('salesChart') salesChartRef: any;
 
   currentDate = new Date();
@@ -147,12 +146,9 @@ export class DashboardVendorComponent {
   getDetails() {
     this.dashService.getDshbrd().subscribe({
       next: (data: any) => {
-        console.log(data);
         this.fillDetails(data.Acm);
       },
       error: (err) => {
-        console.error('Error fetching dashboard data:', err);
-        // Optionally show user-friendly error or alert
         alert('Something went wrong while fetching data. Please try again.');
       },
     });
@@ -161,12 +157,9 @@ export class DashboardVendorComponent {
   getDetailOtSnd() {
     this.dashService.getDashbrdOtsnd().subscribe({
       next: (data: any) => {
-        console.log(data);
         this.pendAmt = data.OUTSTANDINGAMT;
       },
-      error: (err) => {
-        console.error('Error fetching dashboard data:', err);
-      },
+      error: (err) => {},
     });
   }
 
@@ -182,7 +175,5 @@ export class DashboardVendorComponent {
     this.dashService.userDetails.AclAddress1 = data.AcmLocations[0].AclAddress1;
     this.dashService.userDetails.AclAddress2 = data.AcmLocations[0].AclAddress2;
     this.dashService.userDetails.AclPinCode = data.AcmLocations[0].AclPinCode;
-
-    console.log(this.dashService.userDetails.bank);
   }
 }

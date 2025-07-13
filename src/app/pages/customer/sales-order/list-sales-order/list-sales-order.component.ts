@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../../../../services/shoppingCart-service/shopping-cart.service';
 import { SalesOrderService } from '../../../../services/customer-service/sales-order/sales-order.service';
 import Swal from 'sweetalert2';
+import { debounce, debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-list-sales-order',
@@ -31,6 +32,8 @@ export class ListSalesOrderComponent implements OnInit {
   pageSizes = [5, 10, 50, 100, 200];
   openIndexes = new Set<number>();
 
+  private searchOrderNoSubject = new Subject<string>();
+
   constructor(
     private shoppingCartService: ShoppingCartService,
     private router: Router,
@@ -39,6 +42,16 @@ export class ListSalesOrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.getOrderList();
+
+    this.searchOrderNoSubject
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((serachOrderNoTerm) => {
+        if (serachOrderNoTerm.trim()) {
+          this.searchOrders(serachOrderNoTerm);
+        } else {
+          this.getOrderList();
+        }
+      });
   }
 
   getStatusClass(status: string): string {
@@ -116,6 +129,7 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   toggleDetails(index: number): void {
+    console.log(index);
     if (this.openIndexes.has(index)) {
       this.openIndexes.delete(index);
     } else {
@@ -125,6 +139,11 @@ export class ListSalesOrderComponent implements OnInit {
 
   isOpen(index: number): boolean {
     return this.openIndexes.has(index);
+  }
+
+  onSearchOrderNoInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchOrderNoSubject.next(value);
   }
 
   getOrderList() {
@@ -138,6 +157,21 @@ export class ListSalesOrderComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to fetch orders:', err);
+        },
+      });
+  }
+
+  searchOrders(searchTerm: string) {
+    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
+    this.salesOrderService
+      .getOrderList(acmId, this.pageNumber, this.pageSize, searchTerm)
+      .subscribe({
+        next: (response) => {
+          this.orders = response.data;
+          this.totalRecords = response.totalRecords;
+        },
+        error: (err) => {
+          console.error('Failed to search orders:', err);
         },
       });
   }
@@ -156,6 +190,7 @@ export class ListSalesOrderComponent implements OnInit {
     if (this.pageNumber < this.totalPages()) {
       this.pageNumber++;
       this.getOrderList();
+      this.openIndexes.clear();
     }
   }
 
@@ -163,6 +198,7 @@ export class ListSalesOrderComponent implements OnInit {
     if (this.pageNumber > 1) {
       this.pageNumber--;
       this.getOrderList();
+      this.openIndexes.clear();
     }
   }
 
@@ -170,6 +206,7 @@ export class ListSalesOrderComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages()) {
       this.pageNumber = page;
       this.getOrderList();
+      this.openIndexes.clear();
     }
   }
   updateView(view: string): void {

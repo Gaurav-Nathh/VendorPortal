@@ -1,7 +1,85 @@
 <section id="shopping-cart" class="">
   <Section id="nav-prod" class="">
-    <span class="fw-bold text-nowrap">Shopping Cart</span>
-    <div id="search-section" class="search-container">
+    <div class="d-flex align-items-center gap-4">
+      <span class="fw-bold text-nowrap">Shopping Cart</span>
+      <section id="item-Catalouge">
+        <!-- <div class="position-relative" #catalougeSearchBox>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search Catalogue"
+            (input)="itemCatalougeSearchChange($event)"
+          />
+          <div
+            class="table-responsive position-absolute bg-white border mt-1"
+            *ngIf="catalougeSuggestions.length > 0"
+            style="
+              z-index: 1000;
+              max-height: 200px;
+              overflow-y: auto;
+              width: 100%;
+            "
+          >
+            <table class="table table-sm table-hover mb-0">
+              <tbody>
+                <tr
+                  *ngFor="let item of catalougeSuggestions"
+                  (click)="selectedCatalougeSuggestion(item.OcmMkey)"
+                >
+                  <td>{{ item.OcmName }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> -->
+        <div class="catalouge-dropdown" [class.show]="catalougeDropdownOpen">
+          <button
+            class="btn btn-outline-primary dropdown-toggle w-100 text-start"
+            type="button"
+            (click)="toggleCatalougeDropdown()"
+          >
+            <span *ngIf="selectedCatalougeItems.length === 0"
+              >Select Catalogue</span
+            >
+            <span *ngIf="selectedCatalougeItems.length > 0">
+              {{ selectedCatalougeItems.length }} selected
+            </span>
+          </button>
+
+          <div
+            class="catalouge-dropdown-menu"
+            *ngIf="catalougeDropdownOpen"
+            style="max-height: 40rem; overflow-y: auto; text-wrap-mode: nowrap"
+          >
+            <div class="row gap-2">
+              <div
+                class="col-12"
+                *ngFor="let item of itemCatalougeList; let i = index"
+              >
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    [id]="'check-' + i"
+                    [value]="item.Id"
+                    [checked]="isCatalougeSelected(item)"
+                    (change)="onCatalougeCheckboxChange($event, item)"
+                  />
+                  <label class="form-check-label" [for]="'check-' + i">
+                    {{ item.Text }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      *ngIf="CartMode === 'items'"
+      id="search-section"
+      class="search-container"
+    >
       <div id="search-category-box" class="position-relative">
         <button
           class="d-flex align-items-center justify-content-between border-end-only w-auto"
@@ -70,6 +148,38 @@
           </ul>
         </div>
       </div>
+
+      <!-- <section id="item-Catalouge">
+        <div class="position-relative" #catalougeSearchBox>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search Catalogue"
+            (input)="itemCatalougeSearchChange($event)"
+          />
+          <div
+            class="table-responsive position-absolute bg-white border mt-1"
+            *ngIf="catalougeSuggestions.length > 0"
+            style="
+              z-index: 1000;
+              max-height: 200px;
+              overflow-y: auto;
+              width: 100%;
+            "
+          >
+            <table class="table table-sm table-hover mb-0">
+              <tbody>
+                <tr
+                  *ngFor="let item of catalougeSuggestions"
+                  (click)="selectedCatalougeSuggestion(item.OcmMkey)"
+                >
+                  <td>{{ item.OcmName }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section> -->
       <button
         id="toggleSortByMobile"
         type="button"
@@ -196,9 +306,42 @@
   </section>
   <!-- Mobile CartNav  -->
 
+  <!-- Product Catalogue -->
+  <!-- <section id="item-Catalouge">
+    <div class="position-relative" #catalougeSearchBox>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Catalogue"
+        (input)="itemCatalougeSearchChange($event)"
+      />
+      <div
+        class="table-responsive position-absolute bg-white border mt-1"
+        *ngIf="catalougeSuggestions.length > 0"
+        style="z-index: 1000; max-height: 200px; overflow-y: auto; width: 100%"
+      >
+        <table class="table table-sm table-hover mb-0">
+          <thead>
+            <tr class="table-light">
+              <th>OcmMkey</th>
+              <th>OcmName</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let item of catalougeSuggestions"
+              (click)="selectedCatalougeSuggestion(item)"
+            >
+              <td>{{ item.OcmMkey }}</td>
+              <td>{{ item.OcmName }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section> -->
   <!-- FilterSingle -->
-
-  <section id="filterTop" class="screen">
+  <section *ngIf="CartMode === 'items'" id="filterTop" class="screen">
     <div class="category-box" [class.show]="categoryDropDownOpen">
       <button
         class="p-2 fs-6 d-flex align-items-center justify-content-between"
@@ -270,6 +413,58 @@
     </div>
   </section>
 
+  <section *ngIf="CartMode === 'catalouge'" id="filterTop" class="screen">
+    <div class="category-box">
+      <button
+        class="p-2 fs-6 d-flex align-items-center justify-content-between"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        Select Catalogue
+      </button>
+      <ul class="dropdown-menu p-2" style="max-height: 100%; overflow-y: auto">
+        <li
+          *ngFor="let item of itemCatalougeList"
+          (click)="selectCatalouge(item)"
+          class="dropdown-item text-truncate"
+          style="cursor: pointer"
+        >
+          {{ item.Text }}
+        </li>
+      </ul>
+    </div>
+    <div id="filterTopContainer" class="bord">
+      <div id="listContainer" class="bord">
+        <div
+          id="filterList"
+          [ngClass]="filterTopList ? 'list-open' : 'list-close'"
+        >
+          <div
+            class="badge rounded-pill bg-secondary d-flex align-items-center"
+            *ngFor="let selected of selectedCatalogueItems"
+          >
+            <span class="me-2">{{ selected.Text }}</span>
+            <button
+              type="button"
+              class="btn-close btn-close-white btn-sm"
+              aria-label="Remove"
+              (click)="removeCatalogue(selected)"
+            ></button>
+          </div>
+        </div>
+        <button
+          *ngIf="selectedCatalogueItems != null"
+          id="filterDropDownBtn"
+          style="background-color: transparent"
+          (click)="toggleFilterTopList()"
+        >
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+  </section>
   <!-- Side Filter and Shoppin Cart section -->
   <section id="shopping-section" class="">
     <!-- Side Filter -->
@@ -401,7 +596,11 @@
                   (change)="onFilterChange(filter.title, option.Id, $event)"
                 />
               </label>
-              <span class="truncate-text">
+              <span
+                class="truncate-text"
+                ngbTooltip="{{ option.Text }}"
+                placement="top"
+              >
                 {{ option.Text }}
               </span>
             </div>
@@ -433,7 +632,6 @@
             ></button>
           </div>
 
-          <!-- Make only this area scrollable -->
           <div class="modal-body scrollable-body">
             <ng-container *ngIf="currentModalFilter">
               <div class="option-grid">
@@ -634,7 +832,12 @@
                 *ngFor="let item of cart"
               >
                 <div class="container-1">
-                  <span class="fw-semibold">{{ item.ItmName }}</span>
+                  <span
+                    class="fw-semibold text-truncate text-nowrap"
+                    ngbTooltip="{{ item.ItmName }}"
+                    placement="top"
+                    >{{ item.ItmName }}</span
+                  >
                   <span>{{ item.ItmCode }}</span>
                 </div>
                 <div class="container-2">

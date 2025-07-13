@@ -101,18 +101,21 @@ export const routes: Routes = [
       {
         path: 'payment-pending',
         pathMatch: 'full',
-        loadComponent: () =>import('./pages/vendor/payment/payment-pending/payment-pending.component').then(
-          (c)=>c.PaymentPendingComponent
-        ),canActivate:[authGuard]
+        loadComponent: () =>
+          import(
+            './pages/vendor/payment/payment-pending/payment-pending.component'
+          ).then((c) => c.PaymentPendingComponent),
+        canActivate: [authGuard],
       },
       {
         path: 'payment-history',
         pathMatch: 'full',
-        loadComponent: () =>import('./pages/vendor/payment/payment-history/payment-history.component').then(
-          (c)=>c.PaymentHistoryComponent
-        ),
-        canActivate:[authGuard]
-      }
+        loadComponent: () =>
+          import(
+            './pages/vendor/payment/payment-history/payment-history.component'
+          ).then((c) => c.PaymentHistoryComponent),
+        canActivate: [authGuard],
+      },
     ],
   },
   {
@@ -125,9 +128,9 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import(
-            './pages/customer/dashboard-customer/dashboard-customer.component'
-          ).then((c) => c.DashboardCustomerComponent),
+          import('./pages/shared/dashboard/dashboard.component').then(
+            (c) => c.DashboardComponent
+          ),
         canActivate: [authGuard],
       },
       {

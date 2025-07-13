@@ -1,5 +1,6 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import {
   AfterViewInit,
   Component,
@@ -15,7 +16,7 @@ import { ShoppingCartService } from '../../services/shoppingCart-service/shoppin
 import { Router } from '@angular/router';
 import { PSOMain } from '../../Models/SalesOrder/SalesOrder';
 import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
-import { Subscription } from 'rxjs';
+import { debounceTime, elementAt, Subject, Subscription } from 'rxjs';
 
 declare var bootstrap: any;
 
@@ -66,7 +67,14 @@ interface Product {
 
 @Component({
   selector: 'app-shopping-cart',
-  imports: [NgFor, NgIf, FormsModule, NgClass, NgxSliderModule],
+  imports: [
+    NgFor,
+    NgIf,
+    FormsModule,
+    NgClass,
+    NgxSliderModule,
+    NgbTooltipModule,
+  ],
   templateUrl: './shopping-cart.component.html',
   styleUrl: './shopping-cart.component.scss',
 })
@@ -74,6 +82,7 @@ export class ShoppingCartComponent {
   @ViewChild('cartModalRef') cartModalRef!: ElementRef;
   @ViewChild('filterModalRef') filterModalRef!: ElementRef;
   @ViewChild('cardSectionRef') cardSectionRef!: ElementRef;
+  @ViewChild('catalougeSearchBox') catalougeSerachBoxRef!: ElementRef;
 
   private editingSubscription!: Subscription;
 
@@ -118,9 +127,17 @@ export class ShoppingCartComponent {
   itemDetailsResponse: any[] = [];
   salesOrder: PSOMain = {} as PSOMain;
   isCartEditing = false;
+  catalougeSuggestions: any[] = [];
+  catalougeSearchString: Subject<string> = new Subject<string>();
+  itemCatalougeList: any[] = [];
+  selectedCatalougeItems: any[] = [];
+  catalougeDropdownOpen = false;
+  actId = 1;
+  CartMode: string = '';
 
   constructor(
     private shoppingCartService: ShoppingCartService,
+    private sharedService: SharedService,
     private salesOrderService: SalesOrderService,
     private renderer: Renderer2,
     private router: Router
@@ -128,9 +145,26 @@ export class ShoppingCartComponent {
     this.filters.forEach((filter) => {
       this.selectedFilters[filter.title] = [];
     });
+    // this.catalougeSearchString
+    //   .pipe(debounceTime(1000))
+    //   .subscribe((searchText) => {
+    //     if (searchText) {
+    //       this.shoppingCartService
+    //         .getItemCatalougeList(searchText, this.actId)
+    //         .subscribe((response) => {
+    //           this.catalougeSuggestions = response?.OrdCatSearchList || [];
+    //         });
+    //     } else {
+    //       this.catalougeSuggestions = [];
+    //     }
+    //   });
   }
 
   ngOnInit() {
+    this.sharedService.cartMode$.subscribe((mode) => {
+      this.CartMode = mode;
+    });
+
     this.editingSubscription = this.shoppingCartService.isEditing$.subscribe(
       (value) => {
         this.isCartEditing = value;
@@ -138,6 +172,10 @@ export class ShoppingCartComponent {
     );
 
     this.setEditableItems();
+
+    this.getCatalougeList();
+
+    document.addEventListener('click', this.handleOutsideClick.bind(this));
   }
 
   ngAfterViewInit() {
@@ -145,6 +183,215 @@ export class ShoppingCartComponent {
     const filterModalElement = this.filterModalRef.nativeElement;
     this.renderer.appendChild(document.body, cartModalElement);
     this.renderer.appendChild(document.body, filterModalElement);
+  }
+
+  ngOnDestroy() {
+    document.addEventListener('click', this.handleOutsideClick.bind(this));
+  }
+
+  handleOutsideClick(event: any) {
+    if (!event.target.closest('.catalouge-dropdown')) {
+      this.catalougeDropdownOpen = false;
+    }
+  }
+
+  toggleCatalougeDropdown() {
+    this.catalougeDropdownOpen = true;
+    console.log(this.catalougeDropdownOpen);
+  }
+
+  isCatalougeSelected(item: any): boolean {
+    return this.selectedCatalougeItems.some(
+      (selected) => selected.Id === item.Id
+    );
+  }
+
+  getSelectedCatalogueItemsText() {
+    const names = this.selectedCatalougeItems
+      .slice(0, 5)
+      .map((item) => item.Text);
+    const extra =
+      this.selectedCatalougeItems.length > 5
+        ? ` +${this.selectedCatalougeItems.length - 5} more`
+        : '';
+    return names.join(', ') + extra;
+  }
+
+  selectedCatalogueItems: any[] = [];
+
+  selectCatalouge(item: any): void {
+    const exists = this.selectedCatalougeItems.some((i) => i.Id === item.Id);
+    if (!exists) {
+      this.selectedCatalogueItems.push(item);
+    }
+  }
+
+  removeCatalogue(item: any): void {
+    this.selectedCatalogueItems = this.selectedCatalogueItems.filter(
+      (i) => i.Id !== item.Id
+    );
+  }
+
+  onCatalougeCheckboxChange(event: Event, item: any) {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedCatalougeItems.push(item);
+    } else {
+      this.selectedCatalougeItems = this.selectedCatalougeItems.filter(
+        (i) => i.Id !== item.Id
+      );
+    }
+    this.products = [];
+    this.productLoader = true;
+    this.filterPayload.fromPrice = this.minValue;
+    this.filterPayload.toPrice = this.maxValue;
+    this.filterPayload.catId = 0;
+    this.filterPayload.catType = '';
+    this.filterPayload.pageNumber = 1;
+    this.filterPayload.orderCatelogName = this.selectedCatalougeItems
+      .map((i) => i.Id)
+      .join(', ');
+    this.filterPayload.vdate = new Date().toLocaleDateString('en-US');
+    const filters = JSON.stringify(this.filterPayload);
+
+    this.shoppingCartService.getItems(filters).subscribe({
+      next: (res: any) => {
+        const items = res?.ShopCartItemCatgoryList ?? [];
+        items.forEach((item: any) => {
+          const price = item?.Itemprices?.[0];
+          if (price) {
+            price.ShowPrice = price.MRP;
+            price.Stock = price.Vstock + price.Fstock;
+            this.products.push(item);
+          }
+        });
+        this.productLoader = false;
+      },
+      error: (err) => {
+        this.productLoader = false;
+        Swal.fire({
+          toast: true,
+          icon: 'error',
+          title: 'Error getting Items',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+      },
+    });
+  }
+
+  itemCatalougeSearchChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.catalougeSearchString.next(input.value);
+  }
+
+  // itemCatalougeListChange(event: Event) {
+  //   const selectedOption = (event.target as HTMLSelectElement).selectedOptions;
+  //   this.selectedCatalougeListItems = Array.from(selectedOption).map(
+  //     (option) => {
+  //       const id = option.value;
+  //       return this.itemCatalougeList.find((item) => item.Id === id);
+  //     }
+  //   );
+  //   console.log('Selected Items: ', this.selectedCatalougeListItems);
+  // }
+
+  getCatalougeList() {
+    this.shoppingCartService
+      .getItemCatalougeList(this.actId)
+      .subscribe((response) => {
+        this.itemCatalougeList = response?.OctCatList || [];
+        console.log(this.itemCatalougeList);
+      });
+  }
+
+  selectedCatalougeSuggestion(mkey: string) {
+    this.catalougeSuggestions = [];
+    this.shoppingCartService
+      .getItemCatalougeByMkey(mkey)
+      .subscribe((response) => {
+        const details = response?.OrdCat?.OcdCatDetails ?? [];
+        this.products = details.map((item: any) => ({
+          ItmId: item.OcdItmId,
+          ItmCode: item.OcdItmCode,
+          ItmName: item.OcdItmName,
+          ItmPrintAs: item.OcdItmName,
+          ItmSpec: item.OcdSpec || '',
+          ItmImageFile: '',
+          ItmImage: item.OcdItmImage || '',
+          ItmMrp: item.OcdMrp || 0.0,
+          ItmQty: item.OcdQty || 0,
+          ItmPackUntCode: item.OcdItmPackUntCode || '',
+          ItmUntId: item.OcdUntId,
+          ItmBaseUntId: item.OcdBaseUntId,
+          ItmBaseUntCode: item.OcdBaseUntCode,
+
+          Itemprices: [
+            {
+              Batch: null,
+              Vstock: item.OcdVStock || 0,
+              Astock: item.OcdAStock || 0,
+              Rstock: 0,
+              Fstock: item.OcdFStock || 0,
+              Ocstock: 0,
+              Expdate: null,
+              Pack: item.OcdPack || '',
+              Saleprice: item.OcdSaleprice || 0,
+              Trfprice: item.OcdTrfprice || 0,
+              Dlrprice: item.OcdDlrprice || 0,
+              Onlprice: item.OcdSaleprice || 0,
+              Costprice: item.OcdCostprice || 0,
+              MarginType: null,
+              GstRate: item.OcdGstRate || 0,
+              PriceCode: null,
+              MRP: item.OcdMrp || 0,
+              MarginCode: null,
+              MarginRate: 0.0,
+              AvgCostprice: item.OcdCostprice || 0,
+              WogCost: item.OcdCostprice || 0,
+              Mkey: null,
+              Rowno: 0,
+              Subrowno: 0,
+              Code: null,
+              Description: null,
+              Qty: 0,
+              Unit: null,
+              ItmPriceMethod: item.OcdItmPriceMethod || null,
+              OnlMarkRate: 0.0,
+              DlrMarkRate: 0.0,
+              TrfMarkRate: 0.0,
+              SaleMarkRate: 0.0,
+              SaleMarka: null,
+              TrfMarka: null,
+              DlrMarka: null,
+              OnlMarka: null,
+              ItmExpirable: item.OcdItmExpirable || false,
+              Stock: item.OcdAStock || 0,
+              UnitFactorType: 'X',
+              UnitFactor: item.OcdUnitFactor || 1.0,
+              ShowPrice: item.OcdMrp,
+              AddDate: null,
+              RefDate: null,
+            },
+          ],
+        }));
+      });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDoucmentClick(event: MouseEvent): void {
+    if (
+      this.catalougeSerachBoxRef &&
+      !this.catalougeSerachBoxRef.nativeElement.contains(event.target)
+    ) {
+      this.catalougeSuggestions = [];
+    }
   }
 
   toggleDropdown() {
@@ -572,6 +819,7 @@ export class ShoppingCartComponent {
     toPrice: number;
     stockFilter: boolean;
     withImage: boolean;
+    orderCatelogName: string;
   } = {
     brnId: sessionStorage.getItem('UsrBrnId') || '',
     fyrId: 25,
@@ -598,6 +846,7 @@ export class ShoppingCartComponent {
     toPrice: 0,
     stockFilter: true,
     withImage: false,
+    orderCatelogName: '',
   };
 
   selectedNavFilterTitleDisplay = 'Select a filter';

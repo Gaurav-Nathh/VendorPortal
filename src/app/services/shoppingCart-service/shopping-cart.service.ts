@@ -13,8 +13,6 @@ export class ShoppingCartService {
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
-
-
   enableEditing(): void {
     this.editingSubject.next(true);
   }
@@ -37,6 +35,33 @@ export class ShoppingCartService {
       `${this.config.getApiUrl()}/Common/GetShopCartItemCatgoryList`,
       filters,
       { headers }
+    );
+  }
+
+  // getItemCatalougeList(searchText: string, actId: number): Observable<any> {
+  //   const headers = this.config.getHeader();
+  //   const params = { search: searchText, actId: actId };
+  //   return this.http.get<any>(
+  //     `${this.config.getApiUrl()}/OrdCat/GetOrdCatSearch`,
+  //     { headers, params }
+  //   );
+  // }
+
+  getItemCatalougeByMkey(mkey: string): Observable<any> {
+    const headers = this.config.getHeader();
+    const params = { ocmMkey: mkey };
+    return this.http.get<any>(
+      `${this.config.getApiUrl()}/OrdCat/GetOrdCatByMkeyandStock`,
+      { headers, params }
+    );
+  }
+
+  getItemCatalougeList(actId: number): Observable<any> {
+    const headers = this.config.getHeader();
+    const params = { actId: actId };
+    return this.http.get<any>(
+      `${this.config.getApiUrl()}/OrdCat/BindDropDown`,
+      { headers, params }
     );
   }
 }

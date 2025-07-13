@@ -3,6 +3,9 @@
     <div class="">
       <div class="page-title">
         <span>Sales Order</span>
+        <button class="refresh-btn">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
       </div>
       <div class="dashboard-header">
         <div class="view-selector">
@@ -18,9 +21,14 @@
           </div>
         </div>
         <div class="d-flex gap-1">
-          <input type="text" class="search" placeholder="Order No..." />
+          <input
+            type="text"
+            class="search"
+            placeholder="Order No..."
+            (input)="onSearchOrderNoInput($event)"
+          />
           <button class="btn create-btn" (click)="createSO()">
-            <i class="bi bi-plus-lg"></i> Create New PO
+            <i class="bi bi-plus-lg"></i> Create Order
           </button>
         </div>
       </div>

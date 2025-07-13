@@ -57,15 +57,21 @@ export class SalesOrderService {
   getOrderList(
     acmId: number,
     pageNumber: number,
-    pageSize: number
+    pageSize: number,
+    searchOrderNoTerm?: string
   ): Observable<any> {
+    const params: any = {
+      pageNumber,
+      pageSize,
+    };
+
+    if (searchOrderNoTerm?.trim()) {
+      params.searchOrderNoTerm = searchOrderNoTerm;
+    }
     return this.http.get<any>(
       `${this.apiUrlLocal}/PSOMain/GetPSOByAcmID/${acmId}`,
       {
-        params: {
-          pageNumber,
-          pageSize,
-        },
+        params,
       }
     );
   }

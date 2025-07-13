@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+const CART_MODE_KEY = 'cartMode';
+type CartMode = 'catalouge' | 'items';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +14,20 @@ export class SharedService {
   sidebarVisible = new BehaviorSubject<boolean>(true);
   shoppingCartVisible = new BehaviorSubject<boolean>(false);
 
+  private cartModeSubject: BehaviorSubject<CartMode>;
+  public cartMode$: Observable<CartMode>;
+
   sidebarStyle$ = this.sidebarStyle.asObservable();
   sidebarVisible$ = this.sidebarVisible.asObservable();
   shoppingCartVisible$ = this.shoppingCartVisible.asObservable();
+
+  constructor() {
+    const saveMode = sessionStorage.getItem(CART_MODE_KEY) as CartMode;
+    const initialMode: CartMode = saveMode === 'items' ? 'items' : 'catalouge';
+
+    this.cartModeSubject = new BehaviorSubject<CartMode>(initialMode);
+    this.cartMode$ = this.cartModeSubject.asObservable();
+  }
 
   getCurrentSidebarStyle() {
     return this.sidebarStyle.value;
@@ -38,5 +52,14 @@ export class SharedService {
 
   getShoppingCartVisibility() {
     return this.shoppingCartVisible.value;
+  }
+
+  setCartMode(mode: CartMode): void {
+    this.cartModeSubject.next(mode);
+    sessionStorage.setItem(CART_MODE_KEY, mode);
+  }
+
+  getCartMode(): CartMode {
+    return this.cartModeSubject.getValue();
   }
 }
