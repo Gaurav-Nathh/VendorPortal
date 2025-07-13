@@ -1,6 +1,7 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import {
   AfterViewInit,
   Component,
@@ -67,14 +68,7 @@ interface Product {
 
 @Component({
   selector: 'app-shopping-cart',
-  imports: [
-    NgFor,
-    NgIf,
-    FormsModule,
-    NgClass,
-    NgxSliderModule,
-    NgbTooltipModule,
-  ],
+  imports: [NgFor, NgIf, FormsModule, NgClass, NgxSliderModule, TooltipModule],
   templateUrl: './shopping-cart.component.html',
   styleUrl: './shopping-cart.component.scss',
 })
