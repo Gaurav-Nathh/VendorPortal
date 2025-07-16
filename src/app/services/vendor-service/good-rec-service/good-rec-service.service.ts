@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiConfigService } from '../../api-config/api-config.service';
+import { GrrApiArry } from '../../../Models/Vendor/GoodRec.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +12,10 @@ export class GoodRecServiceService {
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
-  goodRecList(): Observable<any[]> {
+  goodRecList(): Observable<GrrApiArry> {
     const headers = this.config.getHeader();
 
-    return this.http.get<any[]>(
+    return this.http.get<GrrApiArry>(
       `${this.config.getApiUrl()}/GR/PortalGetGRListByAcmId`,
       {
         headers,

@@ -99,6 +99,7 @@ referseData() {
  /*  this.searchTerm = '';
   this.status = 'All';
   this.currentPage = 1; */
+   this.getPoList()
   this.applyFilters();
 }
 
