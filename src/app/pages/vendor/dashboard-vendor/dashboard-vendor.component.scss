@@ -294,17 +294,20 @@
       }
     }
 
-   .chart-wrapper {
+  .chart-wrapper {
   position: relative;
   width: 100%;
-  height: auto;
-  min-height: 280px;
-  aspect-ratio: 2 / 1; // 2:1 width to height ratio for responsiveness
-  canvas {
-    width: 100% !important;
-    height: 100% !important;
-  }
+  padding-bottom: 50%; // keeps 2:1 aspect ratio
+  height: 0;
 }
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 
 
 
