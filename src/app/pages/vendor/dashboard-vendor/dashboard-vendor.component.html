@@ -81,14 +81,20 @@
        <!--        <th>Status</th> -->
             </tr>
           </thead>
-          <tbody class="">
-            <tr *ngFor="let sale of recentSales">
-              <td>{{ sale.date | date:'shortDate' }}</td>
-              <td><a href="#" class="invoice-link">{{ sale.invoiceNo }}</a></td>
-              <td class="text-end">{{ sale.amount | currency:'INR' }}</td>
-           
-            </tr>
-          </tbody>
+         
+          <tbody>
+  <tr *ngFor="let sale of recentSales">
+    <td>{{ sale.date ? (sale.date | date: 'shortDate') : '-' }}</td>
+    <td>
+      <a href="#" class="invoice-link" *ngIf="sale.invoiceNo; else empty">{{ sale.invoiceNo }}</a>
+      <ng-template #empty>-</ng-template>
+    </td>
+    <td class="text-end">
+      {{ sale.amount !== undefined ? (sale.amount | currency: 'INR') : '-' }}
+    </td>
+  </tr>
+</tbody>
+
         </table>
       </div>
     </div>

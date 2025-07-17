@@ -229,7 +229,7 @@ goToNextPage() {
 }
 
   referseData(){
-    
+        this.AcntStament();
   }
 
 }

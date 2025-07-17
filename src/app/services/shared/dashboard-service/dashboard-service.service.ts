@@ -24,13 +24,18 @@ export class DashboardServiceService {
     });
   }
   getDashbrdOtsnd() {
+    const date = new Date();
+    const formattedDate = date.toISOString().split('T')[0];
+     const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || 0);
+      const fyrid = Number(sessionStorage.getItem('fryId') || 0);
+ const brnId = Number(sessionStorage.getItem('UsrBrnId') || 0);
     const headers = this.config.getHeader();
 
     const params = {
-      AcmId: 596,
-      FyrId: 25,
-      BrnId: 4,
-      Vdate: '2025-07-03', // Replace with dynamic date if needed
+      AcmId: acmId,
+      FyrId: fyrid,
+      BrnId: brnId,
+      Vdate: formattedDate, // Replace with dynamic date if needed
     };
 
     return this.http.get<any>(

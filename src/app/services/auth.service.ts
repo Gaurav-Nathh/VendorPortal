@@ -18,6 +18,8 @@ interface LoginPayload {
   providedIn: 'root',
 })
 export class AuthService {
+  private apiUrl = 'https://efactoapitest.efacto.cloud/api';
+  private apiKey = '140-9299-524-TEST';
   currentYearShort = new Date().getFullYear().toString().slice(-2);
 
   constructor(

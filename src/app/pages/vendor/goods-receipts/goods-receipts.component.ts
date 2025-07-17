@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { PoGoodReceiptComponent } from "../../../components/vendor/po-good-receipt/po-good-receipt.component";
 import { GoodRecServiceService } from '../../../services/vendor-service/good-rec-service/good-rec-service.service';
 import { FormsModule } from '@angular/forms';
+import { GrrApi, GrrApiArry, GrrSummary } from '../../../Models/Vendor/GoodRec.model';
 
 @Component({
   selector: 'app-goods-receipts',
@@ -14,7 +15,7 @@ export class GoodsReceiptsComponent {
 
 
   
-fullData: any[] = [];
+fullData: GrrSummary[] = [];
 constructor(private grService:GoodRecServiceService) { }
 
 ngOnInit() {
@@ -22,7 +23,7 @@ this.getGrList()
 }
 
 expandedkey: string | null = null;
-selectedItem:any = null;
+selectedItem:GrrSummary | null = null;
 filteredData: any[] = [];
   currentPage: number = 1;
 itemsPerPage: number = 10;
@@ -48,13 +49,13 @@ toggleRow(key: string) {
 
 
 referseData(){
-  
+  this.getGrList()
 }
 
 getGrList() {
-  this.grService.goodRecList().subscribe((data: any) => {
+  this.grService.goodRecList().subscribe((data: GrrApiArry) => {
     if (Array.isArray(data.GRList)) {
-      this.fullData = data.GRList.map((item: any) => ({
+      this.fullData = data.GRList.map((item: GrrApi) => ({
         GrmBrnName: item.GrmBrnName,
         GrmRefNo: item.GrmRefNo,
         GrmVdate: item.GrmVdate,

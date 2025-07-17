@@ -212,6 +212,6 @@ goToNextPage() {
 }
 
 referseData(){
-
+this.paymentFun();
 }
 }

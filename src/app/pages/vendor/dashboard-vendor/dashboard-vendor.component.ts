@@ -185,4 +185,7 @@ export class DashboardVendorComponent {
 
     console.log(this.dashService.userDetails.bank);
   }
+
+
+  
 }

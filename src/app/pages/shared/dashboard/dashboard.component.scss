@@ -294,11 +294,21 @@
       }
     }
 
-    .chart-wrapper {
-      height: 320px;
-      position: relative;
-      animation: fadeInSlide 0.8s ease-out 0.2s both;
-    }
+   .chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 280px;
+  aspect-ratio: 2 / 1; // 2:1 width to height ratio for responsiveness
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
+
+
   }
 
   .transactions-header {
@@ -351,86 +361,86 @@
   }
 
   table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 
-    th {
-      background-color: var(--border-grey);
-      text-align: left;
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      padding: 0.9rem 1rem;
-      border-bottom: 1px solid var(--border-color);
-      letter-spacing: 0.5px;
-    }
+  th {
+    background-color: var(--border-grey);
+    text-align: left;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    padding: 0.9rem 1rem;
+    border: 1px solid #8a8a8a; // <-- added
+    letter-spacing: 0.5px;
+  }
 
-    tr {
-      transition: var(--transition);
+  tr {
+    transition: var(--transition);
 
-      &:hover {
-        background-color: var(--bg-hover);
+    &:hover {
+      background-color: var(--bg-hover);
 
-        td {
-          color: var(--primary);
-        }
-      }
-    }
-
-    td {
-      background-color: var(--card-1);
-      font-size: 0.95rem;
-      padding: 1.1rem 1rem;
-      color: var(--text-primary);
-      border-bottom: 1px solid #f1f5f9;
-      transition: var(--transition);
-
-      .invoice-link {
+      td {
         color: var(--primary);
-        font-weight: 600;
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        transition: var(--transition);
-
-        &::after {
-          content: "↗";
-          margin-left: 4px;
-          font-size: 0.8rem;
-          transition: transform 0.3s ease;
-        }
-
-        &:hover {
-          color: var(--secondary);
-          text-decoration: underline;
-
-          &::after {
-            transform: translate(2px, -2px);
-          }
-        }
-      }
-
-      .status {
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-
-        &-success {
-          background: rgba(22, 163, 74, 0.1);
-          color: var(--success);
-        }
-        &-pending {
-          background: rgba(250, 204, 21, 0.1);
-          color: var(--warning);
-        }
-        &-failed {
-          background: rgba(239, 68, 68, 0.1);
-          color: var(--danger);
-        }
       }
     }
   }
+
+  td {
+    background-color: var(--card-1);
+    font-size: 0.95rem;
+    padding: 1.1rem 1rem;
+    color: var(--text-primary);
+    border: 1px solid #8a8a8a; // <-- updated for full grid lines
+    transition: var(--transition);
+
+    .invoice-link {
+      color: var(--primary);
+      font-weight: 600;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      transition: var(--transition);
+
+      &::after {
+        content: "↗";
+        margin-left: 4px;
+        font-size: 0.8rem;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        color: var(--secondary);
+        text-decoration: underline;
+
+        &::after {
+          transform: translate(2px, -2px);
+        }
+      }
+    }
+
+    .status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+
+      &-success {
+        background: rgba(22, 163, 74, 0.1);
+        color: var(--success);
+      }
+      &-pending {
+        background: rgba(250, 204, 21, 0.1);
+        color: var(--warning);
+      }
+      &-failed {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+      }
+    }
+  }
+}
 
   .profile-header {
     display: flex;
