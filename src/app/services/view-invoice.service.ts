@@ -2,18 +2,16 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Sale } from '../Models/view-invoice.model';
 import { Observable } from 'rxjs';
+import { ApiConfigService } from './api-config/api-config.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ViewInvoiceService {
-
-private apiUrl="https://efactoapidevelopment.efacto.cloud/api/Sale/GetSaleList"
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private config: ApiConfigService) {}
 
   getSaleList(): Observable<{ Sale: Sale[] }> {
-    const headers = new HttpHeaders().set('Code', '140-9299-524-TEST');
+    const headers = this.config.getHeader();
 
     const params = new HttpParams()
       .set('PeriodType', 'this Year')
@@ -29,6 +27,9 @@ private apiUrl="https://efactoapidevelopment.efacto.cloud/api/Sale/GetSaleList"
       .set('AllRecord', 'N')
       .set('SessionId', '0');
 
-    return this.http.get<{ Sale: Sale[] }>(this.apiUrl, { headers, params });
+    return this.http.get<{ Sale: Sale[] }>(this.config.getApiUrl(), {
+      headers,
+      params,
+    });
   }
 }

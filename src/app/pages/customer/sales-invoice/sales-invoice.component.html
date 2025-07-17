@@ -184,7 +184,7 @@
   </div>
   <div
     *ngIf="salesInvoice.length >= 1"
-    class="footer-container d-flex justify-content-between align-items-center mt-3"
+    class="d-flex justify-content-between align-items-center mt-3"
   >
     <div class="mb-2">
       <label for="pageSize">Items per page:</label>
@@ -200,7 +200,7 @@
       </select>
     </div>
     <nav>
-      <ul class="pagination">
+      <ul class="pagination m-0">
         <li class="page-item" [class.disabled]="currentPage === 1">
           <button class="page-link" (click)="prevPage()">Previous</button>
         </li>

@@ -6,6 +6,9 @@ import { ShoppingCartService } from '../../../../services/shoppingCart-service/s
 import { SalesOrderService } from '../../../../services/customer-service/sales-order/sales-order.service';
 import Swal from 'sweetalert2';
 import { debounce, debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import * as FileSaver from 'file-saver';
+import * as ExcelJS from 'exceljs';
+import { SharedService } from '../../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-list-sales-order',
@@ -24,7 +27,6 @@ export class ListSalesOrderComponent implements OnInit {
 
   currentView = 'all';
   orders: any[] = [];
-  filteredOrders: any[] = [];
   editableItems: any[] = [];
   pageNumber: number = 1;
   pageSize: number = 10;
@@ -37,12 +39,12 @@ export class ListSalesOrderComponent implements OnInit {
   constructor(
     private shoppingCartService: ShoppingCartService,
     private router: Router,
-    private salesOrderService: SalesOrderService
+    private salesOrderService: SalesOrderService,
+    private sharedServrice: SharedService
   ) {}
 
   ngOnInit(): void {
-    this.getOrderList();
-
+    this.changePageSize(this.pageSizes[0]);
     this.searchOrderNoSubject
       .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe((serachOrderNoTerm) => {
@@ -59,15 +61,16 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   createSO() {
+    this.sharedServrice.setCartMode('items');
     this.shoppingCartService.disableEditing();
-    this.router.navigate(['/customer/shopping-cart']);
+    this.router.navigate(['/customer/items/create-order']);
+    console.log(this.sharedServrice.getCartMode());
   }
 
   editSO(so: any) {
     this.shoppingCartService.enableEditing();
     this.salesOrderService.setEditableItem(so);
-
-    this.router.navigate(['/customer/shopping-cart']);
+    this.router.navigate(['/customer/items/create-order']);
   }
 
   deleteSO(so: any) {
@@ -129,7 +132,6 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   toggleDetails(index: number): void {
-    console.log(index);
     if (this.openIndexes.has(index)) {
       this.openIndexes.delete(index);
     } else {
@@ -148,12 +150,14 @@ export class ListSalesOrderComponent implements OnInit {
 
   getOrderList() {
     const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
+    console.log('here');
     this.salesOrderService
       .getOrderList(acmId, this.pageNumber, this.pageSize)
       .subscribe({
         next: (response) => {
           this.orders = response.data;
           this.totalRecords = response.totalRecords;
+          console.log(this.orders);
         },
         error: (err) => {
           console.error('Failed to fetch orders:', err);
@@ -178,7 +182,8 @@ export class ListSalesOrderComponent implements OnInit {
 
   changePageSize(newSize: number): void {
     this.pageSize = newSize;
-    this.pageNumber = 1; // reset to first page
+    this.pageNumber = 1;
+    console.log(this.pageSize);
     this.getOrderList();
   }
 
@@ -209,6 +214,93 @@ export class ListSalesOrderComponent implements OnInit {
       this.openIndexes.clear();
     }
   }
+
+  exportSalesOrdersToExcel(): void {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Orders');
+
+    const columnHeaders = [
+      'For Branch',
+      'Order No.',
+      'Date',
+      'Item Count',
+      'Item Quantity',
+      'Net Amount',
+      'Status',
+    ];
+    const headerRow = worksheet.addRow(columnHeaders);
+
+    headerRow.eachCell((cell, colNumber) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getColumn(colNumber).width = 15;
+    });
+
+    const exportData = this.orders.map((item: any) => [
+      item.branchName,
+      item.mkey,
+      item.vDate,
+      item.itmCount,
+      item.itmQty,
+      item.netAmount,
+      item.status,
+    ]);
+
+    exportData.forEach((rowData) => {
+      const row = worksheet.addRow(rowData);
+      row.eachCell((cell) => {
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      });
+    });
+
+    workbook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], { type: 'application/octet-stream' });
+      FileSaver.saveAs(blob, 'Sales Orders.xlsx');
+    });
+  }
+
+  exportOrderToExcel(order: any): void {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Orders');
+
+    const columnHeaders = [
+      'Item Code',
+      'Item Name',
+      'Quantity',
+      'MRP',
+      'Rate',
+      'Net Amount',
+    ];
+    const headerRow = worksheet.addRow(columnHeaders);
+
+    headerRow.eachCell((cell, colNumber) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getColumn(colNumber).width = 15;
+    });
+
+    const exportData = (order.psoItems || []).map((item: any) => [
+      item.itmCode,
+      item.itmName,
+      item.qty,
+      item.mrp,
+      item.rate,
+      item.netamount,
+    ]);
+
+    exportData.forEach((rowData: any) => {
+      const row = worksheet.addRow(rowData);
+      row.eachCell((cell) => {
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      });
+    });
+
+    workbook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], { type: 'application/octet-stream' });
+      FileSaver.saveAs(blob, `Sales Order ${order.mkey} .xlsx`);
+    });
+  }
+
   updateView(view: string): void {
     // this.currentView = view;
     // this.filteredOrders = this.orders.filter((po) =>

@@ -3,9 +3,14 @@
     <div class="">
       <div class="page-title">
         <span>Sales Order</span>
-        <button class="refresh-btn">
-          <i class="fa-solid fa-arrows-rotate"></i>
-        </button>
+        <div class="d-flex gap-2">
+          <button class="refresh-btn">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button class="refresh-btn" (click)="exportSalesOrdersToExcel()">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
       </div>
       <div class="dashboard-header">
         <div class="view-selector">
@@ -111,7 +116,7 @@
                   <i class="bi bi-printer-fill"></i>
                 </button>
 
-                <div class="dropdown">
+                <div class="action-dropdown">
                   <button
                     class="action-btn"
                     type="button"
@@ -121,22 +126,20 @@
                   >
                     <i class="bi bi-three-dots"></i>
                   </button>
-                  <ul
-                    class="dropdown-menu"
-                    aria-labelledby="dropdownMenuButton"
-                    style="z-index: 99"
-                  >
+                  <ul class="dropdown-menu">
                     <li>
-                      <a class="dropdown-item" (click)="editSO(so)">
-                        <i class="bi bi-pencil-square me-2"></i> Edit
+                      <a class="dropdown-item" (click)="exportOrderToExcel(so)">
+                        <i class="fa-solid fa-download me-2"></i> Export
                       </a>
                     </li>
                     <li>
-                      <a
-                        class="dropdown-item text-danger"
-                        (click)="deleteSO(so)"
-                      >
-                        <i class="bi bi-trash me-2"></i> Delete
+                      <a class="dropdown-item" (click)="editSO(so)">
+                        <i class="fa-solid fa-pen-to-square me-2"></i> Edit
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="deleteSO(so)">
+                        <i class="fa-solid fa-trash me-2"></i> Delete
                       </a>
                     </li>
                   </ul>

@@ -7,6 +7,7 @@ export class PSOMain {
   itmCount: number = 0;
   itmQty: number = 0;
   netAmount: number = 0;
+  orderType?: string = '';
   status?: string = '';
   statusCode?: number = 0;
   addUser?: string = '';

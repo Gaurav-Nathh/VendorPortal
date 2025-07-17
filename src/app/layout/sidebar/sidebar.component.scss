@@ -187,6 +187,11 @@
       margin-left: 10px;
     }
   }
+
+  .submenu-active {
+    background-color: var(--color-blue);
+    color: white;
+  }
 }
 
 .d-none {
@@ -195,4 +200,8 @@
 
 .bord {
   border: 1px solid red !important;
+}
+.yo {
+  color: red;
+  background-color: red;
 }

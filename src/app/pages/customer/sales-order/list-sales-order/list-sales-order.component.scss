@@ -20,6 +20,7 @@
   color: var(--primary-text);
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   .refresh-btn {
     width: 2rem;
@@ -31,6 +32,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    i {
+      font-size: 1rem;
+    }
 
     &:hover {
       background: var(--color-blue);
@@ -236,6 +241,20 @@
         &.show,
         .dropdown.show & {
           background: #f1f5f9;
+        }
+      }
+
+      .action-dropdown {
+        .dropdown-menu {
+          z-index: 99;
+          background-color: var(--color-bg);
+
+          .dropdown-item {
+            color: var(--primary-text);
+            &:hover {
+              background-color: var(--color-blue);
+            }
+          }
         }
       }
     }

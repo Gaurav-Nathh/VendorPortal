@@ -7,6 +7,7 @@ import { UserService } from './user.service';
 import { from, of, switchMap, throwError, map } from 'rxjs';
 import { LoadingService } from './shared/loading.service';
 import { SessionServiceService } from './session-service.service';
+import { ApiConfigService } from './api-config/api-config.service';
 
 interface LoginPayload {
   userName: string;
@@ -17,26 +18,24 @@ interface LoginPayload {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://efactoapidevelopment.efacto.cloud/api';
-  private apiKey = '140-9299-524-TEST';
   currentYearShort = new Date().getFullYear().toString().slice(-2);
 
   constructor(
     private router: Router,
     private http: HttpClient,
+    private config: ApiConfigService,
     private userService: UserService,
     private loaderAuthService: LoadingService,
     private sessionService: SessionServiceService
   ) {}
 
   login(payload: LoginPayload): Observable<any> {
-    const headers = new HttpHeaders({
-      Code: this.apiKey,
-      'Content-Type': 'application/json',
-    });
+    const headers = this.config.getHeader();
     this.loaderAuthService.show();
     return this.http
-      .post(`${this.apiUrl}/Login/Authenticate`, payload, { headers })
+      .post(`${this.config.getApiUrl()}/Login/Authenticate`, payload, {
+        headers,
+      })
       .pipe(
         switchMap((response: any) => {
           const userDetails = response.UserDetails;
@@ -59,7 +58,7 @@ export class AuthService {
                     .set('IsAuto', false);
                   this.loaderAuthService.show();
                   return this.http
-                    .get(`${this.apiUrl}/Login/LogOut`, {
+                    .get(`${this.config.getApiUrl()}/Login/LogOut`, {
                       headers,
                       params,
                     })
@@ -172,16 +171,13 @@ export class AuthService {
         // const usrLghId = localStorage.getItem('UsrLghId') || '';
         const userId = sessionStorage.getItem('userId');
         const usrLghId = sessionStorage.getItem('UsrLghId') || '';
-        const headers = new HttpHeaders({
-          code: this.apiKey,
-        });
-
+        const headers = this.config.getHeader();
         const params = new HttpParams()
           .set('LogHisID', parseInt(usrLghId, 10))
           .set('IsAuto', false);
 
         this.http
-          .get(`${this.apiUrl}/Login/LogOut`, { headers, params })
+          .get(`${this.config.getApiUrl()}/Login/LogOut`, { headers, params })
           .subscribe((response: any) => {
             if (response?.IsSuccessfullyLogOUt === true) {
               Swal.fire({
@@ -226,17 +222,11 @@ export class AuthService {
   }
 
   private clearSession() {
-    // localStorage.removeItem('userId');
-    // localStorage.removeItem('isAuthenticated');
-    // localStorage.removeItem('userType');
-    // localStorage.removeItem('UsrLghId');
-    // this.router.navigate(['/login']);
     sessionStorage.clear();
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    // return localStorage.getItem('isAuthenticated') === 'true';
     return sessionStorage.getItem('isAuthenticated') === 'true';
   }
 }

@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, RouterModule } from '@angular/router';
 
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { SharedService } from '../../services/shared/shared.service';
+import { filter } from 'rxjs/operators';
+import { ShoppingCartService } from '../../services/shoppingCart-service/shopping-cart.service';
+import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
 interface MenuItem {
   text: string;
   icon: string;
@@ -30,7 +33,10 @@ export class SidebarComponent {
     private router: Router,
     private sidebarService: SharedService,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private sharedService: SharedService,
+    private shoppingCartService: ShoppingCartService,
+    private salesOrderService: SalesOrderService
   ) {}
 
   isOpen = false;
@@ -41,18 +47,6 @@ export class SidebarComponent {
     this.buildMenu();
     this.currentMenu =
       this.userType === 'vendor' ? this.vendorMenu : this.customerMenu;
-    switch (this.userType) {
-      case 'customer':
-        this.currentMenu = this.customerMenu;
-        break;
-      case 'vendor':
-        this.currentMenu = this.vendorMenu;
-        break;
-      case 'system':
-        this.currentMenu = this.masterMenu;
-        break;
-    }
-
     this.sidebarService.sidebarStyle$.subscribe((style) => {
       this.sidebarShrinkStyle = style === 'overlay' ? true : false;
     });
@@ -60,6 +54,29 @@ export class SidebarComponent {
     this.sidebarService.sidebarVisible$.subscribe((visible) => {
       this.sidebarVisibility = visible;
     });
+
+    // Open submenu when page is reloded
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        const currentRoute = this.router.url;
+
+        this.currentMenu.forEach((menuItem) => {
+          if (menuItem.submenu) {
+            menuItem.isSubmenuOpen = menuItem.submenu.some(
+              (sub) => sub.route && currentRoute.startsWith(sub.route)
+            );
+
+            menuItem.submenu.forEach((sub) => {
+              if (sub.submenu) {
+                sub.isSubmenuOpen = sub.submenu.some(
+                  (s) => s.route && currentRoute.startsWith(s.route)
+                );
+              }
+            });
+          }
+        });
+      });
   }
 
   toggleSidenav() {
@@ -70,6 +87,16 @@ export class SidebarComponent {
     if (item.submenu) {
       item.isSubmenuOpen = !item.isSubmenuOpen;
       event.preventDefault();
+    }
+  }
+
+  handleCartMode(text: string): void {
+    this.shoppingCartService.disableEditing();
+    this.salesOrderService.clearEditableItem();
+    if (text.toLowerCase().includes('catalogue')) {
+      this.sharedService.setCartMode('catalouge');
+    } else if (text.toLowerCase().includes('item')) {
+      this.sharedService.setCartMode('items');
     }
   }
 
@@ -136,14 +163,26 @@ export class SidebarComponent {
       route: '/customer/',
     },
     {
-      text: 'Sales Order',
-      icon: 'fa-solid fa-cart-shopping',
-      route: '/customer/sales-order',
+      text: 'Orders',
+      icon: 'bi bi-file-earmark-check-fill',
+      route: '/customer/all-orders',
     },
     {
-      text: 'Catalouge',
-      icon: 'fa-solid fa-box',
-      route: '/customer/catalouge',
+      text: 'Create Order',
+      icon: 'fa-solid fa-cart-shopping',
+      isSubmenuOpen: false,
+      submenu: [
+        {
+          text: 'Items',
+          icon: 'fa-solid fa-cubes',
+          route: '/customer/items/create-order',
+        },
+        {
+          text: 'Catalogue',
+          icon: 'fa-solid fa-box',
+          route: '/customer/catalouge/create-order',
+        },
+      ],
     },
     {
       text: 'My Orders',
@@ -176,53 +215,6 @@ export class SidebarComponent {
       text: 'Statements',
       icon: 'fa-solid fa-file-invoice-dollar',
       route: '/vendor/page-under-construction',
-    },
-  ];
-
-  masterMenu: MenuItem[] = [
-    {
-      text: 'Dashboard',
-      icon: 'bi bi-grid-1x2-fill',
-      route: '/master/',
-    },
-    {
-      text: 'Sales',
-      icon: 'fa-solid fa-cart-shopping',
-      isSubmenuOpen: false,
-      submenu: [
-        {
-          text: 'Customers',
-          icon: 'fa-solid fa-users',
-          route: '/master/sales/customers',
-        },
-        {
-          text: 'Sales Orders',
-          icon: 'bi bi-file-text-fill',
-          route: '/master/sales/sales-order',
-        },
-        {
-          text: 'Invoices',
-          icon: 'bi bi-file-text-fill',
-          route: '/master/users/vendors',
-        },
-      ],
-    },
-    {
-      text: 'Purchases',
-      icon: 'fa-solid fa-bag-shopping',
-      isSubmenuOpen: false,
-      submenu: [
-        {
-          text: 'Vendors',
-          icon: 'fa-solid fa-users',
-          route: '/master/purchase/vendors',
-        },
-        {
-          text: 'Purchase Orders',
-          icon: 'bi bi-file-text-fill',
-          route: '/master/purchase/purchase-order',
-        },
-      ],
     },
   ];
 

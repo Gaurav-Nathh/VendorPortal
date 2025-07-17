@@ -3,29 +3,24 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { interval, takeUntil, Subject, switchMap } from 'rxjs';
+import { ApiConfigService } from './api-config/api-config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SessionServiceService {
-  private apiUrl = 'https://efactoapidevelopment.efacto.cloud/api';
-  private apiKey = '140-9299-524-TEST';
   private stopPolling$ = new Subject<void>();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private config: ApiConfigService) {}
   startSession() {
-    const headers = new HttpHeaders({
-      Code: this.apiKey,
-    });
+    const headers = this.config.getHeader();
     interval(3000)
       .pipe(
         takeUntil(this.stopPolling$),
         switchMap(() => {
-          // const lghIdStr = localStorage.getItem('UsrLghId') || '0';
           const lghId = sessionStorage.getItem('UsrLghId') || '0';
-          // const lghId = parseInt(lghIdStr, 10);
 
-          return this.http.get(`${this.apiUrl}/Login/LoginAuthenticate`, {
+          return this.http.get(`${this.config.getApiUrl()}/Login/LoginAuthenticate`, {
             headers,
             params: {
               LghId: lghId.toString(),

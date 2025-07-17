@@ -78,7 +78,6 @@ export class SalesOrderService {
 
   setEditableItem(items: any) {
     this.editableItem = items;
-    console.log(items);
   }
   getEditableItem(): any {
     return this.editableItem;

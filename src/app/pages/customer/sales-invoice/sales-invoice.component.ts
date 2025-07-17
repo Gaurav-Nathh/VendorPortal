@@ -24,7 +24,6 @@ export class SalesInvoiceComponent implements OnInit {
 
   ngOnInit(): void {
     this.getSalesInvoiceList();
-    this.paginate();
   }
 
   getSalesInvoiceList() {
@@ -32,6 +31,7 @@ export class SalesInvoiceComponent implements OnInit {
     this.salesInvoiceService.getPortalSalesInvoiceList(amcId).subscribe({
       next: (response) => {
         this.salesInvoice = response.SOList;
+        this.paginate();
       },
       error: (err) => {
         Swal.fire({

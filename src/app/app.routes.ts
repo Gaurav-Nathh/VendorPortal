@@ -151,22 +151,76 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard],
       },
+      // {
+      //   path: 'catalouge',
+      //   pathMatch: 'full',
+      //   loadComponent: () =>
+      //     import('./pages/shopping-cart/shopping-cart.component').then(
+      //       (c) => c.ShoppingCartComponent
+      //     ),
+      //   canActivate: [authGuard],
+      // },
+      // {
+      //   path: 'shopping-cart',
+      //   pathMatch: 'full',
+      //   loadComponent: () =>
+      //     import('./pages/shopping-cart/shopping-cart.component').then(
+      //       (c) => c.ShoppingCartComponent
+      //     ),
+      //   canActivate: [authGuard],
+      // },
       {
-        path: 'shopping-cart',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./pages/shopping-cart/shopping-cart.component').then(
-            (c) => c.ShoppingCartComponent
-          ),
-        canActivate: [authGuard],
-      },
-      {
-        path: 'sales-order',
+        path: 'all-orders',
         pathMatch: 'full',
         loadComponent: () =>
           import(
             './pages/customer/sales-order/list-sales-order/list-sales-order.component'
           ).then((c) => c.ListSalesOrderComponent),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'items',
+        loadComponent: () =>
+          import('./pages/shopping-cart/shopping-cart.component').then(
+            (c) => c.ShoppingCartComponent
+          ),
+        canActivate: [authGuard],
+        children: [
+          {
+            path: 'create-order',
+            loadComponent: () =>
+              import('./pages/shopping-cart/shopping-cart.component').then(
+                (c) => c.ShoppingCartComponent
+              ),
+            canActivate: [authGuard],
+          },
+        ],
+      },
+      {
+        path: 'catalouge',
+        loadComponent: () =>
+          import('./pages/shopping-cart/shopping-cart.component').then(
+            (c) => c.ShoppingCartComponent
+          ),
+        canActivate: [authGuard],
+        children: [
+          {
+            path: 'create-order',
+            loadComponent: () =>
+              import('./pages/shopping-cart/shopping-cart.component').then(
+                (c) => c.ShoppingCartComponent
+              ),
+            canActivate: [authGuard],
+          },
+        ],
+      },
+      {
+        path: 'catalouge',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/shopping-cart/shopping-cart.component').then(
+            (c) => c.ShoppingCartComponent
+          ),
         canActivate: [authGuard],
       },
       {

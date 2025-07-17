@@ -17,7 +17,9 @@ import { ShoppingCartService } from '../../services/shoppingCart-service/shoppin
 import { Router } from '@angular/router';
 import { PSOMain } from '../../Models/SalesOrder/SalesOrder';
 import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
-import { debounceTime, elementAt, Subject, Subscription } from 'rxjs';
+import { debounceTime, elementAt, filter, Subject, Subscription } from 'rxjs';
+import { Product } from '../../Models/customer/product.model';
+import { CatalougeType } from '../../Models/customer/catalougeType.modal';
 
 declare var bootstrap: any;
 
@@ -43,29 +45,6 @@ interface FilterCategory {
   loading?: boolean;
 }
 
-interface ProductFilters {
-  division?: string;
-  category?: string;
-  subCategory?: string;
-  brand?: string;
-  season?: string[];
-  occasion?: string[];
-  gender?: string;
-  baseItem?: string;
-  variant?: string;
-  colors?: string[];
-}
-
-interface Product {
-  name: string;
-  stockId: string;
-  price: number;
-  stock: number;
-  imageUrl: string;
-  quantity?: number;
-  filters?: ProductFilters;
-}
-
 @Component({
   selector: 'app-shopping-cart',
   imports: [NgFor, NgIf, FormsModule, NgClass, NgxSliderModule, TooltipModule],
@@ -77,6 +56,8 @@ export class ShoppingCartComponent {
   @ViewChild('filterModalRef') filterModalRef!: ElementRef;
   @ViewChild('cardSectionRef') cardSectionRef!: ElementRef;
   @ViewChild('catalougeSearchBox') catalougeSerachBoxRef!: ElementRef;
+  @ViewChild('categoryCatalougeContainer')
+  categoryCatalougeContainer!: ElementRef;
 
   private editingSubscription!: Subscription;
 
@@ -111,20 +92,21 @@ export class ShoppingCartComponent {
     Category: [],
   };
   currentModalFilter: FilterCategory | null = null;
-  inStock: boolean = false;
-  withImage: boolean = false;
+  inStock: boolean = true;
+  withImage: boolean = true;
   // productImgUrl: string =
   //   'https://apptest-bng.s3.ap-south-1.amazonaws.com/Efacto%20Test/ITEM/';
   productImgUrl: string = 'https://apptest-bng.s3.ap-south-1.amazonaws.com/';
   products: any[] = [];
   cart: any[] = [];
+  catalougeProducts: any[] = [];
   itemDetailsResponse: any[] = [];
   salesOrder: PSOMain = {} as PSOMain;
   isCartEditing = false;
   catalougeSuggestions: any[] = [];
   catalougeSearchString: Subject<string> = new Subject<string>();
   itemCatalougeList: any[] = [];
-  selectedCatalougeItems: any[] = [];
+  selectedCatalouges: any[] = [];
   catalougeDropdownOpen = false;
   actId = 1;
   CartMode: string = '';
@@ -139,19 +121,6 @@ export class ShoppingCartComponent {
     this.filters.forEach((filter) => {
       this.selectedFilters[filter.title] = [];
     });
-    // this.catalougeSearchString
-    //   .pipe(debounceTime(1000))
-    //   .subscribe((searchText) => {
-    //     if (searchText) {
-    //       this.shoppingCartService
-    //         .getItemCatalougeList(searchText, this.actId)
-    //         .subscribe((response) => {
-    //           this.catalougeSuggestions = response?.OrdCatSearchList || [];
-    //         });
-    //     } else {
-    //       this.catalougeSuggestions = [];
-    //     }
-    //   });
   }
 
   ngOnInit() {
@@ -191,192 +160,116 @@ export class ShoppingCartComponent {
 
   toggleCatalougeDropdown() {
     this.catalougeDropdownOpen = true;
-    console.log(this.catalougeDropdownOpen);
   }
 
-  isCatalougeSelected(item: any): boolean {
-    return this.selectedCatalougeItems.some(
-      (selected) => selected.Id === item.Id
-    );
-  }
+  // isCatalougeSelected(item: any): boolean {
+  //   return this.selectedCatalougeItems.some(
+  //     (selected) => selected.Id === item.Id
+  //   );
+  // }
 
-  getSelectedCatalogueItemsText() {
-    const names = this.selectedCatalougeItems
-      .slice(0, 5)
-      .map((item) => item.Text);
-    const extra =
-      this.selectedCatalougeItems.length > 5
-        ? ` +${this.selectedCatalougeItems.length - 5} more`
-        : '';
-    return names.join(', ') + extra;
-  }
-
-  selectedCatalogueItems: any[] = [];
-
-  selectCatalouge(item: any): void {
-    const exists = this.selectedCatalougeItems.some((i) => i.Id === item.Id);
+  selectCatalouge(catalouge: CatalougeType): void {
+    const exists = this.selectedCatalouges.some((c) => c.Id === catalouge.Id);
     if (!exists) {
-      this.selectedCatalogueItems.push(item);
+      this.selectedCatalouges.push(catalouge);
+      this.getCatalougeItems();
     }
   }
 
-  removeCatalogue(item: any): void {
-    this.selectedCatalogueItems = this.selectedCatalogueItems.filter(
-      (i) => i.Id !== item.Id
+  removeCatalogue(catalouge: CatalougeType): void {
+    this.selectedCatalouges = this.selectedCatalouges.filter(
+      (c) => c.Id !== catalouge.Id
     );
+    this.getCatalougeItems();
   }
 
-  onCatalougeCheckboxChange(event: Event, item: any) {
-    const checkbox = event.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.selectedCatalougeItems.push(item);
-    } else {
-      this.selectedCatalougeItems = this.selectedCatalougeItems.filter(
-        (i) => i.Id !== item.Id
-      );
-    }
-    this.products = [];
-    this.productLoader = true;
-    this.filterPayload.fromPrice = this.minValue;
-    this.filterPayload.toPrice = this.maxValue;
-    this.filterPayload.catId = 0;
-    this.filterPayload.catType = '';
-    this.filterPayload.pageNumber = 1;
-    this.filterPayload.orderCatelogName = this.selectedCatalougeItems
+  getCatalougeItems() {
+    this.filterPayload.orderCatelogName = this.selectedCatalouges
       .map((i) => i.Id)
       .join(', ');
-    this.filterPayload.vdate = new Date().toLocaleDateString('en-US');
-    const filters = JSON.stringify(this.filterPayload);
-
-    this.shoppingCartService.getItems(filters).subscribe({
-      next: (res: any) => {
-        const items = res?.ShopCartItemCatgoryList ?? [];
-        items.forEach((item: any) => {
-          const price = item?.Itemprices?.[0];
-          if (price) {
-            price.ShowPrice = price.MRP;
-            price.Stock = price.Vstock + price.Fstock;
-            this.products.push(item);
-          }
-        });
-        this.productLoader = false;
-      },
-      error: (err) => {
-        this.productLoader = false;
-        Swal.fire({
-          toast: true,
-          icon: 'error',
-          title: 'Error getting Items',
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-          },
-        });
-      },
-    });
+    this.applyFilters();
   }
-
-  itemCatalougeSearchChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.catalougeSearchString.next(input.value);
-  }
-
-  // itemCatalougeListChange(event: Event) {
-  //   const selectedOption = (event.target as HTMLSelectElement).selectedOptions;
-  //   this.selectedCatalougeListItems = Array.from(selectedOption).map(
-  //     (option) => {
-  //       const id = option.value;
-  //       return this.itemCatalougeList.find((item) => item.Id === id);
-  //     }
-  //   );
-  //   console.log('Selected Items: ', this.selectedCatalougeListItems);
-  // }
 
   getCatalougeList() {
     this.shoppingCartService
       .getItemCatalougeList(this.actId)
       .subscribe((response) => {
         this.itemCatalougeList = response?.OctCatList || [];
-        console.log(this.itemCatalougeList);
       });
   }
 
-  selectedCatalougeSuggestion(mkey: string) {
-    this.catalougeSuggestions = [];
-    this.shoppingCartService
-      .getItemCatalougeByMkey(mkey)
-      .subscribe((response) => {
-        const details = response?.OrdCat?.OcdCatDetails ?? [];
-        this.products = details.map((item: any) => ({
-          ItmId: item.OcdItmId,
-          ItmCode: item.OcdItmCode,
-          ItmName: item.OcdItmName,
-          ItmPrintAs: item.OcdItmName,
-          ItmSpec: item.OcdSpec || '',
-          ItmImageFile: '',
-          ItmImage: item.OcdItmImage || '',
-          ItmMrp: item.OcdMrp || 0.0,
-          ItmQty: item.OcdQty || 0,
-          ItmPackUntCode: item.OcdItmPackUntCode || '',
-          ItmUntId: item.OcdUntId,
-          ItmBaseUntId: item.OcdBaseUntId,
-          ItmBaseUntCode: item.OcdBaseUntCode,
+  // selectedCatalougeSuggestion(mkey: string) {
+  //   this.catalougeSuggestions = [];
+  //   this.shoppingCartService
+  //     .getItemCatalougeByMkey(mkey)
+  //     .subscribe((response) => {
+  //       const details = response?.OrdCat?.OcdCatDetails ?? [];
+  //       this.products = details.map((item: any) => ({
+  //         ItmId: item.OcdItmId,
+  //         ItmCode: item.OcdItmCode,
+  //         ItmName: item.OcdItmName,
+  //         ItmPrintAs: item.OcdItmName,
+  //         ItmSpec: item.OcdSpec || '',
+  //         ItmImageFile: '',
+  //         ItmImage: item.OcdItmImage || '',
+  //         ItmMrp: item.OcdMrp || 0.0,
+  //         ItmQty: item.OcdQty || 0,
+  //         ItmPackUntCode: item.OcdItmPackUntCode || '',
+  //         ItmUntId: item.OcdUntId,
+  //         ItmBaseUntId: item.OcdBaseUntId,
+  //         ItmBaseUntCode: item.OcdBaseUntCode,
 
-          Itemprices: [
-            {
-              Batch: null,
-              Vstock: item.OcdVStock || 0,
-              Astock: item.OcdAStock || 0,
-              Rstock: 0,
-              Fstock: item.OcdFStock || 0,
-              Ocstock: 0,
-              Expdate: null,
-              Pack: item.OcdPack || '',
-              Saleprice: item.OcdSaleprice || 0,
-              Trfprice: item.OcdTrfprice || 0,
-              Dlrprice: item.OcdDlrprice || 0,
-              Onlprice: item.OcdSaleprice || 0,
-              Costprice: item.OcdCostprice || 0,
-              MarginType: null,
-              GstRate: item.OcdGstRate || 0,
-              PriceCode: null,
-              MRP: item.OcdMrp || 0,
-              MarginCode: null,
-              MarginRate: 0.0,
-              AvgCostprice: item.OcdCostprice || 0,
-              WogCost: item.OcdCostprice || 0,
-              Mkey: null,
-              Rowno: 0,
-              Subrowno: 0,
-              Code: null,
-              Description: null,
-              Qty: 0,
-              Unit: null,
-              ItmPriceMethod: item.OcdItmPriceMethod || null,
-              OnlMarkRate: 0.0,
-              DlrMarkRate: 0.0,
-              TrfMarkRate: 0.0,
-              SaleMarkRate: 0.0,
-              SaleMarka: null,
-              TrfMarka: null,
-              DlrMarka: null,
-              OnlMarka: null,
-              ItmExpirable: item.OcdItmExpirable || false,
-              Stock: item.OcdAStock || 0,
-              UnitFactorType: 'X',
-              UnitFactor: item.OcdUnitFactor || 1.0,
-              ShowPrice: item.OcdMrp,
-              AddDate: null,
-              RefDate: null,
-            },
-          ],
-        }));
-      });
-  }
+  //         Itemprices: [
+  //           {
+  //             Batch: null,
+  //             Vstock: item.OcdVStock || 0,
+  //             Astock: item.OcdAStock || 0,
+  //             Rstock: 0,
+  //             Fstock: item.OcdFStock || 0,
+  //             Ocstock: 0,
+  //             Expdate: null,
+  //             Pack: item.OcdPack || '',
+  //             Saleprice: item.OcdSaleprice || 0,
+  //             Trfprice: item.OcdTrfprice || 0,
+  //             Dlrprice: item.OcdDlrprice || 0,
+  //             Onlprice: item.OcdSaleprice || 0,
+  //             Costprice: item.OcdCostprice || 0,
+  //             MarginType: null,
+  //             GstRate: item.OcdGstRate || 0,
+  //             PriceCode: null,
+  //             MRP: item.OcdMrp || 0,
+  //             MarginCode: null,
+  //             MarginRate: 0.0,
+  //             AvgCostprice: item.OcdCostprice || 0,
+  //             WogCost: item.OcdCostprice || 0,
+  //             Mkey: null,
+  //             Rowno: 0,
+  //             Subrowno: 0,
+  //             Code: null,
+  //             Description: null,
+  //             Qty: 0,
+  //             Unit: null,
+  //             ItmPriceMethod: item.OcdItmPriceMethod || null,
+  //             OnlMarkRate: 0.0,
+  //             DlrMarkRate: 0.0,
+  //             TrfMarkRate: 0.0,
+  //             SaleMarkRate: 0.0,
+  //             SaleMarka: null,
+  //             TrfMarka: null,
+  //             DlrMarka: null,
+  //             OnlMarka: null,
+  //             ItmExpirable: item.OcdItmExpirable || false,
+  //             Stock: item.OcdAStock || 0,
+  //             UnitFactorType: 'X',
+  //             UnitFactor: item.OcdUnitFactor || 1.0,
+  //             ShowPrice: item.OcdMrp,
+  //             AddDate: null,
+  //             RefDate: null,
+  //           },
+  //         ],
+  //       }));
+  //     });
+  // }
 
   @HostListener('document:click', ['$event'])
   onDoucmentClick(event: MouseEvent): void {
@@ -385,6 +278,11 @@ export class ShoppingCartComponent {
       !this.catalougeSerachBoxRef.nativeElement.contains(event.target)
     ) {
       this.catalougeSuggestions = [];
+    }
+    const clickedInside =
+      this.categoryCatalougeContainer?.nativeElement.contains(event.target);
+    if (!clickedInside && this.filterTopDropDownOpen) {
+      this.filterTopDropDownOpen = false;
     }
   }
 
@@ -548,8 +446,10 @@ export class ShoppingCartComponent {
       const selected = this.selectedFilters[title];
       if (selected.length > 0) {
         this.filterPayload[payloadKey] = selected.join(',');
+        this.catalougeFilterPayload[payloadKey] = selected.join(',');
       } else {
         delete this.filterPayload[payloadKey];
+        delete this.catalougeFilterPayload[payloadKey];
       }
     }
   }
@@ -574,6 +474,9 @@ export class ShoppingCartComponent {
             price.ShowPrice = price.MRP;
             price.Stock = price.Vstock + price.Fstock;
             this.products.push(item);
+            if (this.CartMode === 'catalouge') {
+              this.catalougeProducts.push(item);
+            }
           }
         });
         this.productLoader = false;
@@ -595,6 +498,112 @@ export class ShoppingCartComponent {
         });
       },
     });
+  }
+
+  applyCatalougeFilters(): void {
+    this.catalougeFilterPayload.fromPrice = this.minValue;
+    this.catalougeFilterPayload.toPrice = this.maxValue;
+    // Reset if no filters
+    const isFilterEmpty = Object.entries(this.catalougeFilterPayload).every(
+      ([key, value]) => {
+        if (typeof value === 'boolean') return !value;
+        if (typeof value === 'number') return value === 0;
+        return !value || value.toString().trim() === '';
+      }
+    );
+
+    if (isFilterEmpty) {
+      this.products = [...this.catalougeProducts]; // show all items
+      return;
+    }
+
+    this.products = this.catalougeProducts.filter((product) => {
+      const firstPrice = product.Itemprices?.[0];
+
+      // Price filter
+      if (
+        (this.catalougeFilterPayload.fromPrice > 0 ||
+          this.catalougeFilterPayload.toPrice > 0) &&
+        firstPrice
+      ) {
+        const mrp = firstPrice.MRP ?? 0;
+        const from = this.catalougeFilterPayload.fromPrice || 0;
+        const to = this.catalougeFilterPayload.toPrice || Infinity;
+        if (mrp < from || mrp > to) return false;
+      }
+
+      // Stock filter
+      if (
+        this.catalougeFilterPayload.withStock &&
+        (!firstPrice || firstPrice.Stock <= 0)
+      ) {
+        return false;
+      }
+
+      // Image filter
+      if (
+        this.catalougeFilterPayload.withImage === false &&
+        product.ItmImageFile === ''
+      ) {
+        return false;
+      }
+      // Apply other filters
+      for (const key in this.catalougeFilterPayload) {
+        if (
+          [
+            'divFilter',
+            'catFilter',
+            'subCatFilter',
+            'brandFilter',
+            'seasonFilter',
+            'occFilter',
+            'genderFilter',
+            'baseItmFilter',
+            'varFilter',
+            'sizeFilter',
+            'colorFilter',
+            'atrribute1Filter',
+            'atrribute2Filter',
+            'atrribute3Filter',
+            'atrribute4Filter',
+          ].includes(key)
+        ) {
+          const value = this.catalougeFilterPayload[key];
+          if (typeof value === 'string' && value.trim() !== '') {
+            const values = value.split(',').map((v) => v.trim());
+            const itemValue = this.getProductProperty(product, key);
+            if (!values.includes(String(itemValue))) {
+              return false;
+            }
+          }
+        }
+      }
+
+      return true;
+    });
+  }
+
+  getProductProperty(product: any, filterKey: string): number | null {
+    const map: { [key: string]: string } = {
+      divFilter: 'ItmDivId',
+      catFilter: 'ItmCatId',
+      subCatFilter: 'ItmSubCatId',
+      brandFilter: 'ItmBrandId',
+      seasonFilter: 'ItmSeasonId',
+      occFilter: 'ItmOccaId',
+      genderFilter: 'ItmGenderId',
+      baseItmFilter: 'ItmBaseId',
+      varFilter: 'ItmVarientId',
+      sizeFilter: 'ItmSizeId',
+      colorFilter: 'ItmColorId',
+      atrribute1Filter: 'ItmAtt1Id',
+      atrribute2Filter: 'ItmAtt2Id',
+      atrribute3Filter: 'ItmAtt3Id',
+      atrribute4Filter: 'ItmAtt4Id',
+    };
+
+    const prop = map[filterKey];
+    return prop ? product[prop] ?? null : null;
   }
 
   isDataLoading = false;
@@ -650,11 +659,17 @@ export class ShoppingCartComponent {
   onInStockChange(event: Event): void {
     this.inStock = (event.target as HTMLInputElement).checked;
     this.filterPayload.withStock = this.inStock;
+    if (this.CartMode === 'catalouge') {
+      this.catalougeFilterPayload.withStock = this.inStock;
+    }
   }
 
   onWithImageChange(event: Event): void {
     this.withImage = (event.target as HTMLInputElement).checked;
     this.filterPayload.withImage = this.withImage;
+    if (this.CartMode === 'catalouge') {
+      this.catalougeFilterPayload.withImage = this.withImage;
+    }
   }
 
   minValue: number = 1;
@@ -705,86 +720,6 @@ export class ShoppingCartComponent {
     // ) as HTMLInputElement;
     // if (withImgToggle) inStockToggle.checked = false;
   }
-
-  filterProducts(): void {
-    // const searchTerm = this.searchText.toLowerCase().trim();
-    // // First apply all filters
-    // let filtered = this.products.filter((product) => {
-    //   // Price range filter
-    //   if (
-    //     product.price < this.priceRange.min ||
-    //     product.price > this.priceRange.max
-    //   ) {
-    //     return false;
-    //   }
-    //   // Search text filter (if search term exists)
-    //   if (searchTerm && !product.name.toLowerCase().includes(searchTerm)) {
-    //     return false;
-    //   }
-    //   // In Stock filter
-    //   if (this.inStock && product.stock <= 0) {
-    //     return false;
-    //   }
-    //   //Priace RangeFilter
-    //   // Category filters
-    //   return this.filters.every((filter) => {
-    //     const selectedOptionIds = this.selectedFilters[filter.title];
-    //     if (!selectedOptionIds.length) return true;
-    //     const selectedLabels = filter.options
-    //       .filter((option) => selectedOptionIds.includes(option.id))
-    //       .map((option) => option.label);
-    //     if (
-    //       !product.filters ||
-    //       !product.filters[
-    //         filter.title.toLowerCase().replace(' ', '') as keyof ProductFilters
-    //       ]
-    //     ) {
-    //       return selectedOptionIds.length === 0;
-    //     }
-    //     if (
-    //       filter.title === 'Color' ||
-    //       filter.title === 'Season' ||
-    //       filter.title === 'Occasion'
-    //     ) {
-    //       const productValues =
-    //         (product.filters[
-    //           filter.title
-    //             .toLowerCase()
-    //             .replace(' ', '') as keyof ProductFilters
-    //         ] as string[]) || [];
-    //       return productValues.some((value) => selectedLabels.includes(value));
-    //     }
-    //     const productValue =
-    //       product.filters[
-    //         filter.title.toLowerCase().replace(' ', '') as keyof ProductFilters
-    //       ];
-    //     return selectedLabels.includes(productValue as string);
-    //   });
-    // });
-    // // sorting based on selectedOption
-    // switch (this.selectedOption) {
-    //   case 'Price: High to Low':
-    //     filtered = filtered.sort((a, b) => b.price - a.price);
-    //     break;
-    //   case 'Price: Low to High':
-    //     filtered = filtered.sort((a, b) => a.price - b.price);
-    //     break;
-    //   case 'Popularity':
-    //     // Implement popularity sorting if you have a popularity metric
-    //     // For now, we'll just sort by name as an example
-    //     filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
-    //     break;
-    //   case 'Discount':
-    //     filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
-    //     break;
-    //   case 'All Products':
-    //   default:
-    //     break;
-    // }
-    // this.filteredProducts = filtered;
-  }
-  // localStorage.setItem(
-  //   'UsrBrnId',
 
   filterPayload: {
     [key: string]: any;
@@ -843,6 +778,19 @@ export class ShoppingCartComponent {
     orderCatelogName: '',
   };
 
+  catalougeFilterPayload: {
+    [key: string]: any;
+    withStock: boolean;
+    fromPrice: number;
+    toPrice: number;
+    withImage: boolean;
+  } = {
+    withStock: false,
+    fromPrice: 0,
+    toPrice: 0,
+    withImage: false,
+  };
+
   selectedNavFilterTitleDisplay = 'Select a filter';
   selectedNavFilterTitle: any = null;
   selectedNavFilterOptionId = '';
@@ -886,7 +834,6 @@ export class ShoppingCartComponent {
             this.products.push(item);
           }
         });
-        console.log(res);
         this.productLoader = false;
       },
       error: (err) => {
@@ -916,13 +863,21 @@ export class ShoppingCartComponent {
   selectedSideFilter: any = null;
 
   filterSideModal(filter: any) {
-    console.log(filter);
     this.selectedSideFilter = filter;
   }
 
-  addToCart(product: any) {
+  addToCart(product: Product) {
     try {
-      const existing = this.cart.find((item) => item.ItmId === product.ItmId);
+      let existing: boolean = false;
+      if (this.CartMode === 'catalouge') {
+        existing = this.cart.find(
+          (item) =>
+            item.ItmId === product.ItmId ||
+            item.ItemPrices?.[0]?.MRP === product.Itemprices?.[0]?.MRP
+        );
+      } else {
+        existing = this.cart.find((item) => item.ItmId === product.ItmId);
+      }
       if (existing) {
         Swal.fire({
           toast: true,
@@ -960,27 +915,13 @@ export class ShoppingCartComponent {
     }
   }
 
-  increaseItmCardQty(product: any): void {
+  increaseItmCardQty(product: Product): void {
     product.ItmQty = (product.ItmQty || 1) + 1;
   }
 
-  decreaseItmCardQty(product: any): void {
+  decreaseItmCardQty(product: Product): void {
     if (product.ItmQty && product.ItmQty > 1) {
       product.ItmQty--;
-    }
-  }
-
-  buyNow(product: Product) {
-    // Check if product is already in cart
-    const existingProduct = this.cart.find(
-      (item) => item.stockId === product.stockId
-    );
-
-    if (existingProduct) {
-      this.openCartModal();
-    } else {
-      this.addToCart(product);
-      this.openCartModal();
     }
   }
 
@@ -1134,6 +1075,7 @@ export class ShoppingCartComponent {
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
           0
         ),
+        orderType: sessionStorage.getItem('cartMode') || '',
         status: 'CREATED',
         statusCode: 1,
         addUser: sessionStorage.getItem('UsrAddUser') || '',

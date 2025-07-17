@@ -5,10 +5,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SalesOrder } from '../../../Models/interface/SalesOrder.interface';
 import { SaleOrderDetail } from '../../../Models/interface/SaleOrderDetail.interface';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 @Component({
   selector: 'app-my-orders',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TooltipModule],
   templateUrl: './my-orders.component.html',
   styleUrl: './my-orders.component.scss',
 })
@@ -26,7 +27,6 @@ export class MyOrdersComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPortalSOList();
-    this.paginate();
   }
 
   getPortalSOList() {
@@ -34,6 +34,7 @@ export class MyOrdersComponent implements OnInit {
     this.myOrdersService.getPortalSOList(amcId).subscribe({
       next: (response) => {
         this.soList = response.SOList;
+        this.paginate();
       },
       error: (err) => {
         Swal.fire({
