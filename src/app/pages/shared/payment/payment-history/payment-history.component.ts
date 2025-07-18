@@ -1,4 +1,4 @@
-import { Component, ElementRef, QueryList,ViewChildren,AfterViewInit } from '@angular/core';
+import { Component, ElementRef, QueryList,ViewChildren } from '@angular/core';
 import { PaymentServiceService } from '../../../../services/vendor-service/payment/payment-service.service';
 import { CommonModule } from '@angular/common';
 import { Tooltip } from 'bootstrap';
@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { FormsModule } from '@angular/forms';
 import * as ExcelJS from 'exceljs';
-
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 
 
@@ -36,7 +36,7 @@ export interface AccountTransaction {
 
 @Component({
   selector: 'app-payment-history',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,TooltipModule],
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.scss'
 })
