@@ -1044,7 +1044,7 @@ export class ShoppingCartComponent {
           });
           this.salesOrderService.clearEditableItem();
           this.cart = [];
-          this.router.navigate(['/customer/sales-order']);
+          this.router.navigate(['/customer/all-orders']);
         },
         error: (err) => {
           Swal.fire({
@@ -1112,7 +1112,7 @@ export class ShoppingCartComponent {
             timer: 1000,
           });
           this.cart = [];
-          this.router.navigate(['/customer/sales-order']);
+          this.router.navigate(['/customer/all-orders']);
         },
         error: (err) => {
           Swal.fire({

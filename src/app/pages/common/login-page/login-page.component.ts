@@ -1,13 +1,13 @@
 import { NgClass, NgIf } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
-import { ThemeService } from '../../services/theme.service';
-import { AuthService } from '../../services/auth.service';
-import { UserService } from '../../services/user.service';
+import { ThemeToggleComponent } from '../../../components/theme-toggle/theme-toggle.component';
+import { ThemeService } from '../../../services/theme.service';
+import { AuthService } from '../../../services/auth.service';
+import { UserService } from '../../../services/user.service';
 import { Router, RouterLink } from '@angular/router';
-import { SessionServiceService } from '../../services/session-service.service';
-import { LoadingService } from '../../services/shared/loading.service';
+import { SessionServiceService } from '../../../services/session-service.service';
+import { LoadingService } from '../../../services/shared/loading.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -59,10 +59,7 @@ export class LoginPageComponent {
     }, 3000);
   }
 
-ngOnInit(){
-  
-}
-
+  ngOnInit() {}
 
   @ViewChild('loginForm', { static: true }) loginForm!: NgForm;
 

@@ -3,6 +3,21 @@
     <div class="">
       <div class="page-title">
         <span>Invoices</span>
+
+        <div class="d-flex gap-2">
+          <input
+            type="text"
+            class="search"
+            placeholder="Invoice No..."
+            (input)="onSearchOrderNoInput($event)"
+          />
+          <button class="top-action-btn" (click)="refreshMyOrders()">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button class="top-action-btn" (click)="exportSalesInvoicToExcel()">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -73,6 +88,34 @@
                 <button class="action-btn">
                   <i class="bi bi-printer-fill"></i>
                 </button>
+                <div class="action-dropdown">
+                  <button
+                    class="action-btn"
+                    type="button"
+                    id="dropdownMenuButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        (click)="
+                          exportInvoiceToExcel(
+                            fetchedInvoices.get(i) || [],
+                            sin.SlmVno,
+                            i
+                          )
+                        "
+                      >
+                        <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                        Export
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </td>
             </tr>
 
@@ -170,7 +213,7 @@
       <div
         class="d-flex align-items-center justify-content-center"
         style="height: 95%"
-        *ngIf="salesInvoice.length == 0"
+        *ngIf="pagedInvoices.length == 0"
       >
         <div
           class="d-flex flex-column align-items-center justify-content-center"

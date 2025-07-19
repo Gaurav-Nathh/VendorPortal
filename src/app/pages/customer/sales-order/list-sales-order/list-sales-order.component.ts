@@ -127,6 +127,10 @@ export class ListSalesOrderComponent implements OnInit {
     return items.reduce((sum, item) => sum + Number(item.rate || 0), 0);
   }
 
+  getTotalMRP(items: any[]): number {
+    return items.reduce((sum, item) => sum + Number(item.rate || 0), 0);
+  }
+
   getTotalAmount(items: any[]): number {
     return items.reduce((sum, item) => sum + Number(item.netamount || 0), 0);
   }
@@ -167,6 +171,7 @@ export class ListSalesOrderComponent implements OnInit {
 
   searchOrders(searchTerm: string) {
     const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
+    this.pageNumber = 1;
     this.salesOrderService
       .getOrderList(acmId, this.pageNumber, this.pageSize, searchTerm)
       .subscribe({
@@ -180,10 +185,13 @@ export class ListSalesOrderComponent implements OnInit {
       });
   }
 
+  refreshOrders() {
+    this.openIndexes.clear();
+    this.getOrderList();
+  }
   changePageSize(newSize: number): void {
     this.pageSize = newSize;
     this.pageNumber = 1;
-    console.log(this.pageSize);
     this.getOrderList();
   }
 
@@ -219,6 +227,14 @@ export class ListSalesOrderComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Orders');
 
+    const heading = [['Orders List']];
+
+    heading.forEach((row, index) => {
+      const headingRow = worksheet.addRow(row);
+      worksheet.mergeCells(`A${index + 1}:I${index + 1}`);
+      headingRow.alignment = { vertical: 'middle', horizontal: 'center' };
+      headingRow.font = { bold: true, size: 12 };
+    });
     const columnHeaders = [
       'For Branch',
       'Order No.',
@@ -263,6 +279,19 @@ export class ListSalesOrderComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Orders');
 
+    const heading = [
+      ['Order Details'],
+      [`Order No: ${order.mkey}`],
+      [`Date: ${order.vDate}`],
+    ];
+
+    heading.forEach((row, index) => {
+      const headingRow = worksheet.addRow(row);
+      worksheet.mergeCells(`A${index + 1}:I${index + 1}`);
+      headingRow.alignment = { vertical: 'middle', horizontal: 'center' };
+      headingRow.font = { bold: true, size: 12 };
+    });
+
     const columnHeaders = [
       'Item Code',
       'Item Name',
@@ -295,6 +324,38 @@ export class ListSalesOrderComponent implements OnInit {
       });
     });
 
+    const totalQty = exportData.reduce(
+      (sum: any, row: any[]) => sum + (row[2] || 0),
+      0
+    );
+    const totalMRP = exportData.reduce(
+      (sum: any, row: any[]) => sum + (row[3] || 0),
+      0
+    );
+    const totalRate = exportData.reduce(
+      (sum: any, row: any[]) => sum + (row[4] || 0),
+      0
+    );
+    const totalAmount = exportData.reduce(
+      (sum: any, row: any[]) => sum + (row[5] || 0),
+      0
+    );
+
+    const totalRow = worksheet.addRow([
+      'Total',
+      '',
+      totalQty,
+      totalMRP,
+      totalRate,
+      totalAmount,
+    ]);
+    worksheet.mergeCells(`A${totalRow.number}:B${totalRow.number}`);
+
+    totalRow.eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    });
+
     workbook.xlsx.writeBuffer().then((data) => {
       const blob = new Blob([data], { type: 'application/octet-stream' });
       FileSaver.saveAs(blob, `Sales Order ${order.mkey} .xlsx`);
@@ -302,8 +363,7 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   updateView(view: string): void {
-    // this.currentView = view;
-    // this.filteredOrders = this.orders.filter((po) =>
+    // this.currentView = view;    // this.filteredOrders = this.orders.filter((po) =>
     //   view === 'all' ? true : po.status.toLowerCase() === view
     // );
   }

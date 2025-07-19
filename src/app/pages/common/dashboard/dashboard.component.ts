@@ -1,7 +1,7 @@
-import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ViewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
-import { DashboardServiceService } from '../../../services/shared/dashboard-service/dashboard-service.service';
+import { DashboardService } from '../../../services/shared/dashboard-service/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,6 +10,8 @@ import { DashboardServiceService } from '../../../services/shared/dashboard-serv
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
+  userType: string = '';
+
   @ViewChild('salesChart') salesChartRef: any;
 
   currentDate = new Date();
@@ -47,12 +49,13 @@ export class DashboardComponent {
     },
   ];
 
-  constructor(public dashService: DashboardServiceService) {
+  constructor(public dashboradService: DashboardService) {
     Chart.register(...registerables);
   }
 
   ngOnInit(): void {
-    // Initialization logic
+    this.userType = (sessionStorage.getItem('userType') || '').toLowerCase();
+    console.log(this.userType);
     this.getDetails();
     this.getDetailOtSnd();
   }
@@ -144,36 +147,43 @@ export class DashboardComponent {
   }
 
   getDetails() {
-    this.dashService.getDshbrd().subscribe({
+    this.dashboradService.getDshbrd().subscribe({
       next: (data: any) => {
         this.fillDetails(data.Acm);
       },
       error: (err) => {
+        // Optionally show user-friendly error or alert
         alert('Something went wrong while fetching data. Please try again.');
       },
     });
   }
 
   getDetailOtSnd() {
-    this.dashService.getDashbrdOtsnd().subscribe({
+    this.dashboradService.getDashbrdOtsnd().subscribe({
       next: (data: any) => {
         this.pendAmt = data.OUTSTANDINGAMT;
       },
-      error: (err) => {},
+      error: (err) => {
+        console.error('Error fetching dashboard data:', err);
+      },
     });
   }
 
   fillDetails(data: any) {
-    this.dashService.userDetails.Name = data.AcmName;
-    this.dashService.userDetails.email = data.AcmEmail;
-    this.dashService.userDetails.gstin = data.AcmGstin;
-    this.dashService.userDetails.phone = data.AcmMobileNo;
-    this.dashService.userDetails.bank = data.AcmBanks;
-    this.dashService.userDetails.AcmAddress1 = data.AcmAddress1;
-    this.dashService.userDetails.AcmAddress2 = data.AcmAddress2;
-    this.dashService.userDetails.AclLocation = data.AcmLocations[0].AclLocation;
-    this.dashService.userDetails.AclAddress1 = data.AcmLocations[0].AclAddress1;
-    this.dashService.userDetails.AclAddress2 = data.AcmLocations[0].AclAddress2;
-    this.dashService.userDetails.AclPinCode = data.AcmLocations[0].AclPinCode;
+    this.dashboradService.userDetails.Name = data.AcmName;
+    this.dashboradService.userDetails.email = data.AcmEmail;
+    this.dashboradService.userDetails.gstin = data.AcmGstin;
+    this.dashboradService.userDetails.phone = data.AcmMobileNo;
+    this.dashboradService.userDetails.bank = data.AcmBanks;
+    this.dashboradService.userDetails.AcmAddress1 = data.AcmAddress1;
+    this.dashboradService.userDetails.AcmAddress2 = data.AcmAddress2;
+    this.dashboradService.userDetails.AclLocation =
+      data.AcmLocations[0].AclLocation;
+    this.dashboradService.userDetails.AclAddress1 =
+      data.AcmLocations[0].AclAddress1;
+    this.dashboradService.userDetails.AclAddress2 =
+      data.AcmLocations[0].AclAddress2;
+    this.dashboradService.userDetails.AclPinCode =
+      data.AcmLocations[0].AclPinCode;
   }
 }
