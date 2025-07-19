@@ -200,14 +200,14 @@ export class SidebarComponent {
       isSubmenuOpen: false,
       submenu: [
         {
-          text: 'Pending',
+          text: 'Pending Payment',
           icon: 'fa-solid fa-hourglass-half',
-          route: '/vendor/page-under-construction',
+          route: '/customer/payment-pending',
         },
         {
-          text: 'History',
+          text: 'Account Statement',
           icon: 'fa-solid fa-clock-rotate-left',
-          route: '/vendor/page-under-construction',
+          route: '/customer/payment-history',
         },
       ],
     },

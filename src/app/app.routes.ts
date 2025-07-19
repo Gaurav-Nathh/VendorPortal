@@ -103,7 +103,7 @@ export const routes: Routes = [
         pathMatch: 'full',
         loadComponent: () =>
           import(
-            './pages/vendor/payment/payment-pending/payment-pending.component'
+            './pages/shared/payment/payment-pending/payment-pending.component'
           ).then((c) => c.PaymentPendingComponent),
         canActivate: [authGuard],
       },
@@ -112,7 +112,7 @@ export const routes: Routes = [
         pathMatch: 'full',
         loadComponent: () =>
           import(
-            './pages/vendor/payment/payment-history/payment-history.component'
+            './pages/shared/payment/payment-history/payment-history.component'
           ).then((c) => c.PaymentHistoryComponent),
         canActivate: [authGuard],
       },
@@ -151,24 +151,7 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard],
       },
-      // {
-      //   path: 'catalouge',
-      //   pathMatch: 'full',
-      //   loadComponent: () =>
-      //     import('./pages/shopping-cart/shopping-cart.component').then(
-      //       (c) => c.ShoppingCartComponent
-      //     ),
-      //   canActivate: [authGuard],
-      // },
-      // {
-      //   path: 'shopping-cart',
-      //   pathMatch: 'full',
-      //   loadComponent: () =>
-      //     import('./pages/shopping-cart/shopping-cart.component').then(
-      //       (c) => c.ShoppingCartComponent
-      //     ),
-      //   canActivate: [authGuard],
-      // },
+      
       {
         path: 'all-orders',
         pathMatch: 'full',
@@ -242,14 +225,23 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
-        path: 'page-under-construction',
+        path: 'payment-pending',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./components/under-work/under-work.component').then(
-            (c) => c.UnderWorkComponent
-          ),
+          import('./pages/shared/payment/payment-pending/payment-pending.component').then(
+            (c) => c.PaymentPendingComponent),
         canActivate: [authGuard],
       },
+           {
+        path: 'payment-history',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/shared/payment/payment-history/payment-history.component').then(
+            (c) => c.PaymentHistoryComponent),
+        canActivate: [authGuard],
+      },
+
+
     ],
   },
   {

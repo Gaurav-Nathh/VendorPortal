@@ -61,31 +61,31 @@
   <tbody  id="receipt-accordion" >
     <ng-container *ngFor="let item of paginatedData; let i = index"><!-- paginatedData -->
       <tr class=" " >
-       <td [attr.title]="item.BILLDATE" data-bs-toggle="tooltip">
+       <td >
         {{ item.BILLDATE }}
       </td>
-       <td [attr.title]="item.BILLTYPE" data-bs-toggle="tooltip">
+       <td >
         {{ item.BILLTYPE }}
       </td>
      <td [attr.title]="item.BILLNO" data-bs-toggle="tooltip">
         {{ item.BILLNO }}
       </td>
-      <td [attr.title]="item.BALANCE" data-bs-toggle="tooltip" class="text-end">
+      <td  class="text-end">
         {{ item.BALANCE}}
       </td>
-       <td [attr.title]="item.PAYAMT" data-bs-toggle="tooltip" class="text-end">
+       <td  class="text-end">
         {{ item.PAYAMT}}
       </td>
-          <td [attr.title]="item.ADJAMT" data-bs-toggle="tooltip" class="text-end">
+          <td  class="text-end">
         {{ item.ADJAMT}}
       </td>
-          <td [attr.title]="item.BALANCE" data-bs-toggle="tooltip" class="text-end">
+          <td  class="text-end">
         {{ item.BALANCE}}
       </td>
-       <td [attr.title]="item.DUEDATE" data-bs-toggle="tooltip" class="text-center">
+       <td  class="text-center">
         {{ item.DUEDATE}}
       </td>
-       <td [attr.title]="item.OVERDUE" data-bs-toggle="tooltip" class="text-end">
+       <td  class="text-end">
         {{ item.OVERDUE}}
       </td>
 
