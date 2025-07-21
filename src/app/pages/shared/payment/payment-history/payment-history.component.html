@@ -61,7 +61,7 @@
   <tbody  id="receipt-accordion" >
     <ng-container *ngFor="let item of paginatedData; let i = index">
       <tr class=" " >
-       <td [attr.title]="item.Date" data-bs-toggle="tooltip" class="text-center">
+       <td   class="text-center">
         {{ item.Date | date: 'dd-MM-yyyy' }}
       </td>
       <td [attr.title]="item.Vtype" data-bs-toggle="tooltip" class="text-start">
@@ -73,10 +73,10 @@
       <td [attr.title]="item.Particular" data-bs-toggle="tooltip"  class="text-truncate" style="max-width: 150px;">
         {{ item.Particular}}
       </td>
-       <td [attr.title]="item.Debit" data-bs-toggle="tooltip" class="text-end">
+       <td  class="text-end">
         {{ item.Debit}}
       </td>
-      <td [attr.title]="item.Credit" data-bs-toggle="tooltip" class="text-end">
+      <td  class="text-end">
         {{ item.Credit}}
       </td>
       <td [attr.title]="item.Narration" data-bs-toggle="tooltip" class="text-truncate" style="max-width: 150px;">
@@ -86,7 +86,7 @@
        <td [attr.title]="item['Trn. No.']" data-bs-toggle="tooltip" class="text-end">
         {{ item['Trn. No.']}}
       </td>
-       <td [attr.title]="item['Trn. Date']" data-bs-toggle="tooltip" class="text-center">
+       <td  class="text-center">
         {{ item['Trn. Date'] | date: 'dd-MM-yyyy'}}
       </td>
       
