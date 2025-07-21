@@ -27,6 +27,7 @@ export class SalesInvoiceComponent implements OnInit {
   pageSize: number = 10;
   currentPage: number = 1;
   totalPages: number = 0;
+  isInvoicesLoading: boolean = false;
 
   private searchOrderNoSubject = new Subject<string>();
 
@@ -43,13 +44,16 @@ export class SalesInvoiceComponent implements OnInit {
   }
 
   getSalesInvoiceList() {
+    this.isInvoicesLoading = true;
     const amcId: number = Number(sessionStorage.getItem('UsrLinkAcmId'));
     this.salesInvoiceService.getPortalSalesInvoiceList(amcId).subscribe({
       next: (response) => {
+        this.isInvoicesLoading = false;
         this.salesInvoice = response.SOList;
         this.paginate();
       },
       error: (err) => {
+        this.isInvoicesLoading = false;
         Swal.fire({
           toast: true,
           icon: 'error',
@@ -141,11 +145,35 @@ export class SalesInvoiceComponent implements OnInit {
     }
   }
 
+  getTotalQty(items: SalesInvoiceDetail[]): number {
+    return items.reduce((sum, item) => sum + Number(item.Qty || 0), 0);
+  }
+
+  getTotalBaseQty(items: SalesInvoiceDetail[]): number {
+    return items.reduce((sum, item) => sum + Number(item.BaseQty || 0), 0);
+  }
+
+  getTotalRate(items: SalesInvoiceDetail[]): number {
+    return items.reduce((sum, item) => sum + Number(item.Rate || 0), 0);
+  }
+
+  getTotalGrossAmount(items: SalesInvoiceDetail[]): number {
+    return items.reduce((sum, item) => sum + Number(item.GrossAmt || 0), 0);
+  }
+
+  getTotalDiscountAmount(items: SalesInvoiceDetail[]): number {
+    return items.reduce((sum, item) => sum + Number(item.DisAmt || 0), 0);
+  }
+
+  getTotalAmount(items: SalesInvoiceDetail[]): number {
+    return items.reduce((sum, item) => sum + Number(item.Amount || 0), 0);
+  }
+
   exportSalesInvoicToExcel(): void {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sales Orders');
+    const worksheet = workbook.addWorksheet('Sales Invoices');
 
-    const heading = [['Confirm Orders List']];
+    const heading = [['Purchase Invoice List']];
 
     heading.forEach((row, index) => {
       const headingRow = worksheet.addRow(row);
@@ -155,13 +183,11 @@ export class SalesInvoiceComponent implements OnInit {
     });
     const columnHeaders = [
       'Branch',
-      'Order No.',
+      'Invoice No.',
       'Date',
-      'Reference No.',
-      'Reference Date',
       'Item Count',
+      'Quantity',
       'Net Amount',
-      'Status',
     ];
     const headerRow = worksheet.addRow(columnHeaders);
 
@@ -171,15 +197,13 @@ export class SalesInvoiceComponent implements OnInit {
       worksheet.getColumn(colNumber).width = 15;
     });
 
-    const exportData = this.salesInvoice.map((so: any) => [
-      so.SomBrnName,
-      so.SomVno,
-      so.SomVdate,
-      so.SomRefNo,
-      so.SomRefDate,
-      so.SomItems,
-      so.SomNetAmt,
-      so.SomStatus,
+    const exportData = this.salesInvoice.map((si: any) => [
+      si.SlmBrnName,
+      si.SlmVno,
+      si.SlmVdate,
+      si.SlmItems,
+      si.SlmQty,
+      si.SlmNetAmt,
     ]);
 
     exportData.forEach((rowData) => {
@@ -191,12 +215,12 @@ export class SalesInvoiceComponent implements OnInit {
 
     workbook.xlsx.writeBuffer().then((data) => {
       const blob = new Blob([data], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, 'Sales Orders.xlsx');
+      FileSaver.saveAs(blob, 'Purchase Invoice List.xlsx');
     });
   }
 
   exportInvoiceToExcel(
-    order: SalesInvoiceDetail,
+    order: SalesInvoiceDetail[],
     orderNumber: string,
     index: number
   ) {
@@ -230,7 +254,10 @@ export class SalesInvoiceComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Orders');
 
-    const heading = [['Order Details'], [`Order No: ${orderNumber}`]];
+    const heading = [
+      ['Purchase Invoice Details'],
+      [`Invoice No: ${orderNumber}`],
+    ];
 
     heading.forEach((row, index) => {
       const headingRow = worksheet.addRow(row);
@@ -326,7 +353,7 @@ export class SalesInvoiceComponent implements OnInit {
 
     workbook.xlsx.writeBuffer().then((data) => {
       const blob = new Blob([data], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, `Sales Order ${orderNumber} .xlsx`);
+      FileSaver.saveAs(blob, `Purchase Invoice ${orderNumber} .xlsx`);
     });
   }
 }

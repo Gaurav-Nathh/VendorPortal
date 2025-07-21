@@ -25,6 +25,7 @@ export class MyOrdersComponent implements OnInit {
   totalPages: number = 0;
   fetchedDetails = new Map<number, SaleOrderDetail[]>();
   openIndexes = new Set<number>();
+  isOrdersLoading: boolean = false;
 
   private searchOrderNoSubject = new Subject<string>();
 
@@ -41,13 +42,16 @@ export class MyOrdersComponent implements OnInit {
   }
 
   getPortalSOList() {
+    this.isOrdersLoading = true;
     const amcId: number = Number(sessionStorage.getItem('UsrLinkAcmId'));
     this.myOrdersService.getPortalSOList(amcId).subscribe({
       next: (response) => {
+        this.isOrdersLoading = false;
         this.soList = response.SOList;
         this.paginate();
       },
       error: (err) => {
+        this.isOrdersLoading = false;
         Swal.fire({
           toast: true,
           icon: 'error',
@@ -188,7 +192,7 @@ export class MyOrdersComponent implements OnInit {
 
     workbook.xlsx.writeBuffer().then((data) => {
       const blob = new Blob([data], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, 'Sales Orders.xlsx');
+      FileSaver.saveAs(blob, 'Purchase Orders.xlsx');
     });
   }
 
@@ -234,7 +238,7 @@ export class MyOrdersComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Orders');
 
-    const heading = [['Order Details'], [`Order No: ${orderNumber}`]];
+    const heading = [['Purchase Order Details'], [`Order No: ${orderNumber}`]];
 
     heading.forEach((row, index) => {
       const headingRow = worksheet.addRow(row);
@@ -330,7 +334,7 @@ export class MyOrdersComponent implements OnInit {
 
     workbook.xlsx.writeBuffer().then((data) => {
       const blob = new Blob([data], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, `Sales Order ${orderNumber} .xlsx`);
+      FileSaver.saveAs(blob, `Purchase Order ${orderNumber} .xlsx`);
     });
   }
 
