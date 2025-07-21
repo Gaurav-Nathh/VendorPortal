@@ -1,5 +1,4 @@
 .dashboard-container {
-  padding: 1rem;
   margin-right: 0.4rem;
   background: var(--color-card);
   border-radius: 1rem;
@@ -10,7 +9,14 @@
   .main-container {
     display: flex;
     flex-direction: column;
+    padding-inline: 0.8rem;
+    padding-top: 0.5rem;
     height: 100%;
+  }
+
+  .footer-container {
+    padding-inline: 0.8rem;
+    padding-block: 0.5rem;
   }
 }
 
@@ -22,16 +28,17 @@
   justify-content: space-between;
   align-items: center;
 
-  .refresh-btn {
+  .top-action-btn {
     width: 2rem;
     height: 2rem;
-    border-radius: 100%;
+    border-radius: 0.5rem;
     background: var(--color-bg);
     color: #64748b;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
 
     i {
       font-size: 1rem;
@@ -39,8 +46,22 @@
 
     &:hover {
       background: var(--color-blue);
+      transform: scale(1.1);
       color: white;
+
+      i {
+        animation: spin 0.5s ease-in-out;
+      }
     }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -253,6 +274,8 @@
             color: var(--primary-text);
             &:hover {
               background-color: var(--color-blue);
+              color: white;
+              cursor: pointer;
             }
           }
         }

@@ -4,10 +4,10 @@
       <div class="page-title">
         <span>Sales Order</span>
         <div class="d-flex gap-2">
-          <button class="refresh-btn">
+          <button class="top-action-btn" (click)="refreshOrders()">
             <i class="fa-solid fa-arrows-rotate"></i>
           </button>
-          <button class="refresh-btn" (click)="exportSalesOrdersToExcel()">
+          <button class="top-action-btn" (click)="exportSalesOrdersToExcel()">
             <i class="fa-solid fa-download"></i>
           </button>
         </div>
@@ -42,7 +42,7 @@
     <!-- Orders Table -->
     <div class="flex-fill orders-table-container">
       <table class="orders-table w-100">
-        <thead>
+        <thead class="" style="position: sticky; top: 0; z-index: 1">
           <tr>
             <th>#</th>
             <th>For Branch</th>
@@ -208,7 +208,9 @@
                             <th class="text-center">
                               {{ getTotalQty(so.psoItems) }}
                             </th>
-                            <th></th>
+                            <th>
+                              {{ getTotalMRP(so.psoItems) | currency : "INR" }}
+                            </th>
                             <th>
                               {{ getTotalRate(so.psoItems) | currency : "INR" }}
                             </th>
@@ -245,7 +247,7 @@
   </div>
   <div
     *ngIf="orders.length >= 1"
-    class="footer-container d-flex justify-content-between align-items-center mt-3"
+    class="footer-container d-flex justify-content-between align-items-center"
   >
     <div>
       <label for="pageSize" class="me-2">Page Size:</label>

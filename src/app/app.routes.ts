@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login-page/login-page.component').then(
+      import('./pages/common/login-page/login-page.component').then(
         (c) => c.LoginPageComponent
       ),
   },
@@ -30,9 +30,9 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import(
-            './pages/vendor/dashboard-vendor/dashboard-vendor.component'
-          ).then((c) => c.DashboardVendorComponent),
+          import('./pages/common/dashboard/dashboard.component').then(
+            (c) => c.DashboardComponent
+          ),
         canActivate: [authGuard],
       },
       {
@@ -128,7 +128,7 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/shared/dashboard/dashboard.component').then(
+          import('./pages/common/dashboard/dashboard.component').then(
             (c) => c.DashboardComponent
           ),
         canActivate: [authGuard],

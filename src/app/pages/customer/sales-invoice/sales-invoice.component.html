@@ -3,10 +3,28 @@
     <div class="">
       <div class="page-title">
         <span>Invoices</span>
+
+        <div class="d-flex gap-2">
+          <input
+            type="text"
+            class="search"
+            placeholder="Invoice No..."
+            (input)="onSearchOrderNoInput($event)"
+          />
+          <button class="top-action-btn" (click)="refreshMyOrders()">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button class="top-action-btn" (click)="exportSalesInvoicToExcel()">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="flex-fill orders-table-container mt-3">
+    <div
+      *ngIf="!isInvoicesLoading; else loader"
+      class="flex-fill orders-table-container mt-3"
+    >
       <table class="orders-table w-100">
         <thead>
           <tr>
@@ -73,6 +91,34 @@
                 <button class="action-btn">
                   <i class="bi bi-printer-fill"></i>
                 </button>
+                <div class="action-dropdown">
+                  <button
+                    class="action-btn"
+                    type="button"
+                    id="dropdownMenuButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        (click)="
+                          exportInvoiceToExcel(
+                            fetchedInvoices.get(i) || [],
+                            sin.SlmVno,
+                            i
+                          )
+                        "
+                      >
+                        <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                        Export
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </td>
             </tr>
 
@@ -138,17 +184,60 @@
                                 {{ item.Rate | currency : "INR" }}
                               </td>
                               <td class="text-end">
-                                {{ item.Amount | currency : "INR" }}
+                                {{ item.GrossAmt | currency : "INR" }}
                               </td>
                               <td class="text-end">
                                 {{ item.DisAmt | currency : "INR" }}
                               </td>
                               <td class="text-center">{{ item.GstName }}</td>
                               <td class="fw-semibold text-success text-end">
-                                {{ item.GrossAmt | currency : "INR" }}
+                                {{ item.Amount | currency : "INR" }}
                               </td>
                             </tr>
                           </tbody>
+                          <thead>
+                            <tr
+                              class="text-end"
+                              style="background-color: #e6f9e7"
+                            >
+                              <th colspan="4" class="text-center">Total</th>
+                              <th class="text-center">
+                                {{ getTotalQty(fetchedInvoices.get(i) || []) }}
+                              </th>
+                              <th class="text-center">
+                                {{
+                                  getTotalBaseQty(fetchedInvoices.get(i) || [])
+                                }}
+                              </th>
+                              <th>
+                                {{
+                                  getTotalRate(fetchedInvoices.get(i) || [])
+                                    | currency : "INR"
+                                }}
+                              </th>
+                              <th>
+                                {{
+                                  getTotalGrossAmount(
+                                    fetchedInvoices.get(i) || []
+                                  ) | currency : "INR"
+                                }}
+                              </th>
+                              <th>
+                                {{
+                                  getTotalDiscountAmount(
+                                    fetchedInvoices.get(i) || []
+                                  ) | currency : "INR"
+                                }}
+                              </th>
+                              <th></th>
+                              <th>
+                                {{
+                                  getTotalAmount(fetchedInvoices.get(i) || [])
+                                    | currency : "INR"
+                                }}
+                              </th>
+                            </tr>
+                          </thead>
                         </table>
                       </div>
                     </div>
@@ -170,7 +259,7 @@
       <div
         class="d-flex align-items-center justify-content-center"
         style="height: 95%"
-        *ngIf="salesInvoice.length == 0"
+        *ngIf="pagedInvoices.length == 0"
       >
         <div
           class="d-flex flex-column align-items-center justify-content-center"
@@ -181,12 +270,21 @@
         </div>
       </div>
     </div>
+
+    <ng-template #loader>
+      <div class="loaderContainer">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-center">Getting orders...</p>
+      </div>
+    </ng-template>
   </div>
   <div
     *ngIf="salesInvoice.length >= 1"
-    class="d-flex justify-content-between align-items-center mt-3"
+    class="footer-container d-flex justify-content-between align-items-center mt-3"
   >
-    <div class="mb-2">
+    <div>
       <label for="pageSize">Items per page:</label>
       <select
         id="pageSize"
