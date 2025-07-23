@@ -28,6 +28,17 @@
   justify-content: space-between;
   align-items: center;
 
+  .search {
+    font-size: 1rem;
+    border: 2px solid var(--color-bg);
+    border-radius: 0.5rem;
+    padding-inline: 0.6rem;
+
+    &:focus {
+      outline-color: var(--color-blue);
+    }
+  }
+
   .top-action-btn {
     width: 2rem;
     height: 2rem;

@@ -20,7 +20,7 @@ export class MyOrdersComponent implements OnInit {
   soList: SalesOrder[] = [];
   pagedSOList: any[] = [];
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
-  pageSize: number = 10;
+  pageSize: number = 50;
   currentPage: number = 1;
   totalPages: number = 0;
   fetchedDetails = new Map<number, SaleOrderDetail[]>();

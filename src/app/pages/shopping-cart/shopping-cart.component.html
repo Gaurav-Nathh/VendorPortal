@@ -3,12 +3,12 @@
     <div class="d-flex align-items-center gap-4">
       <span class="fw-bold text-nowrap">Shopping Cart</span>
     </div>
-    <div
-      *ngIf="CartMode === 'items'"
-      id="search-section"
-      class="search-container"
-    >
-      <div id="search-category-box" class="position-relative">
+    <div id="search-section" class="search-container">
+      <div
+        *ngIf="this.CartMode === 'items'"
+        id="search-category-box"
+        class="position-relative"
+      >
         <button
           class="d-flex align-items-center justify-content-between border-end-only w-auto"
           type="button"
@@ -34,7 +34,9 @@
           </li>
         </ul>
       </div>
-      <span style="color: var(--color-blue)">|</span>
+      <span *ngIf="this.CartMode === 'items'" style="color: var(--color-blue)"
+        >|</span
+      >
       <input
         type="text"
         id="prod-search"

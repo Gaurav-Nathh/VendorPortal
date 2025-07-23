@@ -2,8 +2,14 @@
   <div class="main-container flex-fill overflow-auto">
     <div class="">
       <div class="page-title">
-        <span>Sales Order</span>
+        <span>Orders</span>
         <div class="d-flex gap-2">
+          <input
+            type="text"
+            class="search"
+            placeholder="Order No..."
+            (input)="onSearchOrderNoInput($event)"
+          />
           <button class="top-action-btn" (click)="refreshOrders()">
             <i class="fa-solid fa-arrows-rotate"></i>
           </button>
@@ -12,7 +18,7 @@
           </button>
         </div>
       </div>
-      <div class="dashboard-header">
+      <!-- <div class="dashboard-header">
         <div class="view-selector">
           <div class="view-options">
             <button
@@ -36,11 +42,11 @@
             <i class="bi bi-plus-lg"></i> Create Order
           </button>
         </div>
-      </div>
+      </div>  -->
     </div>
 
     <!-- Orders Table -->
-    <div class="flex-fill orders-table-container">
+    <div class="flex-fill orders-table-container mt-3">
       <table class="orders-table w-100">
         <thead class="" style="position: sticky; top: 0; z-index: 1">
           <tr>

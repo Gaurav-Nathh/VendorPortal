@@ -84,6 +84,7 @@ export class SidebarComponent {
   }
 
   toggleSubmenu(item: MenuItem, event: Event) {
+    this.handleCartMode(item.text);
     if (item.submenu) {
       item.isSubmenuOpen = !item.isSubmenuOpen;
       event.preventDefault();
@@ -93,9 +94,10 @@ export class SidebarComponent {
   handleCartMode(text: string): void {
     this.shoppingCartService.disableEditing();
     this.salesOrderService.clearEditableItem();
-    if (text.toLowerCase().includes('catalogue')) {
+    console.log('Selected Text:');
+    if (text.toLowerCase().includes('order by catalouge')) {
       this.sharedService.setCartMode('catalouge');
-    } else if (text.toLowerCase().includes('item')) {
+    } else if (text.toLowerCase().includes('order by items')) {
       this.sharedService.setCartMode('items');
     }
   }
@@ -167,22 +169,32 @@ export class SidebarComponent {
       icon: 'bi bi-file-earmark-check-fill',
       route: '/customer/all-orders',
     },
+    // {
+    //   text: 'Create Order',
+    //   icon: 'fa-solid fa-cart-shopping',
+    //   isSubmenuOpen: false,
+    //   submenu: [
+    //     {
+    //       text: 'Items',
+    //       icon: 'fa-solid fa-cubes',
+    //       route: '/customer/items/create-order',
+    //     },
+    //     {
+    //       text: 'Catalogue',
+    //       icon: 'fa-solid fa-box',
+    //       route: '/customer/catalouge/create-order',
+    //     },
+    //   ],
+    // },
     {
-      text: 'Create Order',
-      icon: 'fa-solid fa-cart-shopping',
-      isSubmenuOpen: false,
-      submenu: [
-        {
-          text: 'Items',
-          icon: 'fa-solid fa-cubes',
-          route: '/customer/items/create-order',
-        },
-        {
-          text: 'Catalogue',
-          icon: 'fa-solid fa-box',
-          route: '/customer/catalouge/create-order',
-        },
-      ],
+      text: 'Order by Items',
+      icon: 'fa-solid fa-cubes',
+      route: '/customer/items/create-order',
+    },
+    {
+      text: 'Order by Catalouge',
+      icon: 'fa-solid fa-box',
+      route: '/customer/catalouge/create-order',
     },
     {
       text: 'My Orders',

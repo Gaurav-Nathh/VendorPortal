@@ -386,25 +386,35 @@ export class ShoppingCartComponent {
   }
 
   searchProducts() {
-    if (this.searchText === '') {
-      Swal.fire({
-        toast: true,
-        icon: 'warning',
-        title: 'Search input cannot be empty!',
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer);
-          toast.addEventListener('mouseleave', Swal.resumeTimer);
-        },
-      });
-    } else {
+    if (this.CartMode === 'items') {
+      if (this.searchText === '') {
+        Swal.fire({
+          toast: true,
+          icon: 'warning',
+          title: 'Search input cannot be empty!',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
       this.filterPayload.searchType = this.selectedSearchOpitionDisplay;
       this.filterPayload.searchValue = this.searchText;
+      this.applyFilters();
+    } else if (this.CartMode === 'catalouge') {
+      this.searchText = this.searchText.trim().toLowerCase();
+      if (!this.searchText) {
+        this.products = [...this.catalougeProducts];
+      } else {
+        this.products = this.catalougeProducts.filter((product) => {
+          const name = product.ItmName?.toLowerCase();
+          const code = product.ItmCode?.toLowerCase();
+          return (
+            name.includes(this.searchText) || code.includes(this.searchText)
+          );
+        });
+      }
     }
-    this.applyFilters();
     this.searchText === '';
   }
 
@@ -507,7 +517,7 @@ export class ShoppingCartComponent {
     const isFilterEmpty = Object.entries(this.catalougeFilterPayload).every(
       ([key, value]) => {
         if (typeof value === 'boolean') return !value;
-        if (typeof value === 'number') return value === 0;
+        // if (typeof value === 'number') return value === 0;
         return !value || value.toString().trim() === '';
       }
     );
@@ -542,7 +552,7 @@ export class ShoppingCartComponent {
 
       // Image filter
       if (
-        this.catalougeFilterPayload.withImage === false &&
+        this.catalougeFilterPayload.withImage === true &&
         product.ItmImageFile === ''
       ) {
         return false;
@@ -578,7 +588,7 @@ export class ShoppingCartComponent {
           }
         }
       }
-
+      console.log(this.catalougeFilterPayload);
       return true;
     });
   }
@@ -785,10 +795,10 @@ export class ShoppingCartComponent {
     toPrice: number;
     withImage: boolean;
   } = {
-    withStock: false,
+    withStock: true,
     fromPrice: 0,
     toPrice: 0,
-    withImage: false,
+    withImage: true,
   };
 
   selectedNavFilterTitleDisplay = 'Select a filter';
@@ -868,6 +878,18 @@ export class ShoppingCartComponent {
 
   addToCart(product: Product) {
     try {
+      if (product.Itemprices[0].Stock <= 0) {
+        Swal.fire({
+          toast: true,
+          icon: 'warning',
+          title: 'Item is out of stock',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        return;
+      }
       let existing: boolean = false;
       if (this.CartMode === 'catalouge') {
         existing = this.cart.find(
@@ -916,6 +938,18 @@ export class ShoppingCartComponent {
   }
 
   increaseItmCardQty(product: Product): void {
+    if (product.ItmQty >= product.Itemprices[0].Stock) {
+      Swal.fire({
+        toast: true,
+        icon: 'warning',
+        title: 'Quantity exceeds available stock',
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      return;
+    }
     product.ItmQty = (product.ItmQty || 1) + 1;
   }
 

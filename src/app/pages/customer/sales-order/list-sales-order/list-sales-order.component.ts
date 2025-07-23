@@ -29,7 +29,7 @@ export class ListSalesOrderComponent implements OnInit {
   orders: any[] = [];
   editableItems: any[] = [];
   pageNumber: number = 1;
-  pageSize: number = 10;
+  pageSize: number = 50;
   totalRecords: number = 0;
   pageSizes = [5, 10, 50, 100, 200];
   openIndexes = new Set<number>();
@@ -44,7 +44,7 @@ export class ListSalesOrderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.changePageSize(this.pageSizes[0]);
+    this.changePageSize(this.pageSizes[2]); // Default to 50 items per page
     this.searchOrderNoSubject
       .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe((serachOrderNoTerm) => {
@@ -60,17 +60,23 @@ export class ListSalesOrderComponent implements OnInit {
     return status.toLowerCase();
   }
 
-  createSO() {
-    this.sharedServrice.setCartMode('items');
-    this.shoppingCartService.disableEditing();
-    this.router.navigate(['/customer/items/create-order']);
-    console.log(this.sharedServrice.getCartMode());
-  }
+  // createSO() {
+  //   this.sharedServrice.setCartMode('items');
+  //   this.shoppingCartService.disableEditing();
+  //   this.router.navigate(['/customer/items/create-order']);
+  //   console.log(this.sharedServrice.getCartMode());
+  // }
 
   editSO(so: any) {
     this.shoppingCartService.enableEditing();
     this.salesOrderService.setEditableItem(so);
-    this.router.navigate(['/customer/items/create-order']);
+    if (so.orderType === 'items') {
+      this.sharedServrice.setCartMode('items');
+      this.router.navigate(['/customer/items/create-order']);
+    } else {
+      this.sharedServrice.setCartMode('catalouge');
+      this.router.navigate(['/customer/catalouge/create-order']);
+    }
   }
 
   deleteSO(so: any) {
