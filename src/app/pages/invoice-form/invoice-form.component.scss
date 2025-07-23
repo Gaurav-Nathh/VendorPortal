@@ -9,37 +9,6 @@
     height: 100%;
     width: 100%;
   }
-
-  #shopping-cart-overlay {
-    position: absolute; /* Full-screen overlay should be fixed */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transform: translateX(100%);
-    transition: transform 0.6s ease-out;
-
-    &.show {
-      transform: translateX(0%);
-    }
-  }
-
-  #shopping-cart-btn {
-    width: 3rem;
-    height: 3rem;
-    position: absolute;
-    top: 5rem;
-    right: 0rem;
-    color: white;
-    background-color: var(--color-blue);
-    border-radius: 0.4rem 0 0 0.4rem;
-    transition: all 0.4s ease-in-out;
-    z-index: 9;
-
-    &.hide {
-      display: none;
-    }
-  }
 }
 
 .purchase-order-form {
@@ -62,14 +31,41 @@
     background-color: var(--color-card);
     border-color: var(--border-color);
 
-    .card-header {
-      background-color: var(--color-bg);
+    .invoice-form-header {
+      background-color: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+
+      h5 {
+        margin: 0;
+        font-weight: 600;
+      }
     }
 
     .card-body {
       padding: 0.6rem !important;
     }
   }
+
+  .is-invalid {
+    border: 1px solid red !important;
+  }
+
+  input.readonly-nofocus {
+    pointer-events: none;
+    background-color: #f9f9f9;
+    cursor: default;
+  }
+
+  .table-footer {
+    background-color: #f1f5f9;
+    border-radius: 0 0 10px 10px;
+    font-size: 1rem;
+    color: #059669;
+  }
+
+
 }
 
 .upload-container {
@@ -162,9 +158,29 @@
   transition: background-color 0.2s ease;
 }
 
+.readonly-grey {
+  background-color: #e9ecef; // Bootstrap's light grey used for disabled inputs
+  cursor: not-allowed;
+}
+
+.item-metadata {
+  position: relative;
+}
+
+.absolute-meta {
+  position: absolute;
+  top: 70%;
+  left: 10%;
+  font-size: 11px;
+  line-height: 1.2;
+  color: #6c757d;
+  white-space: nowrap;
+}
+
 .remove-file:hover {
   background-color: #f8d7da;
 }
+
 
 @media (max-width: 768px) {
   .upload-container {
@@ -182,19 +198,23 @@
     border-left: 1px solid #ced4da;
   }
 }
+
 .action-container {
   display: flex;
   gap: 0.4rem;
   justify-content: center;
 }
+
 .text-truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .bord {
   border: 1px solid red !important;
 }
+
 .modern-data-table {
   width: 100%;
   border-collapse: separate;
@@ -323,13 +343,18 @@
   }
 }
 
+
 // Custom table styling
 .table-container {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible !important;
+  position: relative;
   border-radius: 12px;
+  z-index: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin: 20px 0;
   background: white;
+  height: auto;
 
   table {
     margin-bottom: 0;
@@ -441,8 +466,6 @@
 }
 
 
-
-
 .items-section {
   margin-bottom: 32px;
 
@@ -461,10 +484,19 @@
   }
 
   .table-container {
-    overflow-x: auto;
-    border: 2px solid #e5e7eb;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     background: white;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .items-table-wrapper {
+    // overflow-y: auto;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
   }
 
   .items-table {
@@ -537,7 +569,7 @@
     .total-row {
       background-color: #f1f5f9;
       font-weight: 600;
-      
+
       .total-label {
         text-align: right;
         color: #1f2937;
@@ -552,4 +584,77 @@
       }
     }
   }
+
+  .scrollable-table-wrapper {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scrollable-tbody {
+    flex: 1; // ✅ use remaining space inside the wrapper
+    overflow-y: auto;
+  }
+
+  .scrollable-tbody table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .scrollable-tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+  }
+
+  .table-footer-fixed {
+    background-color: #f1f5f9;
+    padding: 12px 16px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 16px;
+    color: #059669;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+
+}
+
+#itemLookupModal .modal-body {
+  min-height: 300px;
+  /* or whatever height fits well */
+  overflow-y: auto;
+}
+
+.lookup-table-wrapper {
+  max-height: 200px; // Scroll inside modal if too many rows
+  overflow-y: auto;
+}
+
+.metadata-text {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #6b7280; // Tailwind gray-500 or Bootstrap muted
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Chrome, Safari, Edge */
+.number-input::-webkit-inner-spin-button,
+.number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.number-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
