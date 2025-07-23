@@ -33,6 +33,7 @@ export class ListSalesOrderComponent implements OnInit {
   totalRecords: number = 0;
   pageSizes = [5, 10, 50, 100, 200];
   openIndexes = new Set<number>();
+  isOrderLoading: boolean = false;
 
   private searchOrderNoSubject = new Subject<string>();
 
@@ -159,17 +160,19 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   getOrderList() {
+    this.isOrderLoading = true;
     const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
-    console.log('here');
     this.salesOrderService
       .getOrderList(acmId, this.pageNumber, this.pageSize)
       .subscribe({
         next: (response) => {
+          this.isOrderLoading = false;
           this.orders = response.data;
           this.totalRecords = response.totalRecords;
           console.log(this.orders);
         },
         error: (err) => {
+          this.isOrderLoading = false;
           console.error('Failed to fetch orders:', err);
         },
       });

@@ -46,7 +46,10 @@
     </div>
 
     <!-- Orders Table -->
-    <div class="flex-fill orders-table-container mt-3">
+    <div
+      *ngIf="!isOrderLoading; else loader"
+      class="flex-fill orders-table-container mt-3"
+    >
       <table class="orders-table w-100">
         <thead class="" style="position: sticky; top: 0; z-index: 1">
           <tr>
@@ -250,11 +253,16 @@
         </div>
       </div>
     </div>
+    <ng-template #loader>
+      <div class="loaderContainer">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-center">Getting orders...</p>
+      </div>
+    </ng-template>
   </div>
-  <div
-    *ngIf="orders.length >= 1"
-    class="footer-container d-flex justify-content-between align-items-center"
-  >
+  <div *ngIf="orders.length >= 1" class="footer-container">
     <div>
       <label for="pageSize" class="me-2">Page Size:</label>
       <select

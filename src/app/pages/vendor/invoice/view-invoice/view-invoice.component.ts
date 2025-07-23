@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { InvoiceService } from '../../services/vendor-service/invoice/invoice.service';
+import { InvoiceService } from '../../../../services/vendor-service/invoice/invoice.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
-import { Pgrmain } from '../../Models/Invoice/invoice.model';
+import { Pgrmain } from '../../../../Models/Invoice/invoice.model';
 
 @Component({
   selector: 'app-view-invoice',
   imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './view-invoice.component.html',
-  styleUrl: './view-invoice.component.scss'
+  styleUrl: './view-invoice.component.scss',
 })
 export class ViewInvoiceComponent {
   invoiceList: Pgrmain[] = [];
@@ -18,17 +18,17 @@ export class ViewInvoiceComponent {
   itemsPerPage: number = 15;
   pageSizes: number[] = [10, 15, 20, 50, 100];
 
-  constructor(private invoiceService: InvoiceService, private router: Router) { }
+  constructor(private invoiceService: InvoiceService, private router: Router) {}
 
   ngOnInit(): void {
     this.invoiceService.getAllInvoices().subscribe({
       next: (response) => {
         this.invoiceList = response;
-        console.log('list', this.invoiceList)
+        console.log('list', this.invoiceList);
       },
       error: (err) => {
         console.error('Failed to load invoice:', err);
-      }
+      },
     });
   }
 
@@ -57,10 +57,13 @@ export class ViewInvoiceComponent {
   calculateNetAmount(details: any[]): number {
     return Array.isArray(details)
       ? details.reduce(
-        (sum, d) =>
-          sum + (d.grossAmount || 0) - (d.discountAmount || 0) + (d.gstAmount || 0),
-        0
-      )
+          (sum, d) =>
+            sum +
+            (d.grossAmount || 0) -
+            (d.discountAmount || 0) +
+            (d.gstAmount || 0),
+          0
+        )
       : 0;
   }
 
@@ -71,18 +74,20 @@ export class ViewInvoiceComponent {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
+      cancelButtonText: 'No, keep it',
     }).then((result) => {
       if (result.isConfirmed) {
         this.invoiceService.deleteInvoice(mkey).subscribe({
           next: () => {
-            this.invoiceList = this.invoiceList.filter((inv) => inv.mKey !== mkey);
+            this.invoiceList = this.invoiceList.filter(
+              (inv) => inv.mKey !== mkey
+            );
             Swal.fire('Deleted!', 'Invoice has been deleted.', 'success');
           },
           error: (err) => {
             console.error('Error deleting invoice:', err);
             Swal.fire('Error!', 'Failed to delete invoice.', 'error');
-          }
+          },
         });
       }
     });
@@ -95,7 +100,7 @@ export class ViewInvoiceComponent {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, edit it',
-      cancelButtonText: 'No, cancel'
+      cancelButtonText: 'No, cancel',
     }).then((result) => {
       if (result.isConfirmed) {
         this.invoiceService.setMKey(mkey);
