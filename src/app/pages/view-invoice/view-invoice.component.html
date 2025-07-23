@@ -1,0 +1,100 @@
+
+
+<div class="dashboard-container">
+  <div class="main-container flex-fill overflow-auto">
+    <div class="">
+      <div class="page-title">
+        <span>Invoice List</span>
+        <div class="d-flex gap-1">
+          <button class="btn create-btn" [routerLink]="['/vendor/invoice-form']">
+            <i class="bi bi-plus-lg"></i> Create Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoices Table -->
+    <div class="flex-fill orders-table-container">
+      <table class="orders-table w-100">
+        <thead style="position: sticky; top: 0; z-index: 1">
+          <tr>
+            <th>#</th>
+            <th>For Branch</th>
+            <th>Invoice No.</th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Bill No.</th>
+            <th class="text-center">Bill Date</th>
+            <th class="text-center">Item Count</th>
+            <th class="text-end">Net Amount</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let invoice of paginatedData; let i = index">
+            <tr class="align-middle">
+              <td>{{ i + 1 + (currentPage - 1) * itemsPerPage }}</td>
+              <td>{{ invoice.for_BrnName }}</td>
+              <td>{{ invoice.vNo }}</td>
+              <td class="text-center">{{ invoice.vDate | date: 'dd-MM-yyyy' }}</td>
+              <td class="text-center">{{ invoice.refNo }}</td>
+              <td class="text-center">{{ invoice.refDate | date: 'dd-MM-yyyy' }}</td>
+              <td class="text-center">{{ invoice.details.length || 0 }}</td>
+              <td class="text-end">{{ calculateNetAmount(invoice.details) | currency: 'INR' }}</td>
+              <td class="text-center actions-container">
+                <button class="action-btn" title="Edit" (click)="editInvoice(invoice.mKey)">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="action-btn" title="Delete" (click)="deleteInvoice(invoice.mKey)">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+
+      <div
+        class="d-flex align-items-center justify-content-center"
+        style="height: 95%"
+        *ngIf="invoiceList.length === 0"
+      >
+        <div class="d-flex flex-column align-items-center justify-content-center">
+          <i class="bi bi-file-earmark-text-fill fs-2"></i>
+          <span>No records found</span>
+          <small>There is no Invoice created yet.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="invoiceList.length >= 1"
+    class="footer-container d-flex justify-content-between align-items-center"
+  >
+    <div>
+      <label for="pageSize" class="me-2">Page Size:</label>
+      <select
+        id="pageSize"
+        class="form-select d-inline-block w-auto"
+        [(ngModel)]="itemsPerPage"
+        (change)="currentPage = 1"
+      >
+        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+
+    <div>
+      <button class="btn btn-sm btn-secondary me-2" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        class="btn btn-sm btn-secondary ms-2"
+        (click)="goToNextPage()"
+        [disabled]="currentPage >= totalPages"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
