@@ -519,6 +519,26 @@
       padding: 12px;
       border-bottom: 1px solid #e5e7eb;
       font-size: 14px;
+
+      .delete-btn {
+        border: none;
+        background: transparent;
+        color: #ea4335;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 6px;
+        border-radius: 50%;
+        transition: background 0.2s ease;
+
+        &:hover {
+        background-color: rgba(234, 67, 53, 0.1);
+        transform: scale(1.05);
+        }
+      }
+      
     }
 
     .item-row {
