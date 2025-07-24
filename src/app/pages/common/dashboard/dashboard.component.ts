@@ -16,38 +16,40 @@ export class DashboardComponent {
 
   currentDate = new Date();
 
-  recentSales = [
-    {
-      date: new Date('2025-06-20'),
-      invoiceNo: 'INV-2025-0620',
-      amount: 12500.0,
-      status: 'Paid',
-    },
-    {
-      date: new Date('2025-06-15'),
-      invoiceNo: 'INV-2025-0615',
-      amount: 8500.5,
-      status: 'Paid',
-    },
-    {
-      date: new Date('2025-06-10'),
-      invoiceNo: 'INV-2025-0610',
-      amount: 15000.0,
-      status: 'Pending',
-    },
-    {
-      date: new Date('2025-06-05'),
-      invoiceNo: 'INV-2025-0605',
-      amount: 7500.75,
-      status: 'Paid',
-    },
-    {
-      date: new Date('2025-05-28'),
-      invoiceNo: 'INV-2025-0528',
-      amount: 22000.0,
-      status: 'Overdue',
-    },
-  ];
+  // recentSales = [
+  //   {
+  //     date: new Date('2025-06-20'),
+  //     invoiceNo: 'INV-2025-0620',
+  //     amount: 12500.0,
+  //     status: 'Paid',
+  //   },
+  //   {
+  //     date: new Date('2025-06-15'),
+  //     invoiceNo: 'INV-2025-0615',
+  //     amount: 8500.5,
+  //     status: 'Paid',
+  //   },
+  //   {
+  //     date: new Date('2025-06-10'),
+  //     invoiceNo: 'INV-2025-0610',
+  //     amount: 15000.0,
+  //     status: 'Pending',
+  //   },
+  //   {
+  //     date: new Date('2025-06-05'),
+  //     invoiceNo: 'INV-2025-0605',
+  //     amount: 7500.75,
+  //     status: 'Paid',
+  //   },
+  //   {
+  //     date: new Date('2025-05-28'),
+  //     invoiceNo: 'INV-2025-0528',
+  //     amount: 22000.0,
+  //     status: 'Overdue',
+  //   },
+  // ];
+
+  recentSales: any[] = [];
 
   constructor(public dashboradService: DashboardService) {
     Chart.register(...registerables);

@@ -61,7 +61,7 @@
     gap: 1rem;
 
     .summary-card {
-      background: white;
+      background: var(--color-card);
       border-radius: var(--border-radius-lg);
       padding: 1.5rem;
       box-shadow: var(--shadow-md);
@@ -145,7 +145,7 @@
 
       .card-content {
         .card-title {
-          color: var(--text-secondary);
+          color: var(--secondary-text);
           font-weight: 300;
           margin-bottom: 0.5rem;
           letter-spacing: 0.5px;
@@ -153,7 +153,7 @@
 
         .card-value {
           font-size: 1.2rem;
-          color: var(--text-primary);
+          color: var(--primary-text);
           font-weight: 600;
           margin-bottom: 0.5rem;
           background-clip: text;
@@ -208,12 +208,11 @@
   .profile-container,
   .address-container,
   .bank-container {
-    background: var(--bg-secondary);
     border-radius: var(--border-radius-lg);
     border: 1px solid rgba(105, 105, 105, 0.205);
     box-shadow: var(--shadow-sm);
     padding: 1rem;
-    background-color: rgba(161, 158, 167, 0.205);
+    background-color: var(--color-card);
     transition: var(--transition);
     animation: fadeInSlide 0.6s ease-out both;
 
