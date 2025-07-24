@@ -127,16 +127,7 @@ export class InvoiceFormComponent {
     if (this.isEditMode && this.mkey) {
       this.loadInvoice(this.mkey);
     } else {
-      this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe(
-        (data) => {
-          this.generatedNumber = data.vNo;
-          this.invoiceModel.vNo = data.vNo;
-          this.invoiceModel.vNoSeq = data.vNoSeq;
-          this.invoiceModel.vNoPrefix = data.vNoPrefix;
-          this.invoiceModel.mKey = data.mKey;
-        },
-        (err) => console.error('Error generating VNo', err)
-      );
+      
     }
 
     this.lookupInputSubject
