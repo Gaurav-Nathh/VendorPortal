@@ -127,7 +127,7 @@ export class InvoiceFormComponent {
     if (this.isEditMode && this.mkey) {
       this.loadInvoice(this.mkey);
     } else {
-      
+      this.generateNewVnoAndMKey();
     }
 
     this.lookupInputSubject
@@ -227,6 +227,22 @@ export class InvoiceFormComponent {
 
   addItem() {
     this.items.push(this.createNewItem());
+  }
+
+  private generateNewVnoAndMKey() {
+    this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe({
+      next: (data) => {
+        this.generatedNumber = data.vNo;
+        this.invoiceModel.vNo = data.vNo;
+        this.invoiceModel.vNoSeq = data.vNoSeq;
+        this.invoiceModel.vNoPrefix = data.vNoPrefix;
+        this.invoiceModel.mKey = data.mKey;
+      },
+      error: (err) => {
+        console.error('Error generating VNo', err);
+        Swal.fire('Error', 'Failed to generate new invoice number', 'error');
+      }
+    });
   }
 
   onCreatedByChange() {
@@ -521,6 +537,9 @@ export class InvoiceFormComponent {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+    this.generateNewVnoAndMKey();
+
   }
 
   resetExcelUpload() {
