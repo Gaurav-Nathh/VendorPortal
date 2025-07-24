@@ -38,6 +38,7 @@ export class InvoiceFormComponent {
   minDate: string = '';
 
   lookupInputSubject: Subject<string> = new Subject<string>();
+  poNumberInput$ = new Subject<string>();
 
   lookupQuery: string = '';
   lookupSuggestions: any[] = [];
@@ -84,6 +85,17 @@ export class InvoiceFormComponent {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+    this.poNumberInput$
+      .pipe(
+        debounceTime(600),
+        distinctUntilChanged()
+      )
+      .subscribe((poNumber: string) => {
+        if (this.invoiceModel.docType === 'po' && poNumber.trim()) {
+          this.loadPOData(poNumber.trim());
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -233,11 +245,10 @@ export class InvoiceFormComponent {
     }
   }
 
-  onPoNoBlur() {
-    if (this.invoiceModel.docType === 'po' && this.invoiceModel.docNo) {
-      console.log('onPoNoBlur');
-      this.loadPOData(this.invoiceModel.docNo);
-    }
+  onPoNoInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const poNo = input.value;
+    this.poNumberInput$.next(poNo);
   }
 
   loadPOData(poNo: string) {

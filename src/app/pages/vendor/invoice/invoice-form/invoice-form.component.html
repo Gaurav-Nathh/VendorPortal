@@ -122,7 +122,8 @@
                     name="poNo"
                     aria-label="PO Number"
                     [(ngModel)]="invoiceModel.docNo"
-                    (blur)="onPoNoBlur()"
+                    
+                    (input)="onPoNoInputChange($event)"
                     [disabled]="
                       invoiceModel.docType === 'manual' ||
                       invoiceModel.docType === 'excel'
