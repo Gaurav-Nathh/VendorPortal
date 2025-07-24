@@ -14,7 +14,7 @@ export class passwordModel {
   providedIn: 'root'
 })
 export class PasswordService {
-     private userId = sessionStorage.getItem('userId') || '';
+    
 
   constructor(private config: ApiConfigService, private http: HttpClient) { }
 

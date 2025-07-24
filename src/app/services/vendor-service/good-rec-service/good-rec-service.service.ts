@@ -8,29 +8,31 @@ import { GrrApiArry } from '../../../Models/Vendor/GoodRec.model';
   providedIn: 'root',
 })
 export class GoodRecServiceService {
-  private acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+ 
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
   goodRecList(): Observable<GrrApiArry> {
+     const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
     const headers = this.config.getHeader();
 
     return this.http.get<GrrApiArry>(
       `${this.config.getApiUrl()}/GR/PortalGetGRListByAcmId`,
       {
         headers,
-        params: { acmId: this.acmId },
+        params: { acmId: acmId },
       }
     );
   }
   getGoodRecItems(mkey: string): Observable<any[]> {
+     const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
     const headers = this.config.getHeader();
 
     return this.http.get<any[]>(
       `${this.config.getApiUrl()}/GR/PortalGetItemList`,
       {
         headers,
-        params: { mkey, acmId: this.acmId },
+        params: { mkey, acmId:acmId },
       }
     );
   }

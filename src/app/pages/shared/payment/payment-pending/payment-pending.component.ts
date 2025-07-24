@@ -74,8 +74,10 @@ applySearch() {
 this.paymentService.pendingPaymentList().subscribe({
       next: (response:any) =>{
         console.log(response);
-        this.data=response.ReportData;
-        this.filteredItems=response.ReportData.reverse();
+     this.data = response.ReportData.Table;
+this.filteredItems = response.ReportData.Table;
+
+
          this.calculateTotals();
       }
       

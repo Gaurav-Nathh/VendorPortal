@@ -3,6 +3,15 @@ import { Component, ViewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { DashboardService } from '../../../services/shared/dashboard-service/dashboard.service';
 
+
+interface RecentSale {
+  vdate: Date;
+  Vno: string;
+  Amount: number;
+}
+
+
+
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule],
@@ -16,41 +25,21 @@ export class DashboardComponent {
 
   currentDate = new Date();
 
-  recentSales = [
-    {
-      date: new Date('2025-06-20'),
-      invoiceNo: 'INV-2025-0620',
-      amount: 12500.0,
-      status: 'Paid',
-    },
-    {
-      date: new Date('2025-06-15'),
-      invoiceNo: 'INV-2025-0615',
-      amount: 8500.5,
-      status: 'Paid',
-    },
-    {
-      date: new Date('2025-06-10'),
-      invoiceNo: 'INV-2025-0610',
-      amount: 15000.0,
-      status: 'Pending',
-    },
-    {
-      date: new Date('2025-06-05'),
-      invoiceNo: 'INV-2025-0605',
-      amount: 7500.75,
-      status: 'Paid',
-    },
-    {
-      date: new Date('2025-05-28'),
-      invoiceNo: 'INV-2025-0528',
-      amount: 22000.0,
-      status: 'Overdue',
-    },
-  ];
+
+
+recentSales: RecentSale[] = [];
+fixedSalesRows: RecentSale[] = [];
+
+  lastCredit: number | null = null;
+  lastDate: string | null = null;
+
+
+
+
 
   constructor(public dashboradService: DashboardService) {
     Chart.register(...registerables);
+    
   }
 
   ngOnInit(): void {
@@ -58,6 +47,8 @@ export class DashboardComponent {
     console.log(this.userType);
     this.getDetails();
     this.getDetailOtSnd();
+    this.getDashbodTable();
+    this. getLastCreditAndDate();
   }
 
   ngAfterViewInit(): void {
@@ -157,6 +148,61 @@ export class DashboardComponent {
       },
     });
   }
+
+
+getDashbodTable() {
+  this.dashboradService.getDashbodTable().subscribe({
+    next: (response: any) => {
+      const portalData = response?.PortalDashboardAPI || [];
+
+      const sales = portalData.map((item: any): RecentSale => ({
+        vdate: new Date(item.Vdate),
+        Vno: item.Vno,
+        Amount: item.Amount,
+      }));
+
+      // Fill up to 5 rows
+      while (sales.length < 5) {
+        sales.push({
+          vdate: null as any,
+          Vno: '',
+          Amount: undefined as any,
+        });
+      }
+
+      this.fixedSalesRows = sales.slice(0, 5);
+
+      console.log('Fixed sales rows:', this.fixedSalesRows);
+    },
+    error: (err) => {
+      console.error('Error fetching dashboard table data:', err);
+    },
+  });
+}
+
+
+ getLastCreditAndDate(): void {
+    this.dashboradService.accountStatement().subscribe(
+      (response: any) => {
+        const table = response?.ReportData?.Table;
+        if (Array.isArray(table) && table.length > 0) {
+          const last = table[table.length - 1];
+          this.lastCredit = last?.Credit ?? 0;
+          this.lastDate = last?.Date ?? null;
+          console.log('Credit:', this.lastCredit);
+          console.log('Date:', this.lastDate);
+        } else {
+          console.warn('No records found in Table');
+        }
+      },
+      (error) => {
+        console.error('Error fetching account statement', error);
+      }
+    );
+  }
+
+
+
 
   getDetailOtSnd() {
     this.dashboradService.getDashbrdOtsnd().subscribe({
