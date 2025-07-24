@@ -38,6 +38,7 @@ export class InvoiceFormComponent {
   minDate: string = '';
 
   lookupInputSubject: Subject<string> = new Subject<string>();
+  poNumberInput$ = new Subject<string>();
 
   lookupQuery: string = '';
   lookupSuggestions: any[] = [];
@@ -84,6 +85,17 @@ export class InvoiceFormComponent {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+    this.poNumberInput$
+      .pipe(
+        debounceTime(600),
+        distinctUntilChanged()
+      )
+      .subscribe((poNumber: string) => {
+        if (this.invoiceModel.docType === 'po' && poNumber.trim()) {
+          this.loadPOData(poNumber.trim());
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -115,16 +127,7 @@ export class InvoiceFormComponent {
     if (this.isEditMode && this.mkey) {
       this.loadInvoice(this.mkey);
     } else {
-      this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe(
-        (data) => {
-          this.generatedNumber = data.vNo;
-          this.invoiceModel.vNo = data.vNo;
-          this.invoiceModel.vNoSeq = data.vNoSeq;
-          this.invoiceModel.vNoPrefix = data.vNoPrefix;
-          this.invoiceModel.mKey = data.mKey;
-        },
-        (err) => console.error('Error generating VNo', err)
-      );
+      this.generateNewVnoAndMKey();
     }
 
     this.lookupInputSubject
@@ -226,6 +229,22 @@ export class InvoiceFormComponent {
     this.items.push(this.createNewItem());
   }
 
+  private generateNewVnoAndMKey() {
+    this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe({
+      next: (data) => {
+        this.generatedNumber = data.vNo;
+        this.invoiceModel.vNo = data.vNo;
+        this.invoiceModel.vNoSeq = data.vNoSeq;
+        this.invoiceModel.vNoPrefix = data.vNoPrefix;
+        this.invoiceModel.mKey = data.mKey;
+      },
+      error: (err) => {
+        console.error('Error generating VNo', err);
+        Swal.fire('Error', 'Failed to generate new invoice number', 'error');
+      }
+    });
+  }
+
   onCreatedByChange() {
     if (this.invoiceModel.docType === 'excel') {
       const modalEl = this.excelImportModal.nativeElement;
@@ -233,11 +252,10 @@ export class InvoiceFormComponent {
     }
   }
 
-  onPoNoBlur() {
-    if (this.invoiceModel.docType === 'po' && this.invoiceModel.docNo) {
-      console.log('onPoNoBlur');
-      this.loadPOData(this.invoiceModel.docNo);
-    }
+  onPoNoInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const poNo = input.value;
+    this.poNumberInput$.next(poNo);
   }
 
   loadPOData(poNo: string) {
@@ -519,6 +537,9 @@ export class InvoiceFormComponent {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+    this.generateNewVnoAndMKey();
+
   }
 
   resetExcelUpload() {

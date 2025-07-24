@@ -7,29 +7,31 @@ import { ApiConfigService } from '../../api-config/api-config.service';
   providedIn: 'root',
 })
 export class PoVendorServiceService {
-  private acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+  
 
   constructor(private config: ApiConfigService, private http: HttpClient) {}
 
   vendorPoList(): Observable<any[]> {
+    const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
     const headers = this.config.getHeader();
 
     return this.http.get<any[]>(
       `${this.config.getApiUrl()}/PO/PortalGetPOListByAcmId`,
       {
         headers,
-        params: { acmId: this.acmId },
+        params: { acmId: acmId },
       }
     );
   }
   ItemsByMkey(mkey: string): Observable<any[]> {
+    const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
     const headers = this.config.getHeader();
 
     return this.http.get<any[]>(
       `${this.config.getApiUrl()}/PO/PortalGetItemList`,
       {
         headers,
-        params: { mkey: mkey, acmId: this.acmId },
+        params: { mkey: mkey, acmId: acmId },
       }
     );
   }

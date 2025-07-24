@@ -11,7 +11,7 @@ import { ApiConfigService } from '../../api-config/api-config.service';
 export class ItemMappingService {
   /* private apiUrl = 'https://efactoapidevelopment.efacto.cloud/api';
   private apiKey = '140-9299-524-TEST'; */
-  private acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+
   private mappingItemsSubject = new BehaviorSubject<any[]>([]);
   mappingItems$ = this.mappingItemsSubject.asObservable();
 
@@ -20,13 +20,15 @@ export class ItemMappingService {
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
   getMappingItems(): Observable<ItemMappingResponse> {
+   const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+    
     const headers = this.config.getHeader();
 
     return this.http.get<ItemMappingResponse>(
       `${this.config.getApiUrl()}/Item/GetItemByVendorCustomer`,
       {
         headers,
-        params: { acmId: this.acmId },
+        params: { acmId: acmId },
       }
     );
   }
@@ -53,7 +55,8 @@ export class ItemMappingService {
   } */
 
   postMappingItems() {
-    this.itemMapping.itvAcmId = this.acmId; // Set acmId from session storage
+      const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+    this.itemMapping.itvAcmId = acmId; // Set acmId from session storage
     const headers = this.config.getHeader();
 
     return this.http.post<any>(

@@ -213,7 +213,9 @@
     .actions-container {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      // justify-content: space-between;
+      justify-content: center;
+
 
       .action-btn {
         width: 2rem;
