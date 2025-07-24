@@ -2,15 +2,15 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
   InvoiceService,
   Branch,
-} from '../../services/vendor-service/invoice/invoice.service';
+} from '../../../../services/vendor-service/invoice/invoice.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
-import { DecimalLimitDirective } from '../../directives/decimal-limit.directive';
-import { Pgrmain, Pgrdetail } from '../../Models/Invoice/invoice.model';
+import { DecimalLimitDirective } from '../../../../directives/decimal-limit.directive';
+import { Pgrmain, Pgrdetail } from '../../../../Models/Invoice/invoice.model';
 
 declare var bootstrap: any;
 
@@ -38,7 +38,7 @@ export class InvoiceFormComponent {
   minDate: string = '';
 
   lookupInputSubject: Subject<string> = new Subject<string>();
-
+  poNumberInput$ = new Subject<string>();
 
   lookupQuery: string = '';
   lookupSuggestions: any[] = [];
@@ -70,17 +70,32 @@ export class InvoiceFormComponent {
     for_BrnName: '',
     docNo: '',
     docType: 'manual',
-    details: []
+    details: [],
   };
 
   private acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
 
-  constructor(private vendorInvoiceServie: InvoiceService, private router: Router, private route: ActivatedRoute,) {
+  constructor(
+    private vendorInvoiceServie: InvoiceService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+    this.poNumberInput$
+      .pipe(
+        debounceTime(600),
+        distinctUntilChanged()
+      )
+      .subscribe((poNumber: string) => {
+        if (this.invoiceModel.docType === 'po' && poNumber.trim()) {
+          this.loadPOData(poNumber.trim());
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -95,7 +110,9 @@ export class InvoiceFormComponent {
       // console.log('branchlist', this.branchList)
 
       if (!this.isEditMode) {
-        const defaultBranch = this.branchList.find(b => b.Text.toUpperCase() === 'DELHI');
+        const defaultBranch = this.branchList.find(
+          (b) => b.Text.toUpperCase() === 'DELHI'
+        );
         if (defaultBranch) {
           this.invoiceModel.for_BrnName = defaultBranch.Text;
         }
@@ -105,32 +122,26 @@ export class InvoiceFormComponent {
     this.mkey = this.vendorInvoiceServie.getMKey();
     this.isEditMode = !!this.mkey;
 
-    console.log('mkey and edit', this.isEditMode, this.mkey)
+    console.log('mkey and edit', this.isEditMode, this.mkey);
 
     if (this.isEditMode && this.mkey) {
       this.loadInvoice(this.mkey);
     } else {
-      this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe(data => {
-        this.generatedNumber = data.vNo;
-        this.invoiceModel.vNo = data.vNo;
-        this.invoiceModel.vNoSeq = data.vNoSeq;
-        this.invoiceModel.vNoPrefix = data.vNoPrefix;
-        this.invoiceModel.mKey = data.mKey;
-      }, err => console.error('Error generating VNo', err));
+      this.generateNewVnoAndMKey();
     }
 
-    this.lookupInputSubject.pipe(
-      debounceTime(500),
-      distinctUntilChanged()
-    ).subscribe((query) => {
-      this.performLookupSearch(query);
-    });
-
+    this.lookupInputSubject
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((query) => {
+        this.performLookupSearch(query);
+      });
   }
 
   async loadInvoice(mkey: string) {
     try {
-      const res = await this.vendorInvoiceServie.getInvoiceByMKey(mkey).toPromise();
+      const res = await this.vendorInvoiceServie
+        .getInvoiceByMKey(mkey)
+        .toPromise();
       if (!res) {
         throw new Error('Invoice response is undefined');
       }
@@ -145,44 +156,50 @@ export class InvoiceFormComponent {
         this.invoiceModel.refDate = `${yyyy}-${mm}-${dd}`;
       }
 
-      this.items = await Promise.all(res.details.map(async (d) => {
-        let vendorItems: any[] = [];
-        try {
-          const result = await this.vendorInvoiceServie.searchVendorItems(d.itemCode, this.acmId).toPromise();
-          vendorItems = result ?? [];
-        } catch {
-          vendorItems = [];
-        }
+      this.items = await Promise.all(
+        res.details.map(async (d) => {
+          let vendorItems: any[] = [];
+          try {
+            const result = await this.vendorInvoiceServie
+              .searchVendorItems(d.itemCode, this.acmId)
+              .toPromise();
+            vendorItems = result ?? [];
+          } catch {
+            vendorItems = [];
+          }
 
-        const matched = vendorItems.find((item: any) => item.vendorItemCode === d.itemCode);
+          const matched = vendorItems.find(
+            (item: any) => item.vendorItemCode === d.itemCode
+          );
 
-        if (!matched) {
-          alert(`Item "${d.itemCode}" is not mapped`);
-          return this.createNewItem();
-        }
+          if (!matched) {
+            alert(`Item "${d.itemCode}" is not mapped`);
+            return this.createNewItem();
+          }
 
-        const itemDetails = await this.vendorInvoiceServie
-          .getItemDetails(matched.itmId, this.acmId)
-          .toPromise()
-          .catch(() => null);
+          const itemDetails = await this.vendorInvoiceServie
+            .getItemDetails(matched.itmId, this.acmId)
+            .toPromise()
+            .catch(() => null);
 
-        return {
-          rowNo: d.rowNo,
-          itemId: d.itemId,
-          myItemCode: d.itemCode,
-          myItemName: matched.vendorItemName,
-          itemCode: itemDetails?.itemCode || '',
-          itemName: itemDetails?.itemName || '',
-          barcode: d.barcode,
-          mrp: d.mrp,
-          qty: d.quantity,
-          rate: d.rate,
-          discount: d.discountAmount,
-          gstAmount: d.gstAmount || 0,
-          showDropdown: false,
-          suggestions: []
-        };
-      }));
+          return {
+            rowNo: d.rowNo,
+            itemId: d.itemId,
+            myItemCode: d.itemCode,
+            myItemName: matched.vendorItemName,
+            itemCode: itemDetails?.itemCode || '',
+            itemName: itemDetails?.itemName || '',
+            barcode: d.barcode,
+            mrp: d.mrp,
+            qty: d.quantity,
+            rate: d.rate,
+            discount: d.discountAmount,
+            gstAmount: d.gstAmount || 0,
+            showDropdown: false,
+            suggestions: [],
+          };
+        })
+      );
     } catch (err) {
       console.error('Error loading invoice:', err);
       alert('Failed to load invoice');
@@ -204,7 +221,7 @@ export class InvoiceFormComponent {
       grossAmount: 0,
       net: 0,
       showDropdown: false,
-      suggestions: []
+      suggestions: [],
     };
   }
 
@@ -212,6 +229,21 @@ export class InvoiceFormComponent {
     this.items.push(this.createNewItem());
   }
 
+  private generateNewVnoAndMKey() {
+    this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe({
+      next: (data) => {
+        this.generatedNumber = data.vNo;
+        this.invoiceModel.vNo = data.vNo;
+        this.invoiceModel.vNoSeq = data.vNoSeq;
+        this.invoiceModel.vNoPrefix = data.vNoPrefix;
+        this.invoiceModel.mKey = data.mKey;
+      },
+      error: (err) => {
+        console.error('Error generating VNo', err);
+        Swal.fire('Error', 'Failed to generate new invoice number', 'error');
+      }
+    });
+  }
 
   onCreatedByChange() {
     if (this.invoiceModel.docType === 'excel') {
@@ -220,11 +252,10 @@ export class InvoiceFormComponent {
     }
   }
 
-  onPoNoBlur() {
-    if (this.invoiceModel.docType === 'po' && this.invoiceModel.docNo) {
-      console.log('onPoNoBlur');
-      this.loadPOData(this.invoiceModel.docNo);
-    }
+  onPoNoInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const poNo = input.value;
+    this.poNumberInput$.next(poNo);
   }
 
   loadPOData(poNo: string) {
@@ -280,7 +311,7 @@ export class InvoiceFormComponent {
       error: (err) => {
         console.error('Error fetching PO:', err);
         Swal.fire('Error', 'Failed to load PO details', 'error');
-      }
+      },
     });
   }
 
@@ -310,11 +341,13 @@ export class InvoiceFormComponent {
       this.lookupSuggestions = [];
       return;
     }
-    console.log('query perform', query)
+    console.log('query perform', query);
 
-    this.vendorInvoiceServie.searchVendorItems(query, this.acmId).subscribe((res) => {
-      this.lookupSuggestions = res;
-    });
+    this.vendorInvoiceServie
+      .searchVendorItems(query, this.acmId)
+      .subscribe((res) => {
+        this.lookupSuggestions = res;
+      });
   }
 
   selectVendorItemFromModal(selected: any) {
@@ -325,10 +358,12 @@ export class InvoiceFormComponent {
     this.items[index].myItemName = selected.vendorItemName;
     this.items[index].itemId = selected.itmId;
 
-    this.vendorInvoiceServie.getItemDetails(selected.itmId, this.acmId).subscribe((itemDetail) => {
-      this.items[index].itemCode = itemDetail.itemCode;
-      this.items[index].itemName = itemDetail.itemName;
-    });
+    this.vendorInvoiceServie
+      .getItemDetails(selected.itmId, this.acmId)
+      .subscribe((itemDetail) => {
+        this.items[index].itemCode = itemDetail.itemCode;
+        this.items[index].itemName = itemDetail.itemName;
+      });
 
     this.closeItemLookupModal();
   }
@@ -347,7 +382,7 @@ export class InvoiceFormComponent {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it',
-      cancelButtonText: 'No'
+      cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
         this.items.splice(index, 1);
@@ -391,13 +426,17 @@ export class InvoiceFormComponent {
         let vendorItems: any[] = [];
 
         try {
-          const res = await this.vendorInvoiceServie.searchVendorItems(myItemCode, this.acmId).toPromise();
+          const res = await this.vendorInvoiceServie
+            .searchVendorItems(myItemCode, this.acmId)
+            .toPromise();
           vendorItems = res ?? [];
         } catch (error) {
           vendorItems = [];
         }
 
-        const matched = vendorItems.find((item: any) => item.vendorItemCode === myItemCode);
+        const matched = vendorItems.find(
+          (item: any) => item.vendorItemCode === myItemCode
+        );
 
         if (!matched) {
           alert(`Item "${myItemCode}" is not mapped`);
@@ -408,7 +447,9 @@ export class InvoiceFormComponent {
         // Now get item details using existing getItemDetails
         let itemDetails: any = null;
         try {
-          itemDetails = await this.vendorInvoiceServie.getItemDetails(matched.itmId, this.acmId).toPromise();
+          itemDetails = await this.vendorInvoiceServie
+            .getItemDetails(matched.itmId, this.acmId)
+            .toPromise();
         } catch (error) {
           itemDetails = null;
         }
@@ -430,7 +471,7 @@ export class InvoiceFormComponent {
           qty: parseFloat(row['Qty']) || 0,
           rate: parseFloat(row['Rate']) || 0,
           discount: parseFloat(row['Discount Amt']) || 0,
-          gstAmount: parseFloat(row['GST Amt']) || 0
+          gstAmount: parseFloat(row['GST Amt']) || 0,
         });
       }
 
@@ -446,7 +487,15 @@ export class InvoiceFormComponent {
 
   downloadSampleExcel() {
     const ws = XLSX.utils.aoa_to_sheet([
-      ['My Item Code', 'Barcode', 'MRP', 'Qty', 'Rate', 'Discount Amt', 'GST Amt']
+      [
+        'My Item Code',
+        'Barcode',
+        'MRP',
+        'Qty',
+        'Rate',
+        'Discount Amt',
+        'GST Amt',
+      ],
     ]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'SampleItems');
@@ -470,14 +519,17 @@ export class InvoiceFormComponent {
     const file = event.dataTransfer?.files[0];
     if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
       this.selectedFile = file;
-      // this.uploadExcel(); 
+      // this.uploadExcel();
     } else {
       alert('Please upload a valid Excel file (.xlsx or .xls)');
     }
   }
 
   resetFormAfterSubmit() {
-    this.invoiceForm.resetForm({ for_BrnId: this.defaultBranchId, docType: 'manual' });
+    this.invoiceForm.resetForm({
+      for_BrnId: this.defaultBranchId,
+      docType: 'manual',
+    });
     this.items = [this.createNewItem()];
 
     const today = new Date();
@@ -485,6 +537,9 @@ export class InvoiceFormComponent {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+    this.generateNewVnoAndMKey();
+
   }
 
   resetExcelUpload() {
@@ -503,9 +558,11 @@ export class InvoiceFormComponent {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, cancel it',
-      cancelButtonText: 'No'
+      cancelButtonText: 'No',
     }).then((res) => {
-      const defaultBranch = this.branchList.find(b => b.Text.toUpperCase() === 'DELHI');
+      const defaultBranch = this.branchList.find(
+        (b) => b.Text.toUpperCase() === 'DELHI'
+      );
       const defaultBranchName = defaultBranch?.Text || '';
 
       this.vendorInvoiceServie.clearMKey();
@@ -517,7 +574,7 @@ export class InvoiceFormComponent {
 
       this.invoiceForm.form.patchValue({
         for_BrnId: this.defaultBranchId,
-        docType: 'manual'
+        docType: 'manual',
       });
 
       Object.assign(this.invoiceModel, {
@@ -538,7 +595,7 @@ export class InvoiceFormComponent {
         for_BrnId: this.defaultBranchId,
         docNo: '',
         docType: 'manual',
-        details: []
+        details: [],
       });
 
       this.items = [this.createNewItem()];
@@ -554,8 +611,7 @@ export class InvoiceFormComponent {
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const yyyy = today.getFullYear();
       this.currentDate = `${dd}/${mm}/${yyyy}`;
-    })
-
+    });
   }
 
   getTotalNetAmount(): number {
@@ -574,7 +630,7 @@ export class InvoiceFormComponent {
     this.invoiceForm.onSubmit(new Event('submit'));
 
     if (!this.invoiceForm.valid) {
-      Object.values(this.invoiceForm.controls).forEach(control => {
+      Object.values(this.invoiceForm.controls).forEach((control) => {
         control.markAsTouched();
       });
 
@@ -582,11 +638,15 @@ export class InvoiceFormComponent {
       return;
     }
 
-    const hasInvalidItem = this.items.some(item =>
-      !item.myItemCode ||
-      item.mrp == null || item.mrp <= 0 ||
-      item.qty == null || item.qty <= 0 ||
-      item.rate == null || item.rate < 0
+    const hasInvalidItem = this.items.some(
+      (item) =>
+        !item.myItemCode ||
+        item.mrp == null ||
+        item.mrp <= 0 ||
+        item.qty == null ||
+        item.qty <= 0 ||
+        item.rate == null ||
+        item.rate < 0
     );
 
     if (hasInvalidItem) {
@@ -619,7 +679,7 @@ export class InvoiceFormComponent {
         barcode: item.barcode || '',
         itemCode: item.myItemCode || '',
         itemName: item.myItemName || '',
-        net: net
+        net: net,
       };
     });
 
@@ -634,15 +694,16 @@ export class InvoiceFormComponent {
     this.invoiceModel.statusCode = 1;
     this.invoiceModel.details = details;
 
-
     if (this.invoiceModel.refDate && this.invoiceModel.refDate.includes('/')) {
       const [dd, mm, yyyy] = this.invoiceModel.refDate.split('/');
       this.invoiceModel.refDate = `${yyyy}-${mm}-${dd}`; // Convert to ISO format
     }
 
     // Net amount
-    this.invoiceModel.netAmount = details.reduce((sum, d) =>
-      sum + (d.grossAmount - (d.discountAmount || 0) + (d.gstAmount || 0)), 0
+    this.invoiceModel.netAmount = details.reduce(
+      (sum, d) =>
+        sum + (d.grossAmount - (d.discountAmount || 0) + (d.gstAmount || 0)),
+      0
     );
 
     console.log('model', this.invoiceModel);
@@ -659,7 +720,7 @@ export class InvoiceFormComponent {
         error: (err) => {
           console.error('Update error:', err);
           Swal.fire('Error!', 'Failed to update invoice', 'error');
-        }
+        },
       });
     } else {
       this.vendorInvoiceServie.createInvoice(this.invoiceModel).subscribe({
@@ -671,10 +732,8 @@ export class InvoiceFormComponent {
         error: (err) => {
           console.error('Create error:', err);
           Swal.fire('Error!', 'Failed to create invoice', 'error');
-        }
+        },
       });
     }
-
   }
 }
-

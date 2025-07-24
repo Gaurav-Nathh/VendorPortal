@@ -58,7 +58,6 @@
             <ul class="submenu">
               <li *ngFor="let subitem of item.submenu" class="submenu-item">
                 <a
-                  (click)="handleCartMode(subitem.text)"
                   [routerLink]="subitem.route"
                   routerLinkActive="submenu-active"
                   [routerLinkActiveOptions]="{ exact: true }"

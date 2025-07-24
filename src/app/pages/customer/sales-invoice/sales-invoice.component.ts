@@ -24,7 +24,7 @@ export class SalesInvoiceComponent implements OnInit {
   pagedInvoices: any[] = [];
   openIndexes = new Set<number>();
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
-  pageSize: number = 10;
+  pageSize: number = 50;
   currentPage: number = 1;
   totalPages: number = 0;
   isInvoicesLoading: boolean = false;

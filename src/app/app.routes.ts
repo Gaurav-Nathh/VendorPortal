@@ -57,18 +57,18 @@ export const routes: Routes = [
         path: 'invoice',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/view-invoice/view-invoice.component').then(
-            (c) => c.ViewInvoiceComponent
-          ),
+          import(
+            './pages/vendor/invoice/view-invoice/view-invoice.component'
+          ).then((c) => c.ViewInvoiceComponent),
         canActivate: [authGuard],
       },
       {
         path: 'invoice-form',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/invoice-form/invoice-form.component').then(
-            (c) => c.InvoiceFormComponent
-          ),
+          import(
+            './pages/vendor/invoice/invoice-form/invoice-form.component'
+          ).then((c) => c.InvoiceFormComponent),
         canActivate: [authGuard],
       },
       {
@@ -151,7 +151,7 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard],
       },
-      
+
       {
         path: 'all-orders',
         pathMatch: 'full',
@@ -228,20 +228,20 @@ export const routes: Routes = [
         path: 'payment-pending',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/shared/payment/payment-pending/payment-pending.component').then(
-            (c) => c.PaymentPendingComponent),
+          import(
+            './pages/shared/payment/payment-pending/payment-pending.component'
+          ).then((c) => c.PaymentPendingComponent),
         canActivate: [authGuard],
       },
-           {
+      {
         path: 'payment-history',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/shared/payment/payment-history/payment-history.component').then(
-            (c) => c.PaymentHistoryComponent),
+          import(
+            './pages/shared/payment/payment-history/payment-history.component'
+          ).then((c) => c.PaymentHistoryComponent),
         canActivate: [authGuard],
       },
-
-
     ],
   },
   {

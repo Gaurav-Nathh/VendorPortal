@@ -65,26 +65,23 @@
   .footer-container {
     padding-inline: 0.8rem;
     padding-block: 0.5rem;
-  }
-}
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
 
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-  margin-top: 0.6rem;
-  margin-bottom: 0.8rem;
-}
+    .form-select {
+      font-size: 0.8rem;
+    }
+    .page-link {
+      font-size: 0.8rem;
+    }
 
-.search {
-  border: 2px solid var(--color-bg);
-  border-radius: 0.5rem;
-  padding-inline: 0.6rem;
-
-  &:focus {
-    outline-color: var(--color-blue);
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
   }
 }
 
