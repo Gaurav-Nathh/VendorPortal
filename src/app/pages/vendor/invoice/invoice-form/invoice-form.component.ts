@@ -43,6 +43,7 @@ export class InvoiceFormComponent {
   lookupQuery: string = '';
   lookupSuggestions: any[] = [];
   activeItemIndex: number = -1; // which row is being edited
+  formState: 'create' | 'submitted' = 'create';
 
   @ViewChild('itemLookupModal') itemLookupModal!: ElementRef;
   @ViewChild('excelImportModal') excelImportModal!: ElementRef;
@@ -728,6 +729,7 @@ export class InvoiceFormComponent {
           this.vendorInvoiceServie.clearMKey();
           Swal.fire('Success!', 'Invoice created successfully!', 'success');
           this.resetFormAfterSubmit();
+          this.formState = 'submitted';
         },
         error: (err) => {
           console.error('Create error:', err);
