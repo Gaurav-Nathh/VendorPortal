@@ -49,36 +49,101 @@
               <td class="text-center">
                 {{ invoice.refDate | date : "dd-MM-yyyy" }}
               </td>
-              <td class="text-center">{{ invoice.details.length || 0 }}</td>
+              <td class="text-center">{{ invoice.details.length || 0 }}
+                <button class="action-btn ms-2" type="button" (click)="toggleDetails(i)"
+                  [attr.aria-expanded]="isOpen(i)" [attr.data-bs-target]="'#collapse' + i"
+                  [attr.aria-controls]="'collapse' + i">
+                  <i class="bi" [ngClass]="{
+                        'bi-eye-fill': !isOpen(i),
+                        'bi-eye-slash-fill': isOpen(i)
+                      }"></i>
+                </button>
+              </td>
               <td class="text-end">
                 {{ calculateNetAmount(invoice.details) | currency : "INR" }}
               </td>
-              
+
               <td class="text-center actions-container">
-              <div class="action-dropdown dropdown">
-                <button
-                  class="action-btn"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <a class="dropdown-item" (click)="editInvoice(invoice.mKey)">
-                      <i class="fa-solid fa-pen-to-square me-2"></i> Edit
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" (click)="deleteInvoice(invoice.mKey)">
-                      <i class="fa-solid fa-trash me-2"></i> Delete
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </td>
+                <div class="action-dropdown dropdown">
+                  <button class="action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" (click)="editInvoice(invoice.mKey)">
+                        <i class="fa-solid fa-pen-to-square me-2"></i> Edit
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="deleteInvoice(invoice.mKey)">
+                        <i class="fa-solid fa-trash me-2"></i> Delete
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
             </tr>
+            <tr class="collapse-row" *ngIf="isOpen(i)">
+              <td colspan="9" class="row-open">
+                <div class="collapse-container">
+                  <div class="mb-3 mx-4">
+                    <div class="d-flex justify-content-between align-items-center px-4 py-3">
+                      <h6 class="mb-0 fw-bold text-center" style="color: var(--color-blue)">
+                        <i class="bi bi-receipt-cutoff me-2"></i>Invoice Items
+                      </h6>
+                      <span class="badge" style="background-color: var(--color-blue)">
+                        {{ invoice.details.length }} items
+                      </span>
+                    </div>
+
+                    <table class="w-100 collapse-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Item Code</th>
+                          <th>Item Name</th>
+                          <th class="text-center">Quantity</th>
+                          <th class="text-end">MRP</th>
+                          <th class="text-end">Rate</th>
+                          <th class="text-end">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of invoice.details; let j = index">
+                          <td>{{ j + 1 }}</td>
+                          <td>{{ item.itemCode }}</td>
+                          <td>{{ item.itemName }}</td>
+                          <td class="text-center">{{ item.quantity }}</td>
+                          <td class="text-end">{{ item.mrp | currency: 'INR' }}</td>
+                          <td class="text-end">{{ item.rate | currency: 'INR' }}</td>
+                          <td class="text-end text-success fw-semibold">
+                            {{
+                            item.quantity * item.rate -
+                            (item.discountAmount || 0) +
+                            (item.gstAmount || 0) | number : "1.2-2"
+                            }}
+                          </td>
+                        </tr>
+                      </tbody>
+                      <thead>
+                          <tr
+                            class="text-end"
+                            style="background-color: #e6f9e7"
+                          >
+                            <th colspan="6"  class="text-end pe-3 fw-bold">Total</th>
+                            <th>
+                              {{
+                                getTotalAmount(invoice.details) | currency : "INR"
+                              }}
+                            </th>
+                          </tr>
+                        </thead>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
           </ng-container>
         </tbody>
       </table>
@@ -99,18 +164,11 @@
     </div>
   </div>
 
-  <div
-    *ngIf="invoiceList.length >= 1"
-    class="footer-container d-flex justify-content-between align-items-center"
-  >
+  <div *ngIf="invoiceList.length >= 1" class="footer-container d-flex justify-content-between align-items-center">
     <div>
       <label for="pageSize" class="me-2">Page Size:</label>
-      <select
-        id="pageSize"
-        class="form-select d-inline-block w-auto"
-        [(ngModel)]="itemsPerPage"
-        (change)="currentPage = 1"
-      >
+      <select id="pageSize" class="form-select d-inline-block w-auto" [(ngModel)]="itemsPerPage"
+        (change)="currentPage = 1">
         <option *ngFor="let size of pageSizes" [value]="size">
           {{ size }}
         </option>
@@ -118,19 +176,11 @@
     </div>
 
     <div>
-      <button
-        class="btn btn-sm btn-secondary me-2"
-        (click)="goToPreviousPage()"
-        [disabled]="currentPage === 1"
-      >
+      <button class="btn btn-sm btn-secondary me-2" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
         Previous
       </button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button
-        class="btn btn-sm btn-secondary ms-2"
-        (click)="goToNextPage()"
-        [disabled]="currentPage >= totalPages"
-      >
+      <button class="btn btn-sm btn-secondary ms-2" (click)="goToNextPage()" [disabled]="currentPage >= totalPages">
         Next
       </button>
     </div>

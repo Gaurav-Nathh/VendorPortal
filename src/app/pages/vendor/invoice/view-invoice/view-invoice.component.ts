@@ -17,6 +17,7 @@ export class ViewInvoiceComponent {
   currentPage: number = 1;
   itemsPerPage: number = 15;
   pageSizes: number[] = [10, 15, 20, 50, 100];
+  openIndexes = new Set<number>();
 
   constructor(private invoiceService: InvoiceService, private router: Router) {}
 
@@ -108,4 +109,28 @@ export class ViewInvoiceComponent {
       }
     });
   }
+
+  toggleDetails(index: number): void {
+    if (this.openIndexes.has(index)) {
+      this.openIndexes.delete(index);
+    } else {
+      this.openIndexes.add(index);
+    }
+  }
+
+  isOpen(index: number): boolean {
+    return this.openIndexes.has(index);
+  }
+
+  getTotalAmount(items: any[]): number {
+    return items.reduce((sum, item) => {
+      const qty = Number(item.quantity || 0);
+      const rate = Number(item.rate || 0);
+      const discount = Number(item.discountAmount || 0);
+      const gst = Number(item.gstAmount || 0);
+      const lineTotal = qty * rate - discount + gst;
+      return sum + lineTotal;
+    }, 0);
+  }
+
 }
