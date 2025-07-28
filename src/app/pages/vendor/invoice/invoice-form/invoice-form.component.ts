@@ -30,6 +30,7 @@ export class InvoiceFormComponent {
   mkey: string | null = null;
   isEditMode: boolean = false;
   defaultBranchId: number = 0;
+  defaultBrn: string = '';
 
   createdBy: string = '';
   isDragOver: boolean = false;
@@ -43,7 +44,9 @@ export class InvoiceFormComponent {
   lookupQuery: string = '';
   lookupSuggestions: any[] = [];
   activeItemIndex: number = -1; // which row is being edited
-  formState: 'create' | 'submitted' = 'create';
+  // formState: 'create' | 'submitted' = 'create';
+  formState: 'create' | 'submitted' | 'edit' | 'cancel' = 'create';
+
 
   @ViewChild('itemLookupModal') itemLookupModal!: ElementRef;
   @ViewChild('excelImportModal') excelImportModal!: ElementRef;
@@ -115,6 +118,7 @@ export class InvoiceFormComponent {
           (b) => b.Text.toUpperCase() === 'DELHI'
         );
         if (defaultBranch) {
+          this.defaultBrn = defaultBranch.Text;
           this.invoiceModel.for_BrnName = defaultBranch.Text;
         }
       }
@@ -208,23 +212,7 @@ export class InvoiceFormComponent {
     }
   }
 
-  createNewItem() {
-    return {
-      myItemCode: '',
-      myItemName: '',
-      barcode: '',
-      itemCode: '',
-      itemName: '',
-      mrp: 0,
-      qty: 0,
-      rate: 0,
-      discount: 0,
-      grossAmount: 0,
-      net: 0,
-      showDropdown: false,
-      suggestions: [],
-    };
-  }
+
 
   addItem() {
     this.items.push(this.createNewItem());
@@ -526,22 +514,7 @@ export class InvoiceFormComponent {
     }
   }
 
-  resetFormAfterSubmit() {
-    this.invoiceForm.resetForm({
-      for_BrnId: this.defaultBranchId,
-      docType: 'manual',
-    });
-    this.items = [this.createNewItem()];
 
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    this.currentDate = `${dd}/${mm}/${yyyy}`;
-
-    this.generateNewVnoAndMKey();
-
-  }
 
   resetExcelUpload() {
     this.selectedFile = null;
@@ -561,57 +534,63 @@ export class InvoiceFormComponent {
       confirmButtonText: 'Yes, cancel it',
       cancelButtonText: 'No',
     }).then((res) => {
-      const defaultBranch = this.branchList.find(
-        (b) => b.Text.toUpperCase() === 'DELHI'
-      );
-      const defaultBranchName = defaultBranch?.Text || '';
+      if (this.isEditMode) {
+        this.formState = 'submitted';
+        this.isEditMode = false;
+      } else {
+        const defaultBranch = this.branchList.find(
+          (b) => b.Text.toUpperCase() === 'DELHI'
+        );
+        const defaultBranchName = defaultBranch?.Text || '';
 
-      this.vendorInvoiceServie.clearMKey();
-      this.invoiceModel.for_BrnName = defaultBranchName;
+        this.vendorInvoiceServie.clearMKey();
+        this.invoiceModel.for_BrnName = defaultBranchName;
 
-      this.invoiceModel.docType = 'manual';
+        this.invoiceModel.docType = 'manual';
 
-      this.invoiceForm.resetForm();
+        this.invoiceForm.resetForm();
 
-      this.invoiceForm.form.patchValue({
-        for_BrnId: this.defaultBranchId,
-        docType: 'manual',
-      });
+        this.invoiceForm.form.patchValue({
+          for_BrnName: this.defaultBrn,
+          docType: 'manual',
+        });
 
-      Object.assign(this.invoiceModel, {
-        mKey: '',
-        cmpId: 1,
-        brnId: 0,
-        vType: 'PGR',
-        refNo: '',
-        refDate: '',
-        acmId: 0,
-        netAmount: 0,
-        remarks: '',
-        statusCode: 1,
-        addUser: '',
-        addDate: '',
-        modUser: '',
-        modDate: '',
-        for_BrnId: this.defaultBranchId,
-        docNo: '',
-        docType: 'manual',
-        details: [],
-      });
+        Object.assign(this.invoiceModel, {
+          mKey: '',
+          cmpId: 1,
+          brnId: 0,
+          vType: 'PGR',
+          refNo: '',
+          refDate: '',
+          acmId: 0,
+          netAmount: 0,
+          remarks: '',
+          statusCode: 1,
+          addUser: '',
+          addDate: '',
+          modUser: '',
+          modDate: '',
+          for_BrnName: this.defaultBrn,
+          docNo: '',
+          docType: 'manual',
+          details: [],
+        });
 
-      this.items = [this.createNewItem()];
-      this.selectedFile = null;
-      this.resetExcelUpload();
-      this.generatedNumber = '';
-      this.createdBy = '';
-      this.mkey = null;
-      this.isEditMode = false;
+        this.items = [this.createNewItem()];
+        this.selectedFile = null;
+        this.resetExcelUpload();
+        this.generatedNumber = '';
+        this.createdBy = '';
+        this.mkey = null;
 
-      const today = new Date();
-      const dd = String(today.getDate()).padStart(2, '0');
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const yyyy = today.getFullYear();
-      this.currentDate = `${dd}/${mm}/${yyyy}`;
+
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        this.currentDate = `${dd}/${mm}/${yyyy}`;
+        this.formState = 'cancel';
+      }
     });
   }
 
@@ -626,8 +605,84 @@ export class InvoiceFormComponent {
     }, 0);
   }
 
+  startNewInvoice(): void {
+    this.formState = 'create';
+    this.isEditMode = false;
+    this.createdBy = '';
+    this.generatedNumber = '';
+    this.mkey = null;
+
+    // Reset invoice model first
+    Object.assign(this.invoiceModel, {
+      mKey: '',
+      cmpId: 1,
+      brnId: 0,
+      vType: 'PGR',
+      refNo: '',
+      refDate: '',
+      acmId: 0,
+      netAmount: 0,
+      remarks: '',
+      statusCode: 1,
+      addUser: '',
+      addDate: '',
+      modUser: '',
+      modDate: '',
+      for_BrnName: this.defaultBrn,
+      docNo: '',
+      docType: 'manual',
+      details: [],
+    });
+
+    setTimeout(() => {
+      this.invoiceForm.resetForm({
+        docType: 'manual',
+        for_BrnName: this.defaultBrn
+      });
+
+      this.invoiceForm.form.markAsPristine();
+      this.invoiceForm.form.markAsUntouched();
+      this.items = [this.createNewItem()];
+
+    });
+
+    this.generateNewVnoAndMKey();
+
+    console.log('invoiceModel after reset', this.invoiceModel);
+  }
+
+  goToList(): void {
+    this.isEditMode = false;
+    this.vendorInvoiceServie.clearMKey();
+    this.router.navigate(['/vendor/invoice']);
+  }
+
+  enableEditMode(): void {
+    this.mkey = this.invoiceModel.mKey;
+    this.formState = 'edit';
+    this.isEditMode = true;
+  }
+
+  createNewItem() {
+    return {
+      myItemCode: '',
+      myItemName: '',
+      barcode: '',
+      itemCode: '',
+      itemName: '',
+      mrp: 0,
+      qty: 0,
+      rate: 0,
+      discount: 0,
+      grossAmount: 0,
+      net: 0,
+      showDropdown: false,
+      suggestions: [],
+    };
+  }
+
   submitInvoice() {
-    // ✅ Manually trigger `submitted = true`
+
     this.invoiceForm.onSubmit(new Event('submit'));
 
     if (!this.invoiceForm.valid) {
@@ -715,8 +770,8 @@ export class InvoiceFormComponent {
       this.vendorInvoiceServie.updateInvoice(this.invoiceModel).subscribe({
         next: (res) => {
           Swal.fire('Updated!', 'Invoice updated successfully!', 'success');
-          this.vendorInvoiceServie.clearMKey();
-          this.resetFormAfterSubmit();
+          this.formState = 'submitted';
+          this.isEditMode = false;
         },
         error: (err) => {
           console.error('Update error:', err);
@@ -728,8 +783,8 @@ export class InvoiceFormComponent {
         next: (res) => {
           this.vendorInvoiceServie.clearMKey();
           Swal.fire('Success!', 'Invoice created successfully!', 'success');
-          this.resetFormAfterSubmit();
           this.formState = 'submitted';
+          this.isEditMode = false;
         },
         error: (err) => {
           console.error('Create error:', err);
