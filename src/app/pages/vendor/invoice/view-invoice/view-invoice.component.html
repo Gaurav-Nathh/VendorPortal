@@ -53,22 +53,7 @@
               <td class="text-end">
                 {{ calculateNetAmount(invoice.details) | currency : "INR" }}
               </td>
-              <td class="text-center actions-container">
-                <button
-                  class="action-btn"
-                  title="Edit"
-                  (click)="editInvoice(invoice.mKey)"
-                >
-                  <i class="bi bi-pencil-fill"></i>
-                </button>
-                <button
-                  class="action-btn"
-                  title="Delete"
-                  (click)="deleteInvoice(invoice.mKey)"
-                >
-                  <i class="bi bi-trash-fill"></i>
-                </button>
-              </td>
+              
             </tr>
           </ng-container>
         </tbody>
