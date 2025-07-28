@@ -54,6 +54,30 @@
                 {{ calculateNetAmount(invoice.details) | currency : "INR" }}
               </td>
               
+              <td class="text-center actions-container">
+              <div class="action-dropdown dropdown">
+                <button
+                  class="action-btn"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" (click)="editInvoice(invoice.mKey)">
+                      <i class="fa-solid fa-pen-to-square me-2"></i> Edit
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" (click)="deleteInvoice(invoice.mKey)">
+                      <i class="fa-solid fa-trash me-2"></i> Delete
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
             </tr>
           </ng-container>
         </tbody>
