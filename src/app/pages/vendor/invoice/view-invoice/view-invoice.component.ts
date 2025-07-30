@@ -18,53 +18,87 @@ export class ViewInvoiceComponent {
   itemsPerPage: number = 15;
   pageSizes: number[] = [10, 15, 20, 50, 100];
   openIndexes = new Set<number>();
+  isLoading: boolean = false;
+  totalRecords: number = 0;
+  searchTerm: string = '';
 
-  constructor(private invoiceService: InvoiceService, private router: Router) {}
+  constructor(private invoiceService: InvoiceService, private router: Router) { }
 
   ngOnInit(): void {
-    this.invoiceService.getAllInvoices().subscribe({
-      next: (response) => {
-        this.invoiceList = response;
-        console.log('list', this.invoiceList);
-      },
-      error: (err) => {
-        console.error('Failed to load invoice:', err);
-      },
-    });
+    // this.invoiceService.getAllInvoices().subscribe({
+    //   next: (response) => {
+    //     this.invoiceList = response;
+    //     console.log('list', this.invoiceList);
+    //   },
+    //   error: (err) => {
+    //     console.error('Failed to load invoice:', err);
+    //   },
+    // });
+    this.fetchInvoices();
+    // this.isLoading = true;
+
+    // this.invoiceService.getAllInvoices().subscribe({
+    //   next: (response) => {
+    //     this.invoiceList = response;
+    //     this.isLoading = false;
+    //   },
+    //   error: (err) => {
+    //     console.error('Failed to load invoice:', err);
+    //     this.isLoading = false;
+    //   },
+    // });
   }
 
-  get paginatedData() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.invoiceList.slice(start, end);
+  fetchInvoices(): void {
+    this.isLoading = true;
+
+    this.invoiceService
+      .getPaginatedInvoices(this.currentPage, this.itemsPerPage, this.searchTerm)
+      .subscribe({
+        next: (res) => {
+          this.invoiceList = res.data;
+          this.totalRecords = res.totalRecords;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Failed to load invoices:', err);
+          this.isLoading = false;
+        },
+      });
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.invoiceList.length / this.itemsPerPage) || 1;
-  }
+  // get paginatedData() {
+  //   const start = (this.currentPage - 1) * this.itemsPerPage;
+  //   const end = start + this.itemsPerPage;
+  //   return this.invoiceList.slice(start, end);
+  // }
 
-  goToPreviousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
+  // get totalPages(): number {
+  //   return Math.ceil(this.invoiceList.length / this.itemsPerPage) || 1;
+  // }
 
-  goToNextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
+  // goToPreviousPage() {
+  //   if (this.currentPage > 1) {
+  //     this.currentPage--;
+  //   }
+  // }
+
+  // goToNextPage() {
+  //   if (this.currentPage < this.totalPages) {
+  //     this.currentPage++;
+  //   }
+  // }
 
   calculateNetAmount(details: any[]): number {
     return Array.isArray(details)
       ? details.reduce(
-          (sum, d) =>
-            sum +
-            (d.grossAmount || 0) -
-            (d.discountAmount || 0) +
-            (d.gstAmount || 0),
-          0
-        )
+        (sum, d) =>
+          sum +
+          (d.grossAmount || 0) -
+          (d.discountAmount || 0) +
+          (d.gstAmount || 0),
+        0
+      )
       : 0;
   }
 
@@ -131,6 +165,34 @@ export class ViewInvoiceComponent {
       const lineTotal = qty * rate - discount + gst;
       return sum + lineTotal;
     }, 0);
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.fetchInvoices();
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.fetchInvoices();
+    }
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalRecords / this.itemsPerPage) || 1;
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.fetchInvoices();
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.fetchInvoices();
   }
 
 }

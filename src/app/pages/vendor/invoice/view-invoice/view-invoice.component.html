@@ -13,15 +13,25 @@
         </div>
       </div>
       <div class="page-title-header">
-        <!-- <input type="text" class="search" placeholder="Invoice No..." /> -->
+        <input type="text" class="search" placeholder="Search" [(ngModel)]="searchTerm" (input)="onSearchChange()"/>
         <button class="btn create-btn" [routerLink]="['/vendor/invoice-form']">
           <i class="bi bi-plus-lg"></i> Create Invoice
         </button>
       </div>
     </div>
 
+    <!-- Loader shown while data is being fetched -->
+    <ng-container *ngIf="isLoading">
+      <div class="loaderContainer">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-center mt-2">Getting invoices...</p>
+      </div>
+    </ng-container>
+
     <!-- Invoices Table -->
-    <div class="flex-fill orders-table-container">
+    <div class="flex-fill orders-table-container" *ngIf="!isLoading">
       <table class="orders-table w-100">
         <thead style="position: sticky; top: 0; z-index: 1">
           <tr>
@@ -37,7 +47,7 @@
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let invoice of paginatedData; let i = index">
+          <ng-container *ngFor="let invoice of invoiceList; let i = index">
             <tr class="align-middle">
               <td>{{ i + 1 + (currentPage - 1) * itemsPerPage }}</td>
               <td>{{ invoice.for_BrnName }}</td>
@@ -168,7 +178,7 @@
     <div>
       <label for="pageSize" class="me-2">Page Size:</label>
       <select id="pageSize" class="form-select d-inline-block w-auto" [(ngModel)]="itemsPerPage"
-        (change)="currentPage = 1">
+        (change)="onPageSizeChange()">
         <option *ngFor="let size of pageSizes" [value]="size">
           {{ size }}
         </option>

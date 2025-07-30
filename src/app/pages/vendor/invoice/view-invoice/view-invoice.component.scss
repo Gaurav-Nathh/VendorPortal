@@ -235,7 +235,7 @@
       justify-content: center;
 
 
-      
+
 
       .action-dropdown {
         .dropdown-menu {
@@ -253,6 +253,22 @@
         }
       }
     }
+  }
+}
+
+.loaderContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+
+  .spinner-border {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.6rem;
+    color: var(--color-blue);
   }
 }
 
