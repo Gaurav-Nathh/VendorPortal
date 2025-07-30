@@ -25,28 +25,7 @@ export class ViewInvoiceComponent {
   constructor(private invoiceService: InvoiceService, private router: Router) { }
 
   ngOnInit(): void {
-    // this.invoiceService.getAllInvoices().subscribe({
-    //   next: (response) => {
-    //     this.invoiceList = response;
-    //     console.log('list', this.invoiceList);
-    //   },
-    //   error: (err) => {
-    //     console.error('Failed to load invoice:', err);
-    //   },
-    // });
     this.fetchInvoices();
-    // this.isLoading = true;
-
-    // this.invoiceService.getAllInvoices().subscribe({
-    //   next: (response) => {
-    //     this.invoiceList = response;
-    //     this.isLoading = false;
-    //   },
-    //   error: (err) => {
-    //     console.error('Failed to load invoice:', err);
-    //     this.isLoading = false;
-    //   },
-    // });
   }
 
   fetchInvoices(): void {
@@ -67,27 +46,7 @@ export class ViewInvoiceComponent {
       });
   }
 
-  // get paginatedData() {
-  //   const start = (this.currentPage - 1) * this.itemsPerPage;
-  //   const end = start + this.itemsPerPage;
-  //   return this.invoiceList.slice(start, end);
-  // }
-
-  // get totalPages(): number {
-  //   return Math.ceil(this.invoiceList.length / this.itemsPerPage) || 1;
-  // }
-
-  // goToPreviousPage() {
-  //   if (this.currentPage > 1) {
-  //     this.currentPage--;
-  //   }
-  // }
-
-  // goToNextPage() {
-  //   if (this.currentPage < this.totalPages) {
-  //     this.currentPage++;
-  //   }
-  // }
+  
 
   calculateNetAmount(details: any[]): number {
     return Array.isArray(details)
@@ -192,6 +151,10 @@ export class ViewInvoiceComponent {
 
   onSearchChange(): void {
     this.currentPage = 1;
+    this.fetchInvoices();
+  }
+
+  reloadInvoices(): void {
     this.fetchInvoices();
   }
 
