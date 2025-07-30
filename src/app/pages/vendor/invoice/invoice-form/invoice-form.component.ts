@@ -555,26 +555,7 @@ export class InvoiceFormComponent {
           docType: 'manual',
         });
 
-        Object.assign(this.invoiceModel, {
-          mKey: '',
-          cmpId: 1,
-          brnId: 0,
-          vType: 'PGR',
-          refNo: '',
-          refDate: '',
-          acmId: 0,
-          netAmount: 0,
-          remarks: '',
-          statusCode: 1,
-          addUser: '',
-          addDate: '',
-          modUser: '',
-          modDate: '',
-          for_BrnName: this.defaultBrn,
-          docNo: '',
-          docType: 'manual',
-          details: [],
-        });
+        this.resetInvoiceModel();
 
         this.items = [this.createNewItem()];
         this.selectedFile = null;
@@ -613,26 +594,7 @@ export class InvoiceFormComponent {
     this.mkey = null;
 
     // Reset invoice model first
-    Object.assign(this.invoiceModel, {
-      mKey: '',
-      cmpId: 1,
-      brnId: 0,
-      vType: 'PGR',
-      refNo: '',
-      refDate: '',
-      acmId: 0,
-      netAmount: 0,
-      remarks: '',
-      statusCode: 1,
-      addUser: '',
-      addDate: '',
-      modUser: '',
-      modDate: '',
-      for_BrnName: this.defaultBrn,
-      docNo: '',
-      docType: 'manual',
-      details: [],
-    });
+    this.resetInvoiceModel();
 
     setTimeout(() => {
       this.invoiceForm.resetForm({
@@ -680,6 +642,30 @@ export class InvoiceFormComponent {
       suggestions: [],
     };
   }
+
+  private resetInvoiceModel(): void {
+    Object.assign(this.invoiceModel, {
+      mKey: '',
+      cmpId: 1,
+      brnId: 0,
+      vType: 'PGR',
+      refNo: '',
+      refDate: '',
+      acmId: 0,
+      netAmount: 0,
+      remarks: '',
+      statusCode: 1,
+      addUser: '',
+      addDate: '',
+      modUser: '',
+      modDate: '',
+      for_BrnName: this.defaultBrn,
+      docNo: '',
+      docType: 'manual',
+      details: [],
+    });
+  }
+
 
   submitInvoice() {
 

@@ -191,7 +191,7 @@
               <div class="items-section">
                 <div class="section-header">
                   <h2>Order Items</h2>
-                  <button type="button" class="btn btn-primary btn-sm" (click)="addItem()">
+                  <button type="button" class="btn create-btn" (click)="addItem()">
                     Add Item
                   </button>
                 </div>
@@ -206,12 +206,12 @@
                           </th>
                           <th>My Item Name</th>
                           <th>Barcode</th>
-                          <th>MRP <span class="text-danger">*</span></th>
-                          <th>Qty <span class="text-danger">*</span></th>
-                          <th>Rate</th>
+                          <th class="text-end">MRP <span class="text-danger">*</span></th>
+                          <th class="text-end">Qty <span class="text-danger">*</span></th>
+                          <th class="text-end">Rate</th>
                           <th>Gross Amount</th>
-                          <th>Discount Amt</th>
-                          <th>GST Amt</th>
+                          <th class="text-end">Discount Amt</th>
+                          <th class="text-end">GST Amt</th>
                           <th>Net Amount</th>
                           <th>Action</th>
                         </tr>
@@ -285,19 +285,21 @@
                             }}
                           </td>
                           <td>
-                            <button type="button" class="action-btn delete-btn" (click)="deleteItem(i)">
+                            <button *ngIf="items.length > 1" type="button" class="icon-button delete ms-2" (click)="deleteItem(i)">
                               <i class="bi bi-trash"></i>
                             </button>
                           </td>
                         </tr>
                       </tbody>
                     </table>
+
                     <div class="table-footer-fixed">
                       <strong>Total Amount:</strong>
-                      <span class="ms-2 text-success fw-semibold">
+                      <span class="ms-2 fw-semibold">
                         {{ getTotalNetAmount() | number : "1.2-2" }}
                       </span>
                     </div>
+
                   </div>
 
                 </div>
@@ -334,7 +336,7 @@
                   <i class="bi bi-file-earmark-check me-2"></i>Submit
                 </button>
               </div>
-              <div>s
+              <div>
                 <span> </span>
               </div>
             </div>
