@@ -37,6 +37,7 @@ export class InvoiceFormComponent {
   selectedFile: File | null = null;
   lastSelectedDocType: string = '';
   minDate: string = '';
+  isLoading: boolean = false;
 
   lookupInputSubject: Subject<string> = new Subject<string>();
   poNumberInput$ = new Subject<string>();
@@ -103,16 +104,18 @@ export class InvoiceFormComponent {
   }
 
   ngOnInit(): void {
+    this.isLoading  = true;
     this.items = [this.createNewItem()];
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
 
     const acmId = 0;
     const type = 'MOBILEAPP';
-    this.vendorInvoiceServie.getBranches(acmId, type).subscribe((res) => {
-      this.branchList = res.BranchList;
-      // console.log('branchlist', this.branchList)
+    
 
+    Promise.all([
+    this.vendorInvoiceServie.getBranches(acmId, type).toPromise().then((res) => {
+      this.branchList = res?.BranchList || [];
       if (!this.isEditMode) {
         const defaultBranch = this.branchList.find(
           (b) => b.Text.toUpperCase() === 'DELHI'
@@ -122,18 +125,13 @@ export class InvoiceFormComponent {
           this.invoiceModel.for_BrnName = defaultBranch.Text;
         }
       }
+    }),
+    this.initMkeyOrLoadInvoice(), 
+  ])
+    .finally(() => {
+      this.isLoading = false; 
     });
 
-    this.mkey = this.vendorInvoiceServie.getMKey();
-    this.isEditMode = !!this.mkey;
-
-    console.log('mkey and edit', this.isEditMode, this.mkey);
-
-    if (this.isEditMode && this.mkey) {
-      this.loadInvoice(this.mkey);
-    } else {
-      this.generateNewVnoAndMKey();
-    }
 
     this.lookupInputSubject
       .pipe(debounceTime(500), distinctUntilChanged())
@@ -142,7 +140,19 @@ export class InvoiceFormComponent {
       });
   }
 
-  async loadInvoice(mkey: string) {
+  initMkeyOrLoadInvoice(): Promise<void> {
+  this.mkey = this.vendorInvoiceServie.getMKey();
+  this.isEditMode = !!this.mkey;
+
+  if (this.isEditMode && this.mkey) {
+    return this.loadInvoice(this.mkey); 
+  } else {
+    return this.generateNewVnoAndMKey(); 
+  }
+}
+
+
+  async loadInvoice(mkey: string): Promise<void> {
     try {
       const res = await this.vendorInvoiceServie
         .getInvoiceByMKey(mkey)
@@ -218,7 +228,10 @@ export class InvoiceFormComponent {
     this.items.push(this.createNewItem());
   }
 
-  private generateNewVnoAndMKey() {
+  
+
+  private generateNewVnoAndMKey(): Promise<void> {
+  return new Promise((resolve, reject) => {
     this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe({
       next: (data) => {
         this.generatedNumber = data.vNo;
@@ -226,13 +239,19 @@ export class InvoiceFormComponent {
         this.invoiceModel.vNoSeq = data.vNoSeq;
         this.invoiceModel.vNoPrefix = data.vNoPrefix;
         this.invoiceModel.mKey = data.mKey;
+        this.mkey = data.mKey;
+
+        resolve(); 
       },
       error: (err) => {
         console.error('Error generating VNo', err);
         Swal.fire('Error', 'Failed to generate new invoice number', 'error');
+        reject(err);
       }
     });
-  }
+  });
+}
+
 
   onCreatedByChange() {
     if (this.invoiceModel.docType === 'excel') {
@@ -322,7 +341,7 @@ export class InvoiceFormComponent {
 
   onLookupInput() {
     this.lookupInputSubject.next(this.lookupQuery.trim());
-    console.log('onloohup');
+    // console.log('onloohup');
   }
 
   performLookupSearch(query: string) {
@@ -534,26 +553,26 @@ export class InvoiceFormComponent {
       confirmButtonText: 'Yes, cancel it',
       cancelButtonText: 'No',
     }).then((res) => {
+      if(res.isConfirmed) {
+      this.isLoading = true;
+      setTimeout(() => {
       if (this.isEditMode) {
         this.formState = 'submitted';
         this.isEditMode = false;
+        this.isLoading = false;
+        return;
       } else {
-        const defaultBranch = this.branchList.find(
-          (b) => b.Text.toUpperCase() === 'DELHI'
-        );
-        const defaultBranchName = defaultBranch?.Text || '';
+        
 
         this.vendorInvoiceServie.clearMKey();
-        this.invoiceModel.for_BrnName = defaultBranchName;
 
-        this.invoiceModel.docType = 'manual';
 
         this.invoiceForm.resetForm();
 
-        this.invoiceForm.form.patchValue({
-          for_BrnName: this.defaultBrn,
-          docType: 'manual',
-        });
+        // this.invoiceForm.form.patchValue({
+        //   for_BrnName: this.defaultBrn,
+        //   docType: 'manual',
+        // });
 
         this.resetInvoiceModel();
 
@@ -571,7 +590,11 @@ export class InvoiceFormComponent {
         const yyyy = today.getFullYear();
         this.currentDate = `${dd}/${mm}/${yyyy}`;
         this.formState = 'cancel';
+        this.isLoading = false;
+        
       }
+      this.isLoading =false;
+      },300)}
     });
   }
 
@@ -587,6 +610,8 @@ export class InvoiceFormComponent {
   }
 
   startNewInvoice(): void {
+    this.isLoading = true;
+    setTimeout(() => {
     this.formState = 'create';
     this.isEditMode = false;
     this.createdBy = '';
@@ -596,20 +621,24 @@ export class InvoiceFormComponent {
     // Reset invoice model first
     this.resetInvoiceModel();
 
-    setTimeout(() => {
-      this.invoiceForm.resetForm({
-        docType: 'manual',
-        for_BrnName: this.defaultBrn
-      });
+   
+    this.invoiceForm.resetForm();
+
+       this.invoiceForm.form.patchValue({
+          for_BrnName: this.defaultBrn,
+          docType: 'manual',
+        });
+      
 
       this.invoiceForm.form.markAsPristine();
       this.invoiceForm.form.markAsUntouched();
       this.items = [this.createNewItem()];
 
-    });
+   
 
     this.generateNewVnoAndMKey();
-
+    this.isLoading = false;
+    },300);
     console.log('invoiceModel after reset', this.invoiceModel);
   }
 
@@ -620,9 +649,13 @@ export class InvoiceFormComponent {
   }
 
   enableEditMode(): void {
-    this.mkey = this.invoiceModel.mKey;
-    this.formState = 'edit';
-    this.isEditMode = true;
+    this.isLoading = true;
+    setTimeout(() => {
+      this.mkey = this.invoiceModel.mKey;
+      this.formState = 'edit';
+      this.isEditMode = true;
+      this.isLoading = false;
+    }, 250)
   }
 
   createNewItem() {
@@ -668,6 +701,7 @@ export class InvoiceFormComponent {
 
 
   submitInvoice() {
+    this.isLoading = true;
 
     this.invoiceForm.onSubmit(new Event('submit'));
 
@@ -758,6 +792,7 @@ export class InvoiceFormComponent {
           Swal.fire('Updated!', 'Invoice updated successfully!', 'success');
           this.formState = 'submitted';
           this.isEditMode = false;
+          this.isLoading = false;
         },
         error: (err) => {
           console.error('Update error:', err);
@@ -771,6 +806,7 @@ export class InvoiceFormComponent {
           Swal.fire('Success!', 'Invoice created successfully!', 'success');
           this.formState = 'submitted';
           this.isEditMode = false;
+          this.isLoading = false;
         },
         error: (err) => {
           console.error('Create error:', err);
