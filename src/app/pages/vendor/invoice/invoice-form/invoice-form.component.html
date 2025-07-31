@@ -107,16 +107,20 @@
         </div>
       </div>
 
-      <div class="modal" id="excelImportModal" #excelImportModal>
+      <div class="modal custom-modal" id="excelImportModal" #excelImportModal>
         <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content border-0">
-            <div class="modal-header bg-primary text-white">
+          <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header custom-modal-header">
+                <div class="d-flex align-items-center gap-2 w-100 justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
               <h5 class="modal-title">Invoice / Import</h5>
-              <button type="button" class="btn-close btn-close-white" (click)="closeExcelModal()"></button>
+                  </div>
+              <button type="button" class="btn-close btn-close-black" (click)="closeExcelModal()"></button>
+            </div>
             </div>
             <div class="modal-body text-center">
               <div class="mb-3">
-                <button class="btn btn-success text-white me-2" (click)="downloadSampleExcel()">
+                <button class="btn btn-dark text-white me-2" (click)="downloadSampleExcel()">
                   <i class="bi bi-file-earmark-excel-fill me-1"></i> Download
                   Sample Excel
                 </button>
@@ -140,11 +144,11 @@
               </div>
             </div>
 
-            <div class="modal-footer">
-              <button class="btn btn-secondary" (click)="closeExcelModal()">
+            <div class="modal-footer custom-modal-footer">
+              <button class="btn btn-dark" (click)="closeExcelModal()">
                 Close
               </button>
-              <button class="btn btn-primary" (click)="uploadExcel()">
+              <button class="btn create-btn" (click)="uploadExcel()">
                 Upload
               </button>
             </div>
@@ -152,12 +156,12 @@
         </div>
       </div>
 
-      <div class="modal" id="itemLookupModal" #itemLookupModal>
+      <div class="modal custom-modal" id="itemLookupModal" #itemLookupModal>
         <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content border-0">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header custom-modal-header">
               <h5 class="modal-title">Search Item</h5>
-              <button type="button" class="btn-close btn-close-white" (click)="closeItemLookupModal()"></button>
+              <button type="button" class="btn-close btn-close" (click)="closeItemLookupModal()"></button>
             </div>
             <div class="modal-body">
               <input type="text" class="form-control mb-3" placeholder="Search Item Code" name="lookupQuery"
