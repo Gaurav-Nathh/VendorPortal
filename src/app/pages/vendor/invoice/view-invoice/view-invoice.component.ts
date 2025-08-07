@@ -8,6 +8,7 @@ import { Pgrmain } from '../../../../Models/Invoice/invoice.model';
 
 @Component({
   selector: 'app-view-invoice',
+  standalone: true,
   imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './view-invoice.component.html',
   styleUrl: './view-invoice.component.scss',

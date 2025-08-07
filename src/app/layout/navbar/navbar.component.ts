@@ -17,7 +17,7 @@ interface NavItem {
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
-  imports: [ThemeToggleComponent, FormsModule, RouterLink],
+  imports: [ThemeToggleComponent, FormsModule],
 })
 export class NavbarComponent implements OnInit {
   isSidebarVisible: boolean = true;

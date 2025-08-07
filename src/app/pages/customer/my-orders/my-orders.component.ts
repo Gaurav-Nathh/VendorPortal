@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { MyOrdersService } from '../../../services/customer-service/my-orders/my-orders.service';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { SalesOrder } from '../../../Models/interface/SalesOrder.interface';
 import { SaleOrderDetail } from '../../../Models/interface/SaleOrderDetail.interface';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import * as FileSaver from 'file-saver';
 import * as ExcelJS from 'exceljs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-my-orders',
