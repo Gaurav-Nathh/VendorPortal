@@ -81,9 +81,7 @@ export class InvoiceService {
     this.mkey = null;
   }
 
-  getAllInvoices() {
-    return this.http.get<Pgrmain[]>(`${this.baseUrl}PGRMain/GetRecords`);
-  }
+  
 
   deleteInvoice(mkey: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}PGRMain/Delete/${mkey}`, {
@@ -124,6 +122,18 @@ export class InvoiceService {
     return this.http.get<{ vNo: string, vNoSeq: number, vNoPrefix: string, mKey: string }>(
       `${this.baseUrl}PGRMain/generate-vno`, { params }
     );
+  }
+
+  getPaginatedInvoices(pageNumber: number, pageSize: number, searchTerm: string = ''): Observable<any> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    if (searchTerm && searchTerm.trim()) {
+      params = params.set('search', searchTerm.trim());
+    }
+
+    return this.http.get<any>(`${this.baseUrl}PGRMain/GetPaginatedInvoices`, { params });
   }
 
 }

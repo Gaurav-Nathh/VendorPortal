@@ -133,6 +133,11 @@
         text-decoration: none;
         margin-block: 0.8rem;
         color: var(--color-blue);
+
+        display: inline-block;
+        width: auto;
+        padding: 0;
+        margin-left: auto;
       }
 
       button {

@@ -17,53 +17,47 @@ export class ViewInvoiceComponent {
   currentPage: number = 1;
   itemsPerPage: number = 15;
   pageSizes: number[] = [10, 15, 20, 50, 100];
+  openIndexes = new Set<number>();
+  isLoading: boolean = false;
+  totalRecords: number = 0;
+  searchTerm: string = '';
 
-  constructor(private invoiceService: InvoiceService, private router: Router) {}
+  constructor(private invoiceService: InvoiceService, private router: Router) { }
 
   ngOnInit(): void {
-    this.invoiceService.getAllInvoices().subscribe({
-      next: (response) => {
-        this.invoiceList = response;
-        console.log('list', this.invoiceList);
-      },
-      error: (err) => {
-        console.error('Failed to load invoice:', err);
-      },
-    });
+    this.fetchInvoices();
   }
 
-  get paginatedData() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.invoiceList.slice(start, end);
+  fetchInvoices(): void {
+    this.isLoading = true;
+
+    this.invoiceService
+      .getPaginatedInvoices(this.currentPage, this.itemsPerPage, this.searchTerm)
+      .subscribe({
+        next: (res) => {
+          this.invoiceList = res.data;
+          this.totalRecords = res.totalRecords;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Failed to load invoices:', err);
+          this.isLoading = false;
+        },
+      });
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.invoiceList.length / this.itemsPerPage) || 1;
-  }
-
-  goToPreviousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  goToNextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
+  
 
   calculateNetAmount(details: any[]): number {
     return Array.isArray(details)
       ? details.reduce(
-          (sum, d) =>
-            sum +
-            (d.grossAmount || 0) -
-            (d.discountAmount || 0) +
-            (d.gstAmount || 0),
-          0
-        )
+        (sum, d) =>
+          sum +
+          (d.grossAmount || 0) -
+          (d.discountAmount || 0) +
+          (d.gstAmount || 0),
+        0
+      )
       : 0;
   }
 
@@ -108,4 +102,60 @@ export class ViewInvoiceComponent {
       }
     });
   }
+
+  toggleDetails(index: number): void {
+    if (this.openIndexes.has(index)) {
+      this.openIndexes.delete(index);
+    } else {
+      this.openIndexes.add(index);
+    }
+  }
+
+  isOpen(index: number): boolean {
+    return this.openIndexes.has(index);
+  }
+
+  getTotalAmount(items: any[]): number {
+    return items.reduce((sum, item) => {
+      const qty = Number(item.quantity || 0);
+      const rate = Number(item.rate || 0);
+      const discount = Number(item.discountAmount || 0);
+      const gst = Number(item.gstAmount || 0);
+      const lineTotal = qty * rate - discount + gst;
+      return sum + lineTotal;
+    }, 0);
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.fetchInvoices();
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.fetchInvoices();
+    }
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalRecords / this.itemsPerPage) || 1;
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.fetchInvoices();
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.fetchInvoices();
+  }
+
+  reloadInvoices(): void {
+    this.fetchInvoices();
+  }
+
 }
