@@ -6,6 +6,13 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full',
   },
+  // {
+  //   path: '**',
+  //   loadComponent: () =>
+  //     import('./pages/common/login-page/login-page.component').then(
+  //       (c) => c.LoginPageComponent
+  //     ),
+  // },
   {
     path: 'login',
     loadComponent: () =>
@@ -13,13 +20,13 @@ export const routes: Routes = [
         (c) => c.LoginPageComponent
       ),
   },
-  {
-    path: 'forget-password',
-    loadComponent: () =>
-      import('./components/reset-password/reset-password.component').then(
-        (c) => c.ResetPasswordComponent
-      ),
-  },
+  // {
+  //   path: 'forget-password',
+  //   loadComponent: () =>
+  //     import('./components/reset-password/reset-password.component').then(
+  //       (c) => c.ResetPasswordComponent
+  //     ),
+  // },
   {
     path: 'vendor',
     loadComponent: () =>
@@ -72,33 +79,6 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
-        path: 'update-password',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./components/update-password/update-password.component').then(
-            (c) => c.UpdatePasswordComponent
-          ),
-        canActivate: [authGuard],
-      },
-      {
-        path: 'update-profile',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./components/update-profile/update-profile.component').then(
-            (c) => c.UpdateProfileComponent
-          ),
-        canActivate: [authGuard],
-      },
-      {
-        path: 'page-under-construction',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./pages/vendor/goods-receipts/goods-receipts.component').then(
-            (c) => c.GoodsReceiptsComponent
-          ),
-        canActivate: [authGuard],
-      },
-      {
         path: 'payment-pending',
         pathMatch: 'full',
         loadComponent: () =>
@@ -116,6 +96,32 @@ export const routes: Routes = [
           ).then((c) => c.PaymentHistoryComponent),
         canActivate: [authGuard],
       },
+      {
+        path: 'update-password',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/update-password/update-password.component').then(
+            (c) => c.UpdatePasswordComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profile',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/update-profile/update-profile.component').then(
+            (c) => c.UpdateProfileComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'settings',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/settings/settings.component').then(
+            (c) => c.SettingsComponent
+          ),
+      },
     ],
   },
   {
@@ -130,24 +136,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/common/dashboard/dashboard.component').then(
             (c) => c.DashboardComponent
-          ),
-        canActivate: [authGuard],
-      },
-      {
-        path: 'update-profile',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./components/update-profile/update-profile.component').then(
-            (c) => c.UpdateProfileComponent
-          ),
-        canActivate: [authGuard],
-      },
-      {
-        path: 'update-password',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./components/update-password/update-password.component').then(
-            (c) => c.UpdatePasswordComponent
           ),
         canActivate: [authGuard],
       },
@@ -242,13 +230,32 @@ export const routes: Routes = [
           ).then((c) => c.PaymentHistoryComponent),
         canActivate: [authGuard],
       },
+      {
+        path: 'profile',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/update-profile/update-profile.component').then(
+            (c) => c.UpdateProfileComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'update-password',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/update-password/update-password.component').then(
+            (c) => c.UpdatePasswordComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'settings',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./components/settings/settings.component').then(
+            (c) => c.SettingsComponent
+          ),
+      },
     ],
-  },
-  {
-    path: '**',
-    loadComponent: () =>
-      import('./components/no-page-exist/no-page-exist.component').then(
-        (c) => c.NoPageExistComponent
-      ),
   },
 ];

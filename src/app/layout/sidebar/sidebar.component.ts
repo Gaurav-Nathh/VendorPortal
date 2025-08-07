@@ -54,29 +54,6 @@ export class SidebarComponent {
     this.sidebarService.sidebarVisible$.subscribe((visible) => {
       this.sidebarVisibility = visible;
     });
-
-    // Open submenu when page is reloded
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        const currentRoute = this.router.url;
-
-        this.currentMenu.forEach((menuItem) => {
-          if (menuItem.submenu) {
-            menuItem.isSubmenuOpen = menuItem.submenu.some(
-              (sub) => sub.route && currentRoute.startsWith(sub.route)
-            );
-
-            menuItem.submenu.forEach((sub) => {
-              if (sub.submenu) {
-                sub.isSubmenuOpen = sub.submenu.some(
-                  (s) => s.route && currentRoute.startsWith(s.route)
-                );
-              }
-            });
-          }
-        });
-      });
   }
 
   toggleSidenav() {
@@ -94,7 +71,6 @@ export class SidebarComponent {
   handleCartMode(text: string): void {
     this.shoppingCartService.disableEditing();
     this.salesOrderService.clearEditableItem();
-    console.log('Selected Text:');
     if (text.toLowerCase().includes('order by catalouge')) {
       this.sharedService.setCartMode('catalouge');
     } else if (text.toLowerCase().includes('order by items')) {
@@ -235,7 +211,7 @@ export class SidebarComponent {
       {
         text: 'My Profile',
         icon: 'fa-solid fa-circle-user',
-        route: `/${this.userType}/update-profile`,
+        route: `/${this.userType}/profile`,
       },
       {
         text: 'Password',

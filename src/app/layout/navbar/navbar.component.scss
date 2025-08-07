@@ -17,6 +17,7 @@
         color: var(--color-blue);
       }
     }
+
     @media (max-width: 768px) {
       display: none;
     }
@@ -88,6 +89,21 @@
 
   &[aria-expanded="false"] {
     rotate: 0deg;
+  }
+}
+
+.dropdown {
+  .dropdown-menu {
+    background-color: var(--color-bg);
+
+    .dropdown-item {
+      color: var(--primary-text);
+      &:hover {
+        background-color: var(--color-blue);
+        color: white;
+        cursor: pointer;
+      }
+    }
   }
 }
 

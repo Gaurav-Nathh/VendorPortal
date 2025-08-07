@@ -87,10 +87,7 @@ export class InvoiceFormComponent {
     this.currentDate = `${dd}/${mm}/${yyyy}`;
 
     this.poNumberInput$
-      .pipe(
-        debounceTime(600),
-        distinctUntilChanged()
-      )
+      .pipe(debounceTime(600), distinctUntilChanged())
       .subscribe((poNumber: string) => {
         if (this.invoiceModel.docType === 'po' && poNumber.trim()) {
           this.loadPOData(poNumber.trim());
@@ -241,7 +238,7 @@ export class InvoiceFormComponent {
       error: (err) => {
         console.error('Error generating VNo', err);
         Swal.fire('Error', 'Failed to generate new invoice number', 'error');
-      }
+      },
     });
   }
 
@@ -331,7 +328,7 @@ export class InvoiceFormComponent {
     this.activeItemIndex = -1;
   }
 
-  onLookupInput() {
+  onLookupInput(): void {
     this.lookupInputSubject.next(this.lookupQuery.trim());
     console.log('onloohup');
   }
@@ -539,7 +536,6 @@ export class InvoiceFormComponent {
     this.currentDate = `${dd}/${mm}/${yyyy}`;
 
     this.generateNewVnoAndMKey();
-
   }
 
   resetExcelUpload() {

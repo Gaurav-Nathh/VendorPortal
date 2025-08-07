@@ -15,7 +15,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated');
-    console.log(isAuthenticated);
     if (isAuthenticated) {
       this.sessionService.startSession();
     }

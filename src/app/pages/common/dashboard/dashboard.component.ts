@@ -2,15 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { DashboardService } from '../../../services/shared/dashboard-service/dashboard.service';
-
+import Swal from 'sweetalert2';
 
 interface RecentSale {
   vdate: Date;
   Vno: string;
   Amount: number;
 }
-
-
 
 @Component({
   selector: 'app-dashboard',
@@ -25,21 +23,14 @@ export class DashboardComponent {
 
   currentDate = new Date();
 
-
-
-recentSales: RecentSale[] = [];
-fixedSalesRows: RecentSale[] = [];
+  recentSales: RecentSale[] = [];
+  fixedSalesRows: RecentSale[] = [];
 
   lastCredit: number | null = null;
   lastDate: string | null = null;
 
-
-
-
-
   constructor(public dashboradService: DashboardService) {
     Chart.register(...registerables);
-    
   }
 
   ngOnInit(): void {
@@ -48,7 +39,7 @@ fixedSalesRows: RecentSale[] = [];
     this.getDetails();
     this.getDetailOtSnd();
     this.getDashbodTable();
-    this. getLastCreditAndDate();
+    this.getLastCreditAndDate();
   }
 
   ngAfterViewInit(): void {
@@ -139,49 +130,54 @@ fixedSalesRows: RecentSale[] = [];
 
   getDetails() {
     this.dashboradService.getDshbrd().subscribe({
-      next: (data: any) => {
-        this.fillDetails(data.Acm);
-      },
+      next: (data: any) => {},
       error: (err) => {
-        // Optionally show user-friendly error or alert
-        alert('Something went wrong while fetching data. Please try again.');
+        Swal.fire({
+          toast: true,
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to fetch dashboard data. Please try again later.',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+        });
       },
     });
   }
 
+  getDashbodTable() {
+    this.dashboradService.getDashbodTable().subscribe({
+      next: (response: any) => {
+        const portalData = response?.PortalDashboardAPI || [];
 
-getDashbodTable() {
-  this.dashboradService.getDashbodTable().subscribe({
-    next: (response: any) => {
-      const portalData = response?.PortalDashboardAPI || [];
+        const sales = portalData.map(
+          (item: any): RecentSale => ({
+            vdate: new Date(item.Vdate),
+            Vno: item.Vno,
+            Amount: item.Amount,
+          })
+        );
 
-      const sales = portalData.map((item: any): RecentSale => ({
-        vdate: new Date(item.Vdate),
-        Vno: item.Vno,
-        Amount: item.Amount,
-      }));
+        // Fill up to 5 rows
+        while (sales.length < 5) {
+          sales.push({
+            vdate: null as any,
+            Vno: '',
+            Amount: undefined as any,
+          });
+        }
 
-      // Fill up to 5 rows
-      while (sales.length < 5) {
-        sales.push({
-          vdate: null as any,
-          Vno: '',
-          Amount: undefined as any,
-        });
-      }
+        this.fixedSalesRows = sales.slice(0, 5);
 
-      this.fixedSalesRows = sales.slice(0, 5);
+        console.log('Fixed sales rows:', this.fixedSalesRows);
+      },
+      error: (err) => {
+        console.error('Error fetching dashboard table data:', err);
+      },
+    });
+  }
 
-      console.log('Fixed sales rows:', this.fixedSalesRows);
-    },
-    error: (err) => {
-      console.error('Error fetching dashboard table data:', err);
-    },
-  });
-}
-
-
- getLastCreditAndDate(): void {
+  getLastCreditAndDate(): void {
     this.dashboradService.accountStatement().subscribe(
       (response: any) => {
         const table = response?.ReportData?.Table;
@@ -201,9 +197,6 @@ getDashbodTable() {
     );
   }
 
-
-
-
   getDetailOtSnd() {
     this.dashboradService.getDashbrdOtsnd().subscribe({
       next: (data: any) => {
@@ -213,23 +206,5 @@ getDashbodTable() {
         console.error('Error fetching dashboard data:', err);
       },
     });
-  }
-
-  fillDetails(data: any) {
-    this.dashboradService.userDetails.Name = data.AcmName;
-    this.dashboradService.userDetails.email = data.AcmEmail;
-    this.dashboradService.userDetails.gstin = data.AcmGstin;
-    this.dashboradService.userDetails.phone = data.AcmMobileNo;
-    this.dashboradService.userDetails.bank = data.AcmBanks;
-    this.dashboradService.userDetails.AcmAddress1 = data.AcmAddress1;
-    this.dashboradService.userDetails.AcmAddress2 = data.AcmAddress2;
-    this.dashboradService.userDetails.AclLocation =
-      data.AcmLocations[0].AclLocation;
-    this.dashboradService.userDetails.AclAddress1 =
-      data.AcmLocations[0].AclAddress1;
-    this.dashboradService.userDetails.AclAddress2 =
-      data.AcmLocations[0].AclAddress2;
-    this.dashboradService.userDetails.AclPinCode =
-      data.AcmLocations[0].AclPinCode;
   }
 }

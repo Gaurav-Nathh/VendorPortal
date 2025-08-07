@@ -1037,33 +1037,36 @@ export class ShoppingCartComponent {
     if (this.isCartEditing) {
       const editableItem = this.salesOrderService.getEditableItem();
       this.salesOrder = {
-        mKey: editableItem.mkey,
-        itmCount: this.cart.length,
-        itmQty: this.cart.reduce((sum, item) => sum + (item.ItmQty || 0), 0),
-        netAmount: this.cart.reduce(
+        psomMKey: editableItem.mkey,
+        psomItmCount: this.cart.length,
+        psomItmQty: this.cart.reduce(
+          (sum, item) => sum + (item.ItmQty || 0),
+          0
+        ),
+        psomNetAmount: this.cart.reduce(
           (sum, item) =>
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
           0
         ),
-        modUser: sessionStorage.getItem('UsrAddUser') || '',
+        psomModUser: sessionStorage.getItem('UsrAddUser') || '',
         psoItems: this.cart.map((item) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
 
           return {
-            itmId: item.ItmId,
-            pack: price?.Pack || '',
-            mrp: rate,
-            rate: rate,
-            qty: qty,
-            unitId: item.ItmUntId || 0,
-            unitFactor: price?.UnitFactor || 1,
-            netAmount: qty * rate,
-            stock: price?.Stock || 0,
-            baseQty: qty * (price?.UnitFactor || 1),
-            baseUnitId: item.ItmBaseUntId || 0,
-            remarks: '',
+            psodItmId: item.ItmId,
+            psodPack: price?.Pack || '',
+            psodMrp: rate,
+            psodRate: rate,
+            psodQty: qty,
+            psodUnitId: item.ItmUntId || 0,
+            psodUnitFactor: price?.UnitFactor || 1,
+            psodNetAmount: qty * rate,
+            psodStock: price?.Stock || 0,
+            psodBaseQty: qty * (price?.UnitFactor || 1),
+            psodBaseUnitId: item.ItmBaseUntId || 0,
+            psodRemarks: '',
           };
         }),
       };
@@ -1098,40 +1101,43 @@ export class ShoppingCartComponent {
       });
     } else {
       this.salesOrder = {
-        cmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
-        brnId: Number(sessionStorage.getItem('UsrBrnId')),
-        acmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
-        vtype: 'PSO',
-        itmCount: this.cart.length,
-        itmQty: this.cart.reduce((sum, item) => sum + (item.ItmQty || 0), 0),
-        netAmount: this.cart.reduce(
+        psomCmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
+        psomBrnId: Number(sessionStorage.getItem('UsrBrnId')),
+        psomAcmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
+        psomVtype: 'PSO',
+        psomItmCount: this.cart.length,
+        psomItmQty: this.cart.reduce(
+          (sum, item) => sum + (item.ItmQty || 0),
+          0
+        ),
+        psomNetAmount: this.cart.reduce(
           (sum, item) =>
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
           0
         ),
-        orderType: sessionStorage.getItem('cartMode') || '',
-        status: 'CREATED',
-        statusCode: 1,
-        addUser: sessionStorage.getItem('UsrAddUser') || '',
-        modUser: '',
+        psomOrderType: sessionStorage.getItem('cartMode') || '',
+        psomStatus: 'CREATED',
+        psomStatusCode: 1,
+        psomAddUser: sessionStorage.getItem('UsrAddUser') || '',
+        psomModUser: '',
         psoItems: this.cart.map((item) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
 
           return {
-            itmId: item.ItmId,
-            pack: price?.Pack || '',
-            mrp: rate,
-            rate: rate,
-            qty: qty,
-            unitId: item.ItmUntId || 0,
-            unitFactor: price?.UnitFactor || 1,
-            netAmount: qty * rate,
-            stock: price?.Stock || 0,
-            baseQty: qty * (price?.UnitFactor || 1),
-            baseUnitId: item.ItmBaseUntId || 0,
-            remarks: '',
+            psodItmId: item.ItmId,
+            psodPack: price?.Pack || '',
+            psodMrp: rate,
+            psodRate: rate,
+            psodQty: qty,
+            psodUnitId: item.ItmUntId || 0,
+            psodUnitFactor: price?.UnitFactor || 1,
+            psodNetAmount: qty * rate,
+            psodStock: price?.Stock || 0,
+            psodBaseQty: qty * (price?.UnitFactor || 1),
+            psodBaseUnitId: item.ItmBaseUntId || 0,
+            psodRemarks: '',
           };
         }),
       };

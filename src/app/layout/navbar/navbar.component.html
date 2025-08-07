@@ -28,6 +28,7 @@
           class="bi-gear-fill fs-6 navbar-icon"
           role="button"
           title="Settings"
+          (click)="openSettings()"
         ></i>
       </div>
       <div class="d-flex ms-4 align-items-center">
@@ -39,14 +40,17 @@
           data-bs-toggle="dropdown"
         ></i>
         <div class="dropdown">
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="profileDropdown"
-          >
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" (click)="openProfile()">Profile</a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="openSettings()">Settings</a>
+            </li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+            <li>
+              <a class="dropdown-item text-danger" (click)="logout()">Logout</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -85,6 +89,7 @@
           class="bi-gear-fill fs-6 navbar-icon"
           role="button"
           title="Settings"
+          (click)="openSettings()"
         ></i>
       </div>
       <div class="d-flex ms-4 align-items-center">
@@ -96,14 +101,17 @@
           data-bs-toggle="dropdown"
         ></i>
         <div class="dropdown">
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="profileDropdown"
-          >
-            <li><a class="dropdown-item">Profile</a></li>
-            <li><a class="dropdown-item">Settings</a></li>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" (click)="openProfile()">Profile</a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="openSettings()">Settings</a>
+            </li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item text-danger">Logout</a></li>
+            <li>
+              <a class="dropdown-item text-danger" (click)="logout()">Logout</a>
+            </li>
           </ul>
         </div>
       </div>

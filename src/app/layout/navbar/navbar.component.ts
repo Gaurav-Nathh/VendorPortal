@@ -5,6 +5,7 @@ import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle
 import { UserService } from '../../services/user.service';
 import { SharedService } from '../../services/shared/shared.service';
 import { FormsModule, NgModel } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 interface NavItem {
   icon: string;
@@ -16,7 +17,7 @@ interface NavItem {
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
-  imports: [ThemeToggleComponent, FormsModule],
+  imports: [ThemeToggleComponent, FormsModule, RouterLink],
 })
 export class NavbarComponent implements OnInit {
   isSidebarVisible: boolean = true;
@@ -32,7 +33,8 @@ export class NavbarComponent implements OnInit {
   constructor(
     private router: Router,
     private userService: UserService,
-    private sidebarService: SharedService
+    private sidebarService: SharedService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -71,5 +73,17 @@ export class NavbarComponent implements OnInit {
     if (mobileMenu) {
       mobileMenu.classList.toggle('show');
     }
+  }
+
+  openProfile() {
+    this.router.navigate([`${this.userType.toLowerCase()}/profile`]);
+  }
+
+  openSettings() {
+    this.router.navigate([`${this.userType.toLowerCase()}/settings`]);
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }

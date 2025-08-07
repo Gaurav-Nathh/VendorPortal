@@ -1,31 +1,31 @@
 export class PSOMain {
-  mKey?: string;
-  cmpId?: number = 0;
-  brnId?: number = 0;
-  acmId?: number = 0;
-  vtype?: string = '';
-  itmCount: number = 0;
-  itmQty: number = 0;
-  netAmount: number = 0;
-  orderType?: string = '';
-  status?: string = '';
-  statusCode?: number = 0;
-  addUser?: string = '';
-  modUser?: string = '';
+  psomMKey?: string;
+  psomCmpId?: number = 0;
+  psomBrnId?: number = 0;
+  psomAcmId?: number = 0;
+  psomVtype?: string = '';
+  psomItmCount: number = 0;
+  psomItmQty: number = 0;
+  psomNetAmount: number = 0;
+  psomOrderType?: string = '';
+  psomStatus?: string = '';
+  psomStatusCode?: number = 0;
+  psomAddUser?: string = '';
+  psomModUser?: string = '';
   psoItems?: PSODetail[] = [];
 }
 
 export class PSODetail {
-  itmId: number = 0;
-  pack: string = '';
-  mrp: number = 0;
-  rate: number = 0;
-  qty: number = 0;
-  unitId: number = 0;
-  unitFactor: number = 0;
-  netAmount: number = 0;
-  stock: number = 0;
-  baseQty: number = 0;
-  baseUnitId: number = 0;
-  remarks: string = '';
+  psodItmId: number = 0;
+  psodPack: string = '';
+  psodMrp: number = 0;
+  psodRate: number = 0;
+  psodQty: number = 0;
+  psodUnitId: number = 0;
+  psodUnitFactor: number = 0;
+  psodNetAmount: number = 0;
+  psodStock: number = 0;
+  psodBaseQty: number = 0;
+  psodBaseUnitId: number = 0;
+  psodRemarks: string = '';
 }

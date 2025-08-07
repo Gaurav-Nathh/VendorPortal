@@ -1,0 +1,23 @@
+#profile-section {
+  padding: 0.8rem;
+  color: var(--primary-text);
+
+  form {
+    padding-right: 0.5rem;
+    color: var(--primary-text);
+    .cards {
+      background-color: var(--color-card) !important;
+      border-color: var(--border-color) !important;
+      border-radius: 0.8rem !important;
+      height: 100%;
+
+      .card {
+        // background-color: var(--card-color-secondry) !important;
+        background-color: transparent;
+        color: var(--primary-text);
+        border-color: var(--border-color) !important;
+        border-radius: 0.8rem !important;
+      }
+    }
+  }
+}

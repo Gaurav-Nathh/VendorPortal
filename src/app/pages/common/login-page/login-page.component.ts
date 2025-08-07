@@ -9,6 +9,9 @@ import { Router, RouterLink } from '@angular/router';
 import { SessionServiceService } from '../../../services/session-service.service';
 import { LoadingService } from '../../../services/shared/loading.service';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
+import { ApiConfigService } from '../../../services/api-config/api-config.service';
+import { DomainCode } from '../../../Models/Common/domain-code.model';
 
 @Component({
   selector: 'app-login-page',
@@ -47,8 +50,8 @@ export class LoginPageComponent {
   progress = 50;
 
   constructor(
-    private themeService: ThemeService,
     private authService: AuthService,
+    private apiConfigService: ApiConfigService,
     private userService: UserService,
     private sessionService: SessionServiceService,
     public loadingServie: LoadingService,
@@ -78,6 +81,35 @@ export class LoginPageComponent {
       });
       return;
     }
+    this.resolveDomain();
+  }
+
+  resolveDomain() {
+    const domain = this.loginModel.userName.split('@')[1];
+    this.authService.resolveDomain(domain).subscribe({
+      next: (response: DomainCode) => {
+        if (response?.CmpApiUrl && response.CmpKey) {
+          this.apiConfigService.setConfig(response.CmpApiUrl, response.CmpKey);
+          this.login();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Domain Error',
+            text: 'The domain is not valid or not registered.',
+          });
+        }
+      },
+      error: (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to resolve domain. Please try again later.',
+        });
+      },
+    });
+  }
+
+  login() {
     this.authService.login(this.loginModel).subscribe({
       next: (response: any) => {
         if (response.success === true) {
@@ -89,9 +121,6 @@ export class LoginPageComponent {
               break;
             case 'Vendor':
               this.router.navigate(['/vendor']);
-              break;
-            case 'System':
-              this.router.navigate(['/master']);
               break;
             default:
               this.router.navigate(['/']);

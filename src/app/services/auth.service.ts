@@ -8,6 +8,7 @@ import { from, of, switchMap, throwError, map } from 'rxjs';
 import { LoadingService } from './shared/loading.service';
 import { SessionServiceService } from './session-service.service';
 import { ApiConfigService } from './api-config/api-config.service';
+import { DomainCode } from '../Models/Common/domain-code.model';
 
 interface LoginPayload {
   userName: string;
@@ -18,6 +19,8 @@ interface LoginPayload {
   providedIn: 'root',
 })
 export class AuthService {
+  private domainResolverUrl =
+    'https://bngmasterapi.lozics.in/api/Login/DomainAuthenticate';
   currentYearShort = new Date().getFullYear().toString().slice(-2);
 
   constructor(
@@ -28,6 +31,14 @@ export class AuthService {
     private loaderAuthService: LoadingService,
     private sessionService: SessionServiceService
   ) {}
+
+  resolveDomain(domain: string): Observable<DomainCode> {
+    return this.http
+      .get<{ DomainCode: DomainCode }>(
+        `${this.domainResolverUrl}?Domain=${domain}`
+      )
+      .pipe(map((response) => response.DomainCode));
+  }
 
   login(payload: LoginPayload): Observable<any> {
     const headers = this.config.getHeader();
