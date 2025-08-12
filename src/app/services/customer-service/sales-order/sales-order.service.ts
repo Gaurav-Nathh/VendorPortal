@@ -8,8 +8,6 @@ import { ApiConfigService } from '../../api-config/api-config.service';
   providedIn: 'root',
 })
 export class SalesOrderService {
-  // private apiUrlLocal = 'http://localhost:5252/api';
-  private apiUrlLocal = 'http://localhost:5000/api';
   private editableItem: any;
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
@@ -32,7 +30,7 @@ export class SalesOrderService {
     return this.http
       .put<{ message: string }>(
         // `${this.config.getApiUrl()}/PSO/UpdatePSO`,
-        `${this.apiUrlLocal}/PSO/UpdatePSO`,
+        `${this.config.getApiUrl()}/PSO/UpdatePSO`,
         updatedOrder,
         { headers }
       )
