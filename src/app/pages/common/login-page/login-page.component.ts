@@ -89,7 +89,6 @@ export class LoginPageComponent {
     this.authService.resolveDomain(domain).subscribe({
       next: (response: DomainCode) => {
         if (response?.CmpApiUrl && response.CmpKey) {
-          this.apiConfigService.setConfig(response.CmpApiUrl, response.CmpKey);
           this.login();
         } else {
           Swal.fire({

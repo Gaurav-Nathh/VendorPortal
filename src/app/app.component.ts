@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
 import { SessionServiceService } from './services/session-service.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +12,23 @@ import { SessionServiceService } from './services/session-service.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(private sessionService: SessionServiceService) {}
+  constructor(
+    private sessionService: SessionServiceService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    const isAuthenticated = sessionStorage.getItem('isAuthenticated');
-    if (isAuthenticated) {
-      this.sessionService.startSession();
-    }
+    const email = sessionStorage.getItem('UsrEmail') || '';
+    const domain = email.split('@')[1];
+
+    this.authService.resolveDomain(domain).subscribe({
+      next: (response) => {
+        const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+        if (isAuthenticated) {
+          this.sessionService.startSession();
+        }
+      },
+      error: (error) => {},
+    });
   }
 }

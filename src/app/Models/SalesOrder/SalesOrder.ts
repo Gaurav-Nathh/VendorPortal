@@ -4,21 +4,32 @@ export class PSOMain {
   psomBrnId?: number = 0;
   psomAcmId?: number = 0;
   psomVtype?: string = '';
+  psomVNoPrefix?: string = '';
+  psomVNoSeq?: 0;
+  psomVNo?: '';
+  psomVdate?: Date = new Date();
   psomItmCount: number = 0;
   psomItmQty: number = 0;
   psomNetAmount: number = 0;
   psomOrderType?: string = '';
   psomStatus?: string = '';
+  psomRemarks?: string = '';
   psomStatusCode?: number = 0;
   psomAddUser?: string = '';
+  psomAddDate?: Date = new Date();
   psomModUser?: string = '';
-  psoItems?: PSODetail[] = [];
+  psomModDate?: Date = new Date();
+  psomAcmName?: string = '';
+  psomBrnname?: string = '';
+  psoDetails?: PSODetail[] = [];
 }
 
 export class PSODetail {
+  psodPsomMkey?: string = '';
+  psodRowNo?: number = 0;
   psodItmId: number = 0;
   psodPack: string = '';
-  psodMrp: number = 0;
+  psodMRP: number = 0;
   psodRate: number = 0;
   psodQty: number = 0;
   psodUnitId: number = 0;
@@ -27,5 +38,7 @@ export class PSODetail {
   psodStock: number = 0;
   psodBaseQty: number = 0;
   psodBaseUnitId: number = 0;
-  psodRemarks: string = '';
+  psodRemarks?: string = '';
+  psodItmCode?: string = '';
+  psodItmName?: string = '';
 }

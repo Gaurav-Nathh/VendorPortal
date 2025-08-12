@@ -1049,7 +1049,7 @@ export class ShoppingCartComponent {
           0
         ),
         psomModUser: sessionStorage.getItem('UsrAddUser') || '',
-        psoItems: this.cart.map((item) => {
+        psoDetails: this.cart.map((item) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
@@ -1057,7 +1057,7 @@ export class ShoppingCartComponent {
           return {
             psodItmId: item.ItmId,
             psodPack: price?.Pack || '',
-            psodMrp: rate,
+            psodMRP: rate,
             psodRate: rate,
             psodQty: qty,
             psodUnitId: item.ItmUntId || 0,
@@ -1120,7 +1120,7 @@ export class ShoppingCartComponent {
         psomStatusCode: 1,
         psomAddUser: sessionStorage.getItem('UsrAddUser') || '',
         psomModUser: '',
-        psoItems: this.cart.map((item) => {
+        psoDetails: this.cart.map((item) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
@@ -1128,7 +1128,7 @@ export class ShoppingCartComponent {
           return {
             psodItmId: item.ItmId,
             psodPack: price?.Pack || '',
-            psodMrp: rate,
+            psodMRP: rate,
             psodRate: rate,
             psodQty: qty,
             psodUnitId: item.ItmUntId || 0,

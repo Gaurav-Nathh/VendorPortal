@@ -90,7 +90,7 @@ export class ListSalesOrderComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.salesOrderService.deleteSalesOrder(so.mkey).subscribe({
-          next: (res) => {
+          next: () => {
             this.getOrderList();
             Swal.fire({
               toast: true,

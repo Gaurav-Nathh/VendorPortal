@@ -29,7 +29,8 @@ export class AuthService {
     private config: ApiConfigService,
     private userService: UserService,
     private loaderAuthService: LoadingService,
-    private sessionService: SessionServiceService
+    private sessionService: SessionServiceService,
+    private apiConfigService: ApiConfigService
   ) {}
 
   resolveDomain(domain: string): Observable<DomainCode> {
@@ -37,7 +38,18 @@ export class AuthService {
       .get<{ DomainCode: DomainCode }>(
         `${this.domainResolverUrl}?Domain=${domain}`
       )
-      .pipe(map((response) => response.DomainCode));
+      .pipe(
+        map((response) => {
+          if (response?.DomainCode.CmpApiUrl && response?.DomainCode.CmpKey) {
+            console.log(response);
+            this.apiConfigService.setConfig(
+              response.DomainCode.CmpApiUrl,
+              response.DomainCode.CmpKey
+            );
+          }
+          return response.DomainCode;
+        })
+      );
   }
 
   login(payload: LoginPayload): Observable<any> {
@@ -116,6 +128,10 @@ export class AuthService {
             sessionStorage.setItem(
               'UsrName',
               userDetails?.UsrName?.toString() || ''
+            );
+            sessionStorage.setItem(
+              'UsrEmail',
+              userDetails?.UsrEmail?.toString() || ''
             );
             sessionStorage.setItem(
               'UsrLghId',

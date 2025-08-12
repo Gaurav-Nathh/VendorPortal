@@ -11,7 +11,11 @@ import { ApiConfigService } from './api-config/api-config.service';
 export class SessionServiceService {
   private stopPolling$ = new Subject<void>();
 
-  constructor(private http: HttpClient, private router: Router, private config: ApiConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private config: ApiConfigService
+  ) {}
   startSession() {
     const headers = this.config.getHeader();
     interval(3000)
@@ -20,12 +24,15 @@ export class SessionServiceService {
         switchMap(() => {
           const lghId = sessionStorage.getItem('UsrLghId') || '0';
 
-          return this.http.get(`${this.config.getApiUrl()}/Login/LoginAuthenticate`, {
-            headers,
-            params: {
-              LghId: lghId.toString(),
-            },
-          });
+          return this.http.get(
+            `${this.config.getApiUrl()}/Login/LoginAuthenticate`,
+            {
+              headers,
+              params: {
+                LghId: lghId.toString(),
+              },
+            }
+          );
         })
       )
       .subscribe((response: any) => {

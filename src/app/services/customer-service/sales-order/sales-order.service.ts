@@ -8,16 +8,18 @@ import { ApiConfigService } from '../../api-config/api-config.service';
   providedIn: 'root',
 })
 export class SalesOrderService {
-  // private apiUrlLocal = 'http://localhost:5024/api';
-  private apiUrlLocal = 'http://localhost:5252/api';
-
+  // private apiUrlLocal = 'http://localhost:5252/api';
+  private apiUrlLocal = 'http://localhost:5000/api';
   private editableItem: any;
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
   postSalesOrder(salesOrder: PSOMain): Observable<any> {
+    const headers = this.config.getHeader();
     return this.http
-      .post<any>(`${this.apiUrlLocal}/PSOMain/CreatePSO`, salesOrder)
+      .post<any>(`${this.config.getApiUrl()}/PSO/CreatePSO`, salesOrder, {
+        headers,
+      })
       .pipe(
         catchError((error) => {
           return throwError(() => error);
@@ -26,10 +28,13 @@ export class SalesOrderService {
   }
 
   updateSalesOrder(updatedOrder: PSOMain): Observable<string> {
+    const headers = this.config.getHeader();
     return this.http
       .put<{ message: string }>(
-        `${this.apiUrlLocal}/PSOMain/UpdatePSO`,
-        updatedOrder
+        // `${this.config.getApiUrl()}/PSO/UpdatePSO`,
+        `${this.apiUrlLocal}/PSO/UpdatePSO`,
+        updatedOrder,
+        { headers }
       )
       .pipe(
         map((res) => res.message),
@@ -38,9 +43,14 @@ export class SalesOrderService {
   }
 
   deleteSalesOrder(mkey: string): Observable<string> {
-    return this.http.delete(`${this.apiUrlLocal}/PSOMain/DeletePSO/${mkey}`, {
-      responseType: 'text',
-    });
+    const headers = this.config.getHeader();
+    return this.http.delete(
+      `${this.config.getApiUrl()}/PSO/DeletePSO/${mkey}`,
+      {
+        responseType: 'text',
+        headers,
+      }
+    );
   }
 
   getItemsDetail(codes: { code: string }[]): Observable<any[]> {
@@ -65,13 +75,16 @@ export class SalesOrderService {
       pageSize,
     };
 
+    const headers = this.config.getHeader();
+
     if (searchOrderNoTerm?.trim()) {
       params.searchOrderNoTerm = searchOrderNoTerm;
     }
     return this.http.get<any>(
-      `${this.apiUrlLocal}/PSOMain/GetPSOByAcmID/${acmId}`,
+      `${this.config.getApiUrl()}/PSO/GetPSOByAcmID/${acmId}`,
       {
         params,
+        headers,
       }
     );
   }
