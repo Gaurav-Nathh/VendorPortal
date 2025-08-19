@@ -38,7 +38,6 @@ export class DashboardComponent {
   }
 
   ngOnInit(): void {
-    console.log('Dasborad');
     this.userType = (this.userService._user?.UsrType ?? '').toLowerCase();
     this.getDetails();
     this.getDetailOtSnd();

@@ -11,6 +11,7 @@ import { UserService } from './services/shared/user-service/user.service';
 import { ApiConfigService } from './services/api-config/api-config.service';
 import { filter, switchMap } from 'rxjs';
 import { commonRoutes, customerRoute, vendorRoutes } from './app.routes';
+import { UtilityService } from './services/utility/utility.service';
 
 @Component({
   selector: 'app-root',
@@ -52,7 +53,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private location: Location,
-    private config: ApiConfigService
+    private config: ApiConfigService,
+    private utilityService: UtilityService
   ) {}
 
   ngOnInit(): void {
@@ -66,7 +68,6 @@ export class AppComponent implements OnInit {
               next: (response) => {
                 // this.setRoutes();
                 this.isInitialized = true;
-                console.log('loader false');
                 const logHisId = sessionStorage.getItem('UsrLghId');
                 if (logHisId) {
                   this.sessionService.startSession();
@@ -106,11 +107,9 @@ export class AppComponent implements OnInit {
 
     if (!userData) {
       if (this.config.getIsProduction()) {
-        console.log('in production');
         window.location.href = this.config.getLoginPageUrl();
         return;
       } else {
-        console.log('not production');
         this.isInitialized = true;
         this.router.navigate(['/login']);
       }
@@ -119,7 +118,6 @@ export class AppComponent implements OnInit {
     }
 
     const decryptedData = this.decryptData(userData ?? '');
-    console.log('Decrypted Data:', decryptedData);
     this.domain = decryptedData.AboutDomain;
     this.userLghId = decryptedData.UserLghId;
     this.userId = decryptedData.user;
@@ -128,8 +126,8 @@ export class AppComponent implements OnInit {
     this.loginModel.password = decryptedData.Password;
     this.loginModel.lghLocation = decryptedData.Location;
     this.loginModel.lghPincode = decryptedData.PinCode;
-    this.loginModel.lghBrowser = this.getBrowserName();
-    this.loginModel.lghOs = this.getOSName();
+    this.loginModel.lghBrowser = this.utilityService.getBrowserName();
+    this.loginModel.lghOs = this.utilityService.getOSName();
     this.loginModel.lghIpaddress = decryptedData.UserIp;
     // this.loginModel.headerCode
     this.loginModel.lastSoftwareUpdate = '';
@@ -163,42 +161,6 @@ export class AppComponent implements OnInit {
         this.isInitialized = true;
       },
     });
-  }
-
-  getBrowserName(): string {
-    const ua = navigator.userAgent;
-
-    if (ua.includes('Chrome') && !ua.includes('Edg') && !ua.includes('OPR')) {
-      return 'Chrome';
-    } else if (ua.includes('Firefox')) {
-      return 'Firefox';
-    } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
-      return 'Safari';
-    } else if (ua.includes('Edg')) {
-      return 'Edge';
-    } else if (ua.includes('OPR')) {
-      return 'Opera';
-    } else {
-      return 'Unknown';
-    }
-  }
-
-  getOSName(): string {
-    const ua = navigator.userAgent;
-
-    if (ua.includes('Windows')) {
-      return 'Windows';
-    } else if (ua.includes('Mac OS')) {
-      return 'MacOS';
-    } else if (ua.includes('Linux')) {
-      return 'Linux';
-    } else if (/Android/i.test(ua)) {
-      return 'Android';
-    } else if (/iPhone|iPad|iPod/i.test(ua)) {
-      return 'iOS';
-    } else {
-      return 'Unknown';
-    }
   }
 
   // setRoutes() {

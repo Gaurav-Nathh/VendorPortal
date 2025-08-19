@@ -278,7 +278,6 @@ export class AuthService {
             );
           } else {
             this.userServie.setUser(userDetails);
-            console.log('I was here');
             sessionStorage.setItem('UsrLghId', userDetails?.UsrLghId || '');
             sessionStorage.setItem(
               'UsrId',

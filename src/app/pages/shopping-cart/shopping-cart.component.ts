@@ -592,7 +592,6 @@ export class ShoppingCartComponent {
           }
         }
       }
-      console.log(this.catalougeFilterPayload);
       return true;
     });
   }

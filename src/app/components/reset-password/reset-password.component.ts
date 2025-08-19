@@ -17,7 +17,5 @@ export class ResetPasswordComponent {
 
   constructor() {}
 
-  onSubmit() {
-    console.log(this.loginModel.email);
-  }
+  onSubmit() {}
 }

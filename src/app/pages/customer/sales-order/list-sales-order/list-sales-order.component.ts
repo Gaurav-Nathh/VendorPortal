@@ -172,7 +172,6 @@ export class ListSalesOrderComponent implements OnInit {
           this.isOrderLoading = false;
           this.orders = response.data;
           this.totalRecords = response.totalRecords;
-          console.log(this.orders);
         },
         error: (err) => {
           this.isOrderLoading = false;

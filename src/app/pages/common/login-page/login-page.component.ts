@@ -31,9 +31,20 @@ import CryptoJS from 'crypto-js';
   styleUrl: './login-page.component.scss',
 })
 export class LoginPageComponent {
-  loginModel = {
+  public loginModel: LoginModel = {
     userName: '',
     password: '',
+    lghLocation: '',
+    lghPincode: '',
+    lghBrowser: '',
+    lghOs: '',
+    lghIpaddress: '',
+    headerCode: '',
+    lastSoftwareUpdate: '',
+    cmpUsers: false,
+    portalUsers: false,
+    lghId: 0,
+    isMobileLogin: false,
   };
 
   userType: string = '';
@@ -55,46 +66,6 @@ export class LoginPageComponent {
   progress = 50;
   domain: string = '';
 
-  // public loginModel: LoginModel = {
-  //   userName: '',
-  //   password: '',
-  //   lghLocation: '',
-  //   lghPincode: '',
-  //   lghBrowser: '',
-  //   lghOs: '',
-  //   lghIpaddress: '',
-  //   headerCode: '',
-  //   lastSoftwareUpdate: '',
-  //   cmpUsers: false,
-  //   portalUsers: false,
-  //   lghId: 0,
-  //   isMobileLogin: false,
-  // };
-
-  dataToEncrypt: any = {
-    user: '',
-    key: '',
-    utm_destination: '',
-    utm_key: '',
-    UserIp: '',
-    Location: '',
-    Pincode: '',
-    UserName: '',
-    Password: '',
-    UrlTab: '',
-    CmpReportUrl: '',
-    CmpCode: '',
-    CmpDocAccessKey: '',
-    CmpDocBucketName: '',
-    CmpDocRegion: '',
-    CmpDocSecrectAccesskey: '',
-    CmpDocUrl: '',
-    AboutLicKey: '',
-    AboutNoOfUsers: '',
-    AboutDomain: '',
-    CmpPlan: '',
-    userLghId: 0,
-  };
   isLocationAllowed: boolean = false;
 
   constructor(
@@ -140,25 +111,7 @@ export class LoginPageComponent {
     this.domain = this.loginModel.userName.split('@')[1];
     this.authService.resolveDomain(this.domain).subscribe({
       next: (response) => {
-        this.dataToEncrypt.key = response.CmpKey;
-        this.dataToEncrypt.utm_destination = response.CmpApiUrl;
-        this.dataToEncrypt.utm_key = '9oiuj78hyg';
-        this.dataToEncrypt.UserName = this.loginModel.userName;
-        this.dataToEncrypt.Password = this.loginModel.password;
-        this.dataToEncrypt.UrlTab = window.location.href;
-        this.dataToEncrypt.CmpReportUrl = response.CmpReportUrl;
-        this.dataToEncrypt.CmpCode = response.CmpCode;
-        this.dataToEncrypt.CmpDocAccessKey = response.CmpDocAccessKey;
-        this.dataToEncrypt.CmpDocBucketName = response.CmpDocBucketName;
-        this.dataToEncrypt.CmpDocRegion = response.CmpDocRegion;
-        this.dataToEncrypt.CmpDocSecrectAccesskey =
-          response.CmpDocSecretAccessKey;
-        this.dataToEncrypt.CmpDocUrl = response.CmpDocUrl;
-        this.dataToEncrypt.AboutLicKey = response.CmpLicKey;
-        this.dataToEncrypt.AboutNoOfUsers = response.CmpUsers;
-        this.dataToEncrypt.AboutDomain = this.domain;
-        this.dataToEncrypt.CmpPlan = response.CmpPlan;
-
+        this.loginModel.headerCode = response.CmpKey;
         this.login();
       },
       error: (error) => {
@@ -172,12 +125,10 @@ export class LoginPageComponent {
   }
 
   login() {
+    this.loginModel.lghBrowser = this.utilityService.getBrowserName();
+    this.loginModel.lghOs = this.utilityService.getOSName();
     this.authService.login_local(this.loginModel).subscribe({
       next: (respone: any) => {
-        this.dataToEncrypt.user = respone.userDetails.UsrId;
-        this.dataToEncrypt.userLghId = respone.userDetails.UsrLghId;
-
-        console.log('Data to Encrypt:', this.dataToEncrypt);
         if (
           respone.userDetails.UsrType === 'Customer' ||
           respone.userDetails.UsrType === 'Vendor'
@@ -189,36 +140,20 @@ export class LoginPageComponent {
             this.router.navigate(['/dashboard']);
           }
         } else {
-          this.redirectWithEncryptedData();
+          Swal.fire({
+            icon: 'error',
+            title: 'User Type Error',
+            text: 'Invalid user type. Please contact support.',
+          });
         }
-        // window.location.href = this.apiConfigService.getLoginPageUrl();
-
-        // window.location.href = 'http://127.0.0.1:5501/';
       },
     });
-  }
-
-  redirectWithEncryptedData() {
-    const secretKey = 'EFACTOBNG';
-    const encryptedData = CryptoJS.AES.encrypt(
-      JSON.stringify(this.dataToEncrypt),
-      secretKey
-    ).toString();
-
-    let baseUrl = this.dataToEncrypt.utm_destination;
-    if (baseUrl.endsWith('/api')) {
-      baseUrl = baseUrl.slice(0, -4);
-    }
-
-    window.location.href = `${baseUrl}?data=${encodeURIComponent(
-      encryptedData
-    )}`;
   }
 
   fetchIp() {
     this.utilityService.getIp().subscribe({
       next: (ip) => {
-        this.dataToEncrypt.UserIp = ip;
+        this.loginModel.lghIpaddress = ip;
       },
       error: (err) => {
         console.error('Error fetching IP address:', err);
@@ -235,8 +170,8 @@ export class LoginPageComponent {
 
         this.utilityService.reverseGeocode(lat, lon).subscribe({
           next: (data) => {
-            this.dataToEncrypt.Location = data['display_name'];
-            this.dataToEncrypt.Pincode = data['address']?.['postcode'] || '';
+            this.loginModel.lghLocation = data['display_name'];
+            this.loginModel.lghPincode = data['address']?.['postcode'] || '';
           },
           error: (err) => console.error('Error fetching location:', err),
         });
