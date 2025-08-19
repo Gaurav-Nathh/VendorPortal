@@ -1,0 +1,45 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { map, catchError, Observable, throwError } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UtilityService {
+  constructor(private http: HttpClient) {}
+
+  getIp(): Observable<string> {
+    return this.http
+      .get<{ ip: string }>('https://api.ipify.org?format=json')
+      .pipe(
+        map((res) => res.ip),
+        catchError((err) => throwError(() => err))
+      );
+  }
+
+  getLocation(): Observable<GeolocationPosition> {
+    return new Observable((observer) => {
+      if (!navigator.geolocation) {
+        observer.error('Geolocation is not supported by this browser.');
+      } else {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            observer.next(position);
+            observer.complete();
+          },
+          (error) => {
+            observer.error(error);
+          },
+          {
+            enableHighAccuracy: true,
+          }
+        );
+      }
+    });
+  }
+
+  reverseGeocode(lat: number, lon: number): Observable<any> {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+    return this.http.get(url).pipe(catchError((err) => throwError(() => err)));
+  }
+}

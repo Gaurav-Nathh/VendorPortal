@@ -4,19 +4,25 @@ import { ApiConfigService } from '../../api-config/api-config.service';
 import { Observable, tap, map } from 'rxjs';
 import { user } from '../../../Models/Common/dashboard.model';
 import { AccountStatementParams } from '../../../Models/Vendor/AcntStatment';
+import { UserService } from '../user-service/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardService {
-  constructor(private http: HttpClient, private config: ApiConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ApiConfigService,
+    private userService: UserService
+  ) {}
 
   userDetails: user = new user();
   acntModel = new AccountStatementParams();
+  currentYearShort = new Date().getFullYear().toString().slice(-2);
 
   getDshbrd(): Observable<user> {
     const headers = this.config.getHeader();
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || 0);
+    const acmId = this.userService._user?.UsrLinkAcmId ?? 0;
 
     return this.http
       .get<any>(`${this.config.getApiUrl()}/Acm/${acmId}`, {
@@ -30,9 +36,12 @@ export class DashboardService {
   getDashbrdOtsnd() {
     const date = new Date();
     const formattedDate = date.toISOString().split('T')[0];
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || 0);
-    const fyrid = Number(sessionStorage.getItem('fryId') || 0);
-    const brnId = Number(sessionStorage.getItem('UsrBrnId') || 0);
+    // const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || 0);
+    const acmId = this.userService._user?.UsrLinkAcmId ?? 0;
+    // const fyrid = Number(sessionStorage.getItem('fryId') || 0);
+    const fyrid = this.currentYearShort;
+    // const brnId = Number(sessionStorage.getItem('UsrBrnId') || 0);
+    const brnId = this.userService._user?.UsrBrnId ?? 0;
     const headers = this.config.getHeader();
 
     const params = {
@@ -51,8 +60,10 @@ export class DashboardService {
     );
   }
   getDashbodTable() {
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || 0);
-    const typr = sessionStorage.getItem('userType') || '';
+    // const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || 0);
+    const acmId = this.userService._user?.UsrLinkAcmId ?? 0;
+    // const typr = sessionStorage.getItem('userType') || '';
+    const typr = this.userService._user?.UsrType ?? '';
     const params = {
       AcmId: acmId,
       Type: typr,
@@ -67,10 +78,14 @@ export class DashboardService {
   }
 
   accountStatement(): Observable<any[]> {
-    const acmName = sessionStorage.getItem('UsrLinkAcmName') || '';
-    const UseBrnId = sessionStorage.getItem('UsrBrnId');
-    const fryId = sessionStorage.getItem('fryId');
-    const UsrCode = sessionStorage.getItem('UsrCode') ?? '';
+    // const acmName = sessionStorage.getItem('UsrLinkAcmName') || '';
+    const acmName = this.userService._user?.UsrLinkAcmName ?? '';
+    // const UseBrnId = sessionStorage.getItem('UsrBrnId');
+    const UseBrnId = this.userService._user?.UsrBrnId ?? 0;
+    // const fryId = sessionStorage.getItem('fryId');
+    const fryId = this.currentYearShort;
+    // const UsrCode = sessionStorage.getItem('UsrCode') ?? '';
+    const UsrCode = this.userService._user?.UsrCode ?? '';
 
     this.acntModel.TypeValue = acmName;
     this.acntModel.BrnId = UseBrnId ? +UseBrnId : undefined;

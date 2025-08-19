@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { FormsModule } from '@angular/forms';
 import * as ExcelJS from 'exceljs';
+import { UserService } from '../../../../services/shared/user-service/user.service';
 
 
 
@@ -43,17 +44,19 @@ totalBalance: number = 0;
 currentPage: number = 1;
 itemsPerPage: number = 16;
   filteredItems: OutstandingBill[] = [];
-  private acmName = sessionStorage.getItem('UsrLinkAcmName') || '';
-  private UsrName = sessionStorage.getItem('UsrName') || '';
+  private acmName: string = '';
+  private UsrName: string = '';
   
   searchText: string = '';
 
-  constructor(public paymentService:PaymentServiceService){
+  constructor(public paymentService:PaymentServiceService, private userService: UserService){
 
   }
 
 
   ngOnInit(){
+    this.acmName = this.userService._user?.UsrLinkAcmName ?? '';
+    this.UsrName = this.userService._user?.UsrName ?? '';
     this.paymentFun();
   }
 

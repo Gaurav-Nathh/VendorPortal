@@ -9,6 +9,7 @@ import { debounce, debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import * as FileSaver from 'file-saver';
 import * as ExcelJS from 'exceljs';
 import { SharedService } from '../../../../services/shared/shared.service';
+import { UserService } from '../../../../services/shared/user-service/user.service';
 
 @Component({
   selector: 'app-list-sales-order',
@@ -34,6 +35,7 @@ export class ListSalesOrderComponent implements OnInit {
   pageSizes = [5, 10, 50, 100, 200];
   openIndexes = new Set<number>();
   isOrderLoading: boolean = false;
+  acmId: number = 0;
 
   private searchOrderNoSubject = new Subject<string>();
 
@@ -41,10 +43,12 @@ export class ListSalesOrderComponent implements OnInit {
     private shoppingCartService: ShoppingCartService,
     private router: Router,
     private salesOrderService: SalesOrderService,
-    private sharedServrice: SharedService
+    private sharedServrice: SharedService,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
+    this.acmId = this.userService._user?.UsrLinkAcmId ?? 0;
     this.changePageSize(this.pageSizes[2]); // Default to 50 items per page
     this.searchOrderNoSubject
       .pipe(debounceTime(500), distinctUntilChanged())
@@ -73,10 +77,10 @@ export class ListSalesOrderComponent implements OnInit {
     this.salesOrderService.setEditableItem(so);
     if (so.orderType === 'items') {
       this.sharedServrice.setCartMode('items');
-      this.router.navigate(['/customer/items/create-order']);
+      this.router.navigate(['/items/create-order']);
     } else {
       this.sharedServrice.setCartMode('catalouge');
-      this.router.navigate(['/customer/catalouge/create-order']);
+      this.router.navigate(['/catalouge/create-order']);
     }
   }
 
@@ -161,9 +165,8 @@ export class ListSalesOrderComponent implements OnInit {
 
   getOrderList() {
     this.isOrderLoading = true;
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
     this.salesOrderService
-      .getOrderList(acmId, this.pageNumber, this.pageSize)
+      .getOrderList(this.acmId, this.pageNumber, this.pageSize)
       .subscribe({
         next: (response) => {
           this.isOrderLoading = false;
@@ -179,10 +182,9 @@ export class ListSalesOrderComponent implements OnInit {
   }
 
   searchOrders(searchTerm: string) {
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId'));
     this.pageNumber = 1;
     this.salesOrderService
-      .getOrderList(acmId, this.pageNumber, this.pageSize, searchTerm)
+      .getOrderList(this.acmId, this.pageNumber, this.pageSize, searchTerm)
       .subscribe({
         next: (response) => {
           this.orders = response.data;

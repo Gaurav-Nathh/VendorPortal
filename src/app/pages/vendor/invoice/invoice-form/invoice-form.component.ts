@@ -657,7 +657,7 @@ export class InvoiceFormComponent {
   goToList(): void {
     this.isEditMode = false;
     this.vendorInvoiceServie.clearMKey();
-    this.router.navigate(['/vendor/invoice']);
+    this.router.navigate(['/invoice']);
   }
 
   enableEditMode(): void {

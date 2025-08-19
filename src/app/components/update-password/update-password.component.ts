@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { passwordModel, PasswordService } from '../../services/shared/password-service/password.service';
+import {
+  passwordModel,
+  PasswordService,
+} from '../../services/shared/password-service/password.service';
 import Swal from 'sweetalert2';
-
-
-
-
-
 
 @Component({
   selector: 'app-update-password',
@@ -16,9 +14,7 @@ import Swal from 'sweetalert2';
   imports: [FormsModule, CommonModule],
 })
 export class UpdatePasswordComponent {
-  
-
- currentPassword: string = '';
+  currentPassword: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
 
@@ -35,11 +31,16 @@ export class UpdatePasswordComponent {
 
   getPasswordStrengthText(): string {
     switch (this.getPasswordStrength()) {
-      case 1: return 'Weak';
-      case 2: return 'Moderate';
-      case 3: return 'Strong';
-      case 4: return 'Very Strong';
-      default: return 'Very Weak';
+      case 1:
+        return 'Weak';
+      case 2:
+        return 'Moderate';
+      case 3:
+        return 'Strong';
+      case 4:
+        return 'Very Strong';
+      default:
+        return 'Very Weak';
     }
   }
 
@@ -65,55 +66,57 @@ export class UpdatePasswordComponent {
     );
   }
 
- onSubmit(): void {
-  if (!this.isFormValid()) return;
+  onSubmit(): void {
+    if (!this.isFormValid()) return;
 
-  const model = new passwordModel();
-  model.OldPassword = this.currentPassword;
-  model.NewPassword = this.newPassword;
+    const model = new passwordModel();
+    model.OldPassword = this.currentPassword;
+    model.NewPassword = this.newPassword;
 
-  const userId = sessionStorage.getItem('userId');
-  if (userId) {
-    model.Id = +userId;
-  } else {
-    Swal.fire('Error', 'User ID not found. Please login again.', 'error');
-    return;
-  }
+    const userId = sessionStorage.getItem('UsrId');
+    if (userId) {
+      model.Id = +userId;
+    } else {
+      Swal.fire('Error', 'User ID not found. Please login again.', 'error');
+      return;
+    }
 
-  this.passwordService.changePassword(model).subscribe({
-    next: (res: any) => {
-      if (res?.Detail?.errorCode === -1) {
-        // API returned a failure despite 200 status
-        Swal.fire('Failed', res.Detail.Message || 'Password update failed.', 'error');
-      } else {
-        // Successful password change
-        Swal.fire('Success', 'Password updated successfully', 'success');
+    this.passwordService.changePassword(model).subscribe({
+      next: (res: any) => {
+        if (res?.Detail?.errorCode === -1) {
+          // API returned a failure despite 200 status
+          Swal.fire(
+            'Failed',
+            res.Detail.Message || 'Password update failed.',
+            'error'
+          );
+        } else {
+          // Successful password change
+          Swal.fire('Success', 'Password updated successfully', 'success');
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
+        }
+      },
+      error: (err: any) => {
+        console.error('Error updating password', err);
+
+        const errorMessage =
+          err?.error?.Detail?.Message ||
+          'Something went wrong. Please try again.';
+        Swal.fire('Error', errorMessage, 'error');
+
+        // Clear input fields
         this.currentPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
-      }
-    },
-    error: (err: any) => {
-      console.error('Error updating password', err);
+      },
+    });
+  }
 
-      const errorMessage = err?.error?.Detail?.Message || 'Something went wrong. Please try again.';
-      Swal.fire('Error', errorMessage, 'error');
-
-      // Clear input fields
-      this.currentPassword = '';
-      this.newPassword = '';
-      this.confirmPassword = '';
-    }
-  });
-}
-
-
-
-checkPasswordStrength(): void {
-  // Angular automatically handles change detection,
-  // but calling getPasswordStrength() ensures consistency.
-  this.getPasswordStrength();
-}
-
-
+  checkPasswordStrength(): void {
+    // Angular automatically handles change detection,
+    // but calling getPasswordStrength() ensures consistency.
+    this.getPasswordStrength();
+  }
 }

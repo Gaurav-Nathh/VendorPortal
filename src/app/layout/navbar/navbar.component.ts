@@ -2,10 +2,11 @@ import { CommonModule, NgFor } from '@angular/common';
 import { Component, NgModule, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
-import { UserService } from '../../services/user.service';
 import { SharedService } from '../../services/shared/shared.service';
 import { FormsModule, NgModel } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/shared/user-service/user.service';
+import { User } from '../../Models/Common/user.model';
 
 interface NavItem {
   icon: string;
@@ -23,6 +24,7 @@ export class NavbarComponent implements OnInit {
   isSidebarVisible: boolean = true;
   greeting: string = '';
   userType: string = '';
+  user: User | null = null;
   navItems: NavItem[] = [
     { icon: 'bi-house', label: 'Home', route: '/home' },
     { icon: 'bi-person', label: 'Profile', route: '/profile' },
@@ -38,7 +40,10 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.userType = this.userService.getUserType();
+    // this.userService.user$.subscribe((user) => {
+    //   this.userType = user?.UsrType ?? '';
+    // });
+    this.userType = this.userService._user?.UsrType ?? '';
     this.sidebarService.sidebarVisible$.subscribe((visible) => {
       this.isSidebarVisible = visible;
     });
@@ -53,11 +58,7 @@ export class NavbarComponent implements OnInit {
     // }
 
     // this.greeting += `, ${this.capitalize(this.userType)}`;
-    this.greeting = `Welcome to ${
-      sessionStorage.getItem('userType') || ''
-    } Portal, ${sessionStorage.getItem('UsrName')}`;
-
-    const brnId = Number(sessionStorage.getItem('UsrLinkAcmId') || '');
+    this.greeting = `Welcome to ${this.userType} Portal, ${this.userService._user?.UsrName}`;
   }
 
   capitalize(text: string): string {

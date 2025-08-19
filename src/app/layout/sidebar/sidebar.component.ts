@@ -4,11 +4,11 @@ import { ActivatedRoute, NavigationEnd, RouterModule } from '@angular/router';
 
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { UserService } from '../../services/user.service';
 import { SharedService } from '../../services/shared/shared.service';
 import { filter } from 'rxjs/operators';
 import { ShoppingCartService } from '../../services/shoppingCart-service/shopping-cart.service';
 import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
+import { UserService } from '../../services/shared/user-service/user.service';
 interface MenuItem {
   text: string;
   icon: string;
@@ -43,7 +43,7 @@ export class SidebarComponent {
   userType!: string;
 
   ngOnInit() {
-    this.userType = this.userService.getUserType().toLowerCase();
+    this.userType = (this.userService._user?.UsrType ?? '').toLowerCase();
     this.buildMenu();
     this.currentMenu =
       this.userType === 'vendor' ? this.vendorMenu : this.customerMenu;
@@ -86,29 +86,29 @@ export class SidebarComponent {
     {
       text: 'Dashboard',
       icon: 'bi bi-grid-1x2-fill',
-      route: '/vendor/',
+      route: '/',
     },
 
     {
       text: 'Item Mapping',
       icon: 'fa fa-box sidebar-icon',
-      route: '/vendor/item-mapping',
+      route: '/item-mapping',
     },
 
     {
       text: 'Purchase Orders',
       icon: 'fa-solid fa-rectangle-list',
-      route: '/vendor/purchase-orders',
+      route: '/purchase-orders',
     },
     {
       text: 'Invoice',
       icon: 'fa-solid fa-file-lines',
-      route: '/vendor/invoice',
+      route: '/invoice',
     },
     {
       text: 'Goods Receipts',
       icon: 'fa-solid fa-receipt',
-      route: '/vendor/page-under-construction',
+      route: '/page-under-construction',
     },
     {
       text: 'Payment',
@@ -118,19 +118,19 @@ export class SidebarComponent {
         {
           text: 'Pending Payment',
           icon: 'fa-solid fa-hourglass-half',
-          route: '/vendor/payment-pending',
+          route: '/payment-pending',
         },
         {
           text: 'Account Statement',
           icon: 'fa-solid fa-clock-rotate-left',
-          route: '/vendor/payment-history',
+          route: '/payment-history',
         },
       ],
     },
     {
       text: 'Statements',
       icon: 'fa-solid fa-file-invoice-dollar',
-      route: '/vendor/page-under-construction',
+      route: '/page-under-construction',
     },
   ];
 
@@ -138,12 +138,12 @@ export class SidebarComponent {
     {
       text: 'Dashboard',
       icon: 'bi bi-grid-1x2-fill',
-      route: '/customer/',
+      route: '/',
     },
     {
       text: 'Orders',
       icon: 'bi bi-file-earmark-check-fill',
-      route: '/customer/all-orders',
+      route: '/all-orders',
     },
     // {
     //   text: 'Create Order',
@@ -165,22 +165,22 @@ export class SidebarComponent {
     {
       text: 'Order by Items',
       icon: 'fa-solid fa-cubes',
-      route: '/customer/items/create-order',
+      route: '/items/create-order',
     },
     {
       text: 'Order by Catalouge',
       icon: 'fa-solid fa-box',
-      route: '/customer/catalouge/create-order',
+      route: '/catalouge/create-order',
     },
     {
       text: 'My Orders',
       icon: 'bi bi-file-earmark-check-fill',
-      route: '/customer/my-orders',
+      route: '/my-orders',
     },
     {
       text: 'Invoice',
       icon: 'fa-solid fa-file-invoice-dollar',
-      route: '/customer/invoice',
+      route: '/invoice',
     },
     {
       text: 'Payment',
@@ -190,19 +190,19 @@ export class SidebarComponent {
         {
           text: 'Pending Payment',
           icon: 'fa-solid fa-hourglass-half',
-          route: '/customer/payment-pending',
+          route: '/payment-pending',
         },
         {
           text: 'Account Statement',
           icon: 'fa-solid fa-clock-rotate-left',
-          route: '/customer/payment-history',
+          route: '/payment-history',
         },
       ],
     },
     {
       text: 'Statements',
       icon: 'fa-solid fa-file-invoice-dollar',
-      route: '/vendor/page-under-construction',
+      route: '/page-under-construction',
     },
   ];
 
@@ -211,12 +211,12 @@ export class SidebarComponent {
       {
         text: 'My Profile',
         icon: 'fa-solid fa-circle-user',
-        route: `/${this.userType}/profile`,
+        route: '/profile',
       },
       {
         text: 'Password',
         icon: 'fa-solid fa-lock',
-        route: `/${this.userType}/update-password`,
+        route: '/update-password',
       },
     ];
   }

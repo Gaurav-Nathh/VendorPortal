@@ -53,7 +53,7 @@ export class SessionServiceService {
   }
   logoutUser() {
     sessionStorage.clear();
-    this.router.navigate(['/login']);
+    window.location.href = this.config.getLoginPageUrl();
   }
   stopSession() {
     this.stopPolling$.next();
