@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import * as FileSaver from 'file-saver';
 import * as ExcelJS from 'exceljs';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../../services/shared/user-service/user.service';
 
 @Component({
   selector: 'app-my-orders',
@@ -29,7 +30,10 @@ export class MyOrdersComponent implements OnInit {
 
   private searchOrderNoSubject = new Subject<string>();
 
-  constructor(private myOrdersService: MyOrdersService) {}
+  constructor(
+    private myOrdersService: MyOrdersService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.getPortalSOList();
@@ -43,7 +47,7 @@ export class MyOrdersComponent implements OnInit {
 
   getPortalSOList() {
     this.isOrdersLoading = true;
-    const amcId: number = Number(sessionStorage.getItem('UsrLinkAcmId'));
+    const amcId: number = this.userService._user?.UsrLinkAcmId ?? 0;
     this.myOrdersService.getPortalSOList(amcId).subscribe({
       next: (response) => {
         this.isOrdersLoading = false;

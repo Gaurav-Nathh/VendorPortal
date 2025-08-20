@@ -11,6 +11,7 @@ import {
   SalesInvoiceDetail,
   SalesInvoice,
 } from '../../../Models/customer/salesInvoice.model';
+import { UserService } from '../../../services/shared/user-service/user.service';
 
 @Component({
   selector: 'app-sales-invoice',
@@ -31,7 +32,10 @@ export class SalesInvoiceComponent implements OnInit {
 
   private searchOrderNoSubject = new Subject<string>();
 
-  constructor(private salesInvoiceService: SalesInvoiceService) {}
+  constructor(
+    private salesInvoiceService: SalesInvoiceService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.getSalesInvoiceList();
@@ -45,7 +49,7 @@ export class SalesInvoiceComponent implements OnInit {
 
   getSalesInvoiceList() {
     this.isInvoicesLoading = true;
-    const amcId: number = Number(sessionStorage.getItem('UsrLinkAcmId'));
+    const amcId: number = this.userService._user?.UsrLinkAcmId ?? 0;
     this.salesInvoiceService.getPortalSalesInvoiceList(amcId).subscribe({
       next: (response) => {
         this.isInvoicesLoading = false;

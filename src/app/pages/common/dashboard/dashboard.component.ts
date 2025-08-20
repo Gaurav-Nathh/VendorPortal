@@ -3,6 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { DashboardService } from '../../../services/shared/dashboard-service/dashboard.service';
 import Swal from 'sweetalert2';
+import { UserService } from '../../../services/shared/user-service/user.service';
 
 interface RecentSale {
   vdate: Date;
@@ -29,13 +30,15 @@ export class DashboardComponent {
   lastCredit: number | null = null;
   lastDate: string | null = null;
 
-  constructor(public dashboradService: DashboardService) {
+  constructor(
+    public dashboradService: DashboardService,
+    private userService: UserService
+  ) {
     Chart.register(...registerables);
   }
 
   ngOnInit(): void {
-    this.userType = (sessionStorage.getItem('userType') || '').toLowerCase();
-    console.log(this.userType);
+    this.userType = (this.userService._user?.UsrType ?? '').toLowerCase();
     this.getDetails();
     this.getDetailOtSnd();
     this.getDashbodTable();
@@ -168,8 +171,6 @@ export class DashboardComponent {
         }
 
         this.fixedSalesRows = sales.slice(0, 5);
-
-        console.log('Fixed sales rows:', this.fixedSalesRows);
       },
       error: (err) => {
         console.error('Error fetching dashboard table data:', err);
@@ -185,8 +186,6 @@ export class DashboardComponent {
           const last = table[table.length - 1];
           this.lastCredit = last?.Credit ?? 0;
           this.lastDate = last?.Date ?? null;
-          console.log('Credit:', this.lastCredit);
-          console.log('Date:', this.lastDate);
         } else {
           console.warn('No records found in Table');
         }

@@ -4,7 +4,6 @@ import { ApiConfigService } from '../../api-config/api-config.service';
 import { Observable } from 'rxjs';
 import { Pgrmain } from '../../../Models/Invoice/invoice.model';
 
-
 export interface Branch {
   Id: string;
   Text: string;
@@ -25,24 +24,21 @@ export interface PODetailItem {
 export interface POModel {
   PoDetails: PODetailItem[];
   PomMkey: string;
-
 }
 
 export interface POApiResponse {
   model: POModel;
 }
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class InvoiceService {
-
   private baseUrl = 'https://localhost:7133/api/';
 
   private mkey: string | null = null;
 
-  constructor(private http: HttpClient, private config: ApiConfigService) { }
+  constructor(private http: HttpClient, private config: ApiConfigService) {}
 
   getBranches(
     acmId: number,
@@ -66,7 +62,10 @@ export class InvoiceService {
     const params = new HttpParams()
       .set('AcmId', acmId.toString())
       .set('Vno', vno);
-    return this.http.get<POApiResponse>(`${this.config.getApiUrl()}/PO/PortalGetByVno`, { params, headers });
+    return this.http.get<POApiResponse>(
+      `${this.config.getApiUrl()}/PO/PortalGetByVno`,
+      { params, headers }
+    );
   }
 
   setMKey(value: string) {
@@ -80,8 +79,6 @@ export class InvoiceService {
   clearMKey() {
     this.mkey = null;
   }
-
-  
 
   deleteInvoice(mkey: string): Observable<any> {
     const headers = this.config.getHeader();
@@ -122,7 +119,14 @@ export class InvoiceService {
     });
   }
 
-  generateVno(vType: string): Observable<{ vNo: string, vNoSeq: number, vNoPrefix: string, mKey: string }> {
+  generateVno(
+    vType: string
+  ): Observable<{
+    vNo: string;
+    vNoSeq: number;
+    vNoPrefix: string;
+    mKey: string;
+  }> {
     const params = new HttpParams().set('vType', vType);
     const headers = this.config.getHeader();
 
@@ -131,7 +135,11 @@ export class InvoiceService {
     );
   }
 
-  getPaginatedInvoices(pageNumber: number, pageSize: number, searchTerm: string = ''): Observable<any> {
+  getPaginatedInvoices(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm: string = ''
+  ): Observable<any> {
     let params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
@@ -143,5 +151,4 @@ export class InvoiceService {
 
     return this.http.get<any>(`${this.config.getApiUrl()}/PGR/GetPaginatedInvoices`, { params, headers });
   }
-
 }

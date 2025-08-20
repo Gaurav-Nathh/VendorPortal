@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ItemMappingResponse } from '../../../pages/vendor/item-mapping/item-mapping.component';
 import { ItemMappingModel } from '../../../Models/MappingForm.model';
 import { ApiConfigService } from '../../api-config/api-config.service';
+import { UserService } from '../../shared/user-service/user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,11 +18,15 @@ export class ItemMappingService {
 
   itemMapping: any = new ItemMappingModel();
 
-  constructor(private http: HttpClient, private config: ApiConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ApiConfigService,
+    private userService: UserService
+  ) {}
 
   getMappingItems(): Observable<ItemMappingResponse> {
-   const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
-    
+    const acmId = String(this.userService._user?.UsrLinkAcmId);
+
     const headers = this.config.getHeader();
 
     return this.http.get<ItemMappingResponse>(
@@ -55,7 +60,8 @@ export class ItemMappingService {
   } */
 
   postMappingItems() {
-      const acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+    const acmId = String(this.userService._user?.UsrLinkAcmId);
+
     this.itemMapping.itvAcmId = acmId; // Set acmId from session storage
     const headers = this.config.getHeader();
 

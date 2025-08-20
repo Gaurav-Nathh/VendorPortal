@@ -110,7 +110,7 @@ export class ViewInvoiceComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.invoiceService.setMKey(mkey);
-        this.router.navigate(['/vendor/invoice-form']);
+        this.router.navigate(['/invoice-form']);
       }
     });
   }

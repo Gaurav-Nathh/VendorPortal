@@ -1,1 +1,27 @@
-<router-outlet></router-outlet>
+<!-- <router-outlet></router-outlet> -->
+
+<main *ngIf="isInitialized; else loadingTemplate" id="main" class="">
+  <router-outlet></router-outlet>
+  <!-- <section class="">
+    <app-navbar></app-navbar>
+  </section>
+  <section id="main-container" class="">
+    <section id="sidebar-container" class="">
+      <app-sidebar></app-sidebar>
+    </section>
+    <section id="page-container" class="">
+      <router-outlet></router-outlet>
+    </section>
+  </section> -->
+</main>
+
+<ng-template #loadingTemplate>
+  <div class="loaderContainer">
+    <div class="loader-body">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Getting things ready for you…</p>
+    </div>
+  </div>
+</ng-template>

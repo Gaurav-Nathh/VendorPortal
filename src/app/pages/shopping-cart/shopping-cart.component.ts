@@ -20,6 +20,7 @@ import { SalesOrderService } from '../../services/customer-service/sales-order/s
 import { debounceTime, elementAt, filter, Subject, Subscription } from 'rxjs';
 import { Product } from '../../Models/customer/product.model';
 import { CatalougeType } from '../../Models/customer/catalougeType.modal';
+import { UserService } from '../../services/shared/user-service/user.service';
 
 declare var bootstrap: any;
 
@@ -109,6 +110,7 @@ export class ShoppingCartComponent {
   selectedCatalouges: any[] = [];
   catalougeDropdownOpen = false;
   actId = 1;
+  brnId: number = 0;
   CartMode: string = '';
 
   constructor(
@@ -116,7 +118,8 @@ export class ShoppingCartComponent {
     private sharedService: SharedService,
     private salesOrderService: SalesOrderService,
     private renderer: Renderer2,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {
     this.filters.forEach((filter) => {
       this.selectedFilters[filter.title] = [];
@@ -124,6 +127,7 @@ export class ShoppingCartComponent {
   }
 
   ngOnInit() {
+    this.brnId = this.userService._user?.UsrBrnId ?? 0;
     this.sharedService.cartMode$.subscribe((mode) => {
       this.CartMode = mode;
     });
@@ -336,7 +340,7 @@ export class ShoppingCartComponent {
   }
 
   closeShoppingCart() {
-    this.router.navigate(['/customer/sales-order']);
+    this.router.navigate(['/sales-order']);
   }
 
   toggleSideFilterMobile() {
@@ -588,7 +592,6 @@ export class ShoppingCartComponent {
           }
         }
       }
-      console.log(this.catalougeFilterPayload);
       return true;
     });
   }
@@ -760,7 +763,7 @@ export class ShoppingCartComponent {
     withImage: boolean;
     orderCatelogName: string;
   } = {
-    brnId: sessionStorage.getItem('UsrBrnId') || '',
+    brnId: String(this.brnId),
     fyrId: 25,
     wrhId: 0,
     vdate: '',
@@ -1048,7 +1051,7 @@ export class ShoppingCartComponent {
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
           0
         ),
-        psomModUser: sessionStorage.getItem('UsrAddUser') || '',
+        psomModUser: this.userService._user?.UsrAddUser,
         psoDetails: this.cart.map((item) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
@@ -1081,7 +1084,7 @@ export class ShoppingCartComponent {
           });
           this.salesOrderService.clearEditableItem();
           this.cart = [];
-          this.router.navigate(['/customer/all-orders']);
+          this.router.navigate(['/all-orders']);
         },
         error: (err) => {
           Swal.fire({
@@ -1101,9 +1104,12 @@ export class ShoppingCartComponent {
       });
     } else {
       this.salesOrder = {
-        psomCmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
-        psomBrnId: Number(sessionStorage.getItem('UsrBrnId')),
-        psomAcmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
+        // psomCmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
+        psomCmpId: this.userService._user?.UsrCCmpId,
+        // psomBrnId: Number(sessionStorage.getItem('UsrBrnId')),
+        psomBrnId: this.userService._user?.UsrBrnId,
+        // psomAcmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
+        psomAcmId: this.userService._user?.UsrLinkAcmId,
         psomVtype: 'PSO',
         psomItmCount: this.cart.length,
         psomItmQty: this.cart.reduce(
@@ -1118,7 +1124,8 @@ export class ShoppingCartComponent {
         psomOrderType: sessionStorage.getItem('cartMode') || '',
         psomStatus: 'CREATED',
         psomStatusCode: 1,
-        psomAddUser: sessionStorage.getItem('UsrAddUser') || '',
+        // psomAddUser: sessionStorage.getItem('UsrAddUser') || '',
+        psomAddUser: this.userService._user?.UsrAddUser,
         psomModUser: '',
         psoDetails: this.cart.map((item) => {
           const price = item.Itemprices[0];
@@ -1152,7 +1159,7 @@ export class ShoppingCartComponent {
             timer: 1000,
           });
           this.cart = [];
-          this.router.navigate(['/customer/all-orders']);
+          this.router.navigate(['/all-orders']);
         },
         error: (err) => {
           Swal.fire({

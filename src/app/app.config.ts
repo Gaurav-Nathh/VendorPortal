@@ -1,8 +1,35 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  inject,
+  makeEnvironmentProviders,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { routes } from './app.routes';
+import { commonRoutes, customerRoute, vendorRoutes } from './app.routes';
+import { ApiConfigService } from './services/api-config/api-config.service';
+
+export function initApp(configService: ApiConfigService) {
+  return () => {
+    configService.initialize();
+  };
+}
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes)]
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter([...commonRoutes, ...customerRoute, ...vendorRoutes]),
+
+    makeEnvironmentProviders([
+      {
+        provide: 'APP_INIT',
+        useFactory: () => {
+          const configService = inject(ApiConfigService);
+          configService.initialize();
+          return true;
+        },
+      },
+    ]),
+  ],
 };

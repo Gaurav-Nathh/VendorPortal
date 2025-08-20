@@ -12,6 +12,10 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { ApiConfigService } from '../../../services/api-config/api-config.service';
 import { DomainCode } from '../../../Models/Common/domain-code.model';
+import { LoginModel } from '../../../Models/Common/login.model';
+import { UtilityService } from '../../../services/utility/utility.service';
+import { user } from '../../../Models/Common/dashboard.model';
+import CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-login-page',
@@ -27,10 +31,22 @@ import { DomainCode } from '../../../Models/Common/domain-code.model';
   styleUrl: './login-page.component.scss',
 })
 export class LoginPageComponent {
-  loginModel = {
+  public loginModel: LoginModel = {
     userName: '',
     password: '',
+    lghLocation: '',
+    lghPincode: '',
+    lghBrowser: '',
+    lghOs: '',
+    lghIpaddress: '',
+    headerCode: '',
+    lastSoftwareUpdate: '',
+    cmpUsers: false,
+    portalUsers: false,
+    lghId: 0,
+    isMobileLogin: false,
   };
+
   userType: string = '';
   hidePassword: boolean = true;
   showPasswordField = false;
@@ -48,6 +64,9 @@ export class LoginPageComponent {
 
   currentImage = 0;
   progress = 50;
+  domain: string = '';
+
+  isLocationAllowed: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -55,14 +74,18 @@ export class LoginPageComponent {
     private userService: UserService,
     private sessionService: SessionServiceService,
     public loadingServie: LoadingService,
-    private router: Router
+    private router: Router,
+    private utilityService: UtilityService
   ) {
     setInterval(() => {
       this.nextSlide();
     }, 3000);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fetchIp();
+    this.fetchLocation();
+  }
 
   @ViewChild('loginForm', { static: true }) loginForm!: NgForm;
 
@@ -85,18 +108,11 @@ export class LoginPageComponent {
   }
 
   resolveDomain() {
-    const domain = this.loginModel.userName.split('@')[1];
-    this.authService.resolveDomain(domain).subscribe({
-      next: (response: DomainCode) => {
-        if (response?.CmpApiUrl && response.CmpKey) {
-          this.login();
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Domain Error',
-            text: 'The domain is not valid or not registered.',
-          });
-        }
+    this.domain = this.loginModel.userName.split('@')[1];
+    this.authService.resolveDomain(this.domain).subscribe({
+      next: (response) => {
+        this.loginModel.headerCode = response.CmpKey;
+        this.login();
       },
       error: (error) => {
         Swal.fire({
@@ -109,27 +125,86 @@ export class LoginPageComponent {
   }
 
   login() {
-    this.authService.login(this.loginModel).subscribe({
-      next: (response: any) => {
-        if (response.success === true) {
-          this.sessionService.startSession();
-          this.userType = this.userService.getUserType();
-          switch (this.userType) {
-            case 'Customer':
-              this.router.navigate(['/customer']);
-              break;
-            case 'Vendor':
-              this.router.navigate(['/vendor']);
-              break;
-            default:
-              this.router.navigate(['/']);
-              break;
+    this.loginModel.lghBrowser = this.utilityService.getBrowserName();
+    this.loginModel.lghOs = this.utilityService.getOSName();
+    this.authService.login_local(this.loginModel).subscribe({
+      next: (respone: any) => {
+        if (
+          respone.userDetails.UsrType === 'Customer' ||
+          respone.userDetails.UsrType === 'Vendor'
+        ) {
+          const logHisId = sessionStorage.getItem('UsrLghId');
+          sessionStorage.setItem('Domain', this.domain);
+          if (logHisId) {
+            this.sessionService.startSession();
+            this.router.navigate(['/dashboard']);
           }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'User Type Error',
+            text: 'Invalid user type. Please contact support.',
+          });
         }
       },
-      error: (error) => {},
     });
   }
+
+  fetchIp() {
+    this.utilityService.getIp().subscribe({
+      next: (ip) => {
+        this.loginModel.lghIpaddress = ip;
+      },
+      error: (err) => {
+        console.error('Error fetching IP address:', err);
+      },
+    });
+  }
+
+  fetchLocation() {
+    this.utilityService.getLocation().subscribe({
+      next: (position) => {
+        this.isLocationAllowed = true;
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        this.utilityService.reverseGeocode(lat, lon).subscribe({
+          next: (data) => {
+            this.loginModel.lghLocation = data['display_name'];
+            this.loginModel.lghPincode = data['address']?.['postcode'] || '';
+          },
+          error: (err) => console.error('Error fetching location:', err),
+        });
+      },
+      error: (err) => {
+        this.isLocationAllowed = false;
+        console.error('Error fetching geolocation:', err);
+      },
+    });
+  }
+
+  // login() {
+  //   this.authService.login(this.loginModel).subscribe({
+  //     next: (response: any) => {
+  //       if (response.success === true) {
+  //         this.sessionService.startSession();
+  //         this.userType = this.userService.getUserType();
+  //         switch (this.userType) {
+  //           case 'Customer':
+  //             this.router.navigate(['/customer']);
+  //             break;
+  //           case 'Vendor':
+  //             this.router.navigate(['/vendor']);
+  //             break;
+  //           default:
+  //             this.router.navigate(['/']);
+  //             break;
+  //         }
+  //       }
+  //     },
+  //     error: (error) => {},
+  //   });
+  // }
 
   nextSlide() {
     this.currentImage = (this.currentImage + 1) % this.images.length;
