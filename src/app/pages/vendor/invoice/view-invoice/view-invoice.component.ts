@@ -22,10 +22,20 @@ export class ViewInvoiceComponent {
   isLoading: boolean = false;
   totalRecords: number = 0;
   searchTerm: string = '';
+  branchList: any[] = [];
 
   constructor(private invoiceService: InvoiceService, private router: Router) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    // console.log("view- branch");
+    // await this.loadBranches();
+    console.log("branchList", this.branchList);
+    const acmId = 0;
+    const type = 'MOBILEAPP';
+    this.invoiceService.getBranches(acmId, type).toPromise().then((res) => {
+      this.branchList = res?.BranchList || [];
+      console.log("branchList", this.branchList);
+    })
     this.fetchInvoices();
   }
 
@@ -39,6 +49,7 @@ export class ViewInvoiceComponent {
           this.invoiceList = res.data;
           this.totalRecords = res.totalRecords;
           this.isLoading = false;
+          console.log('list data', this.invoiceList)
         },
         error: (err) => {
           console.error('Failed to load invoices:', err);
@@ -47,7 +58,7 @@ export class ViewInvoiceComponent {
       });
   }
 
-  
+
 
   calculateNetAmount(details: any[]): number {
     return Array.isArray(details)
@@ -75,7 +86,7 @@ export class ViewInvoiceComponent {
         this.invoiceService.deleteInvoice(mkey).subscribe({
           next: () => {
             this.invoiceList = this.invoiceList.filter(
-              (inv) => inv.mKey !== mkey
+              (inv) => inv.PgrmMKey !== mkey
             );
             Swal.fire('Deleted!', 'Invoice has been deleted.', 'success');
           },
@@ -159,4 +170,11 @@ export class ViewInvoiceComponent {
     this.fetchInvoices();
   }
 
+  getBranchName(branchId: string | number): string {
+    const branch = this.branchList.find(b => Number(b.Id) === Number(branchId));
+    return branch ? branch.Text : 'Unknown';
+  }
+
+  async loadBranches() {
+  }
 }

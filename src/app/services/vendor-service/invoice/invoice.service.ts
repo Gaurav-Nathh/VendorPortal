@@ -84,43 +84,50 @@ export class InvoiceService {
   
 
   deleteInvoice(mkey: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}PGRMain/Delete/${mkey}`, {
-      responseType: 'text' as 'json'
+    const headers = this.config.getHeader();
+    return this.http.delete(`${this.config.getApiUrl()}/PGR/Delete/${mkey}`, {
+      responseType: 'text' as 'json',
+      headers
     });
   }
 
   createInvoice(payload: Pgrmain) {
-    return this.http.post<Pgrmain>(`${this.baseUrl}PGRMain/CreatePGRMain`, payload);
+    const headers = this.config.getHeader();
+    return this.http.post<Pgrmain>(`${this.config.getApiUrl()}/PGR/CreatePGRMain`, payload, { headers });
   }
 
   searchVendorItems(query: string, acmId: string) {
+    const headers = this.config.getHeader();
     const params = new HttpParams()
       .set('query', query)
       .set('acmId', acmId);
-    return this.http.get<any[]>(`${this.baseUrl}PGRMain/search-itemvendor`, { params });
+    return this.http.get<any[]>(`${this.config.getApiUrl()}/PGR/search-itemvendor`, { params, headers });
   }
 
   getItemDetails(itmId: string, acmId: string) {
+    const headers = this.config.getHeader();
     const params = new HttpParams()
       .set('itmId', itmId)
       .set('acmId', acmId);
-    return this.http.get<any>(`${this.baseUrl}PGRMain/item-details`, { params });
+    return this.http.get<any>(`${this.config.getApiUrl()}/PGR/item-details`, { params, headers });
   }
 
   getInvoiceByMKey(mkey: string): Observable<Pgrmain> {
-    return this.http.get<Pgrmain>(`${this.baseUrl}PGRMain/${mkey}`);
+    return this.http.get<Pgrmain>(`${this.config.getApiUrl()}/PGRMain/${mkey}`);
   }
 
   updateInvoice(data: Pgrmain): Observable<any> {
-    return this.http.put(`${this.baseUrl}PGRMain/Update`, data, {
+    return this.http.put(`${this.config.getApiUrl()}/PGR/Update`, data, {
       responseType: 'text' as 'json'
     });
   }
 
   generateVno(vType: string): Observable<{ vNo: string, vNoSeq: number, vNoPrefix: string, mKey: string }> {
     const params = new HttpParams().set('vType', vType);
+    const headers = this.config.getHeader();
+
     return this.http.get<{ vNo: string, vNoSeq: number, vNoPrefix: string, mKey: string }>(
-      `${this.baseUrl}PGRMain/generate-vno`, { params }
+      `${this.config.getApiUrl()}/PGR/generate-vno`, { params, headers }
     );
   }
 
@@ -132,8 +139,9 @@ export class InvoiceService {
     if (searchTerm && searchTerm.trim()) {
       params = params.set('search', searchTerm.trim());
     }
+    const headers = this.config.getHeader();
 
-    return this.http.get<any>(`${this.baseUrl}PGRMain/GetPaginatedInvoices`, { params });
+    return this.http.get<any>(`${this.config.getApiUrl()}/PGR/GetPaginatedInvoices`, { params, headers });
   }
 
 }

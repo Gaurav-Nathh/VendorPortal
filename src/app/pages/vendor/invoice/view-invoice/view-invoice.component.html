@@ -50,16 +50,17 @@
           <ng-container *ngFor="let invoice of invoiceList; let i = index">
             <tr class="align-middle">
               <td>{{ i + 1 + (currentPage - 1) * itemsPerPage }}</td>
-              <td>{{ invoice.for_BrnName }}</td>
-              <td>{{ invoice.vNo }}</td>
+              <td>{{ getBranchName(invoice.PgrmForBrnId) }}</td>
+              <!-- <td>{{ invoice.PgrmForBrnId }}</td> -->
+              <td>{{ invoice.PgrmVNo }}</td>
               <td class="text-center">
-                {{ invoice.vDate | date : "dd-MM-yyyy" }}
+                {{ invoice.PgrmVDate | date : "dd-MM-yyyy" }}
               </td>
-              <td class="text-center">{{ invoice.refNo }}</td>
+              <td class="text-center">{{ invoice.PgrmRefNo }}</td>
               <td class="text-center">
-                {{ invoice.refDate | date : "dd-MM-yyyy" }}
+                {{ invoice.PgrmRefDate | date : "dd-MM-yyyy" }}
               </td>
-              <td class="text-center">{{ invoice.details.length || 0 }}
+              <td class="text-center">{{ invoice.PGRDetails.length || 0 }}
                 <button class="action-btn ms-2" type="button" (click)="toggleDetails(i)"
                   [attr.aria-expanded]="isOpen(i)" [attr.data-bs-target]="'#collapse' + i"
                   [attr.aria-controls]="'collapse' + i">
@@ -70,7 +71,7 @@
                 </button>
               </td>
               <td class="text-end">
-                {{ calculateNetAmount(invoice.details) | currency : "INR" }}
+                {{ calculateNetAmount(invoice.PGRDetails) | currency : "INR" }}
               </td>
 
               <td class="text-center actions-container">
@@ -80,12 +81,12 @@
                   </button>
                   <ul class="dropdown-menu">
                     <li>
-                      <a class="dropdown-item" (click)="editInvoice(invoice.mKey)">
+                      <a class="dropdown-item" (click)="editInvoice(invoice.PgrmMKey)">
                         <i class="fa-solid fa-pen-to-square me-2"></i> Edit
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" (click)="deleteInvoice(invoice.mKey)">
+                      <a class="dropdown-item" (click)="deleteInvoice(invoice.PgrmMKey)">
                         <i class="fa-solid fa-trash me-2"></i> Delete
                       </a>
                     </li>
@@ -102,7 +103,7 @@
                         <i class="bi bi-receipt-cutoff me-2"></i>Invoice Items
                       </h6>
                       <span class="badge" style="background-color: var(--color-blue)">
-                        {{ invoice.details.length }} items
+                        {{ invoice.PGRDetails.length }} items
                       </span>
                     </div>
 
@@ -119,18 +120,18 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let item of invoice.details; let j = index">
+                        <tr *ngFor="let item of invoice.PGRDetails; let j = index">
                           <td>{{ j + 1 }}</td>
-                          <td>{{ item.itemCode }}</td>
-                          <td>{{ item.itemName }}</td>
-                          <td class="text-center">{{ item.quantity }}</td>
-                          <td class="text-end">{{ item.mrp | currency: 'INR' }}</td>
-                          <td class="text-end">{{ item.rate | currency: 'INR' }}</td>
+                          <td>{{ item.PgrdItemCode }}</td>
+                          <td>{{ item.PgrdItemName }}</td>
+                          <td class="text-center">{{ item.PgrdQuantity }}</td>
+                          <td class="text-end">{{ item.PgrdMRP | currency: 'INR' }}</td>
+                          <td class="text-end">{{ item.PgrdRate | currency: 'INR' }}</td>
                           <td class="text-end text-success fw-semibold">
                             {{
-                            item.quantity * item.rate -
-                            (item.discountAmount || 0) +
-                            (item.gstAmount || 0) | number : "1.2-2"
+                            item.PgrdQuantity * item.PgrdRate -
+                            (item.PgrdDiscountAmount || 0) +
+                            (item.PgrdGstAmount || 0) | number : "1.2-2"
                             }}
                           </td>
                         </tr>
@@ -143,7 +144,7 @@
                             <th colspan="6"  class="text-end pe-3 fw-bold">Total</th>
                             <th>
                               {{
-                                getTotalAmount(invoice.details) | currency : "INR"
+                                getTotalAmount(invoice.PGRDetails) | currency : "INR"
                               }}
                             </th>
                           </tr>

@@ -41,16 +41,16 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label">For Branch</label>
-                  <select class="form-select" name="for_BrnName" [(ngModel)]="invoiceModel.for_BrnName" [disabled]="formState === 'submitted' || formState === 'cancel'">
+                  <select class="form-select" name="for_BrnId" [(ngModel)]="invoiceModel.PgrmForBrnId" [disabled]="formState === 'submitted' || formState === 'cancel'">
                     <option value="" selected>Select Branch</option>
-                    <option *ngFor="let branch of branchList" [value]="branch.Text">
+                    <option *ngFor="let branch of branchList" [value]="branch.Id">
                       {{ branch.Text }}
                     </option>
                   </select>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Number</label>
-                  <input type="text" class="form-control readonly-grey" [(ngModel)]="invoiceModel.vNo" name="vno"
+                  <input type="text" class="form-control readonly-grey" [(ngModel)]="invoiceModel.PgrmVNo" name="vno"
                     readonly />
                 </div>
 
@@ -70,14 +70,14 @@
               <div class="row g-3">
                 <div class="col-md-6 col-lg-6">
                   <label class="form-label">Bill No. <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" name="refNo" [(ngModel)]="invoiceModel.refNo"
+                  <input type="text" class="form-control" name="refNo" [(ngModel)]="invoiceModel.PgrmRefNo"
                     aria-label="Bill Number" required #refNo="ngModel" [ngClass]="{
                       'is-invalid': refNo.invalid && refNo.touched
                     }" [readonly]="formState === 'submitted' || formState === 'cancel'"/>
                 </div>
                 <div class="col-md-6 col-lg-6">
                   <label class="form-label">Bill Date <span class="text-danger">*</span></label>
-                  <input type="date" class="form-control" name="refDate" [(ngModel)]="invoiceModel.refDate"
+                  <input type="date" class="form-control" name="refDate" [(ngModel)]="invoiceModel.PgrmRefDate"
                     aria-label="Bill Date" [min]="minDate" required #refDate="ngModel" [ngClass]="{
                       'is-invalid': refDate.invalid && refDate.touched
                     }" [readonly]="formState === 'submitted' || formState === 'cancel'"/>
@@ -85,7 +85,7 @@
 
                 <div class="col-md-6 col-lg-6">
                   <label class="form-label">Created By</label>
-                  <select class="form-select" name="docType" [(ngModel)]="invoiceModel.docType"
+                  <select class="form-select" name="docType" [(ngModel)]="invoiceModel.PgrmDocType"
                     (change)="onCreatedByChange()"  [disabled]="formState === 'submitted' || formState === 'cancel'">
                     <option value="excel">Excel Import</option>
                     <option value="manual" selected>Manual</option>
@@ -96,10 +96,10 @@
                 <div class="col-md-6 col-lg-6">
                   <label class="form-label">PO Number</label>
                   <input type="text" class="form-control" name="poNo" aria-label="PO Number"
-                    [(ngModel)]="invoiceModel.docNo" (input)="onPoNoInputChange($event)" [disabled]="
-                      invoiceModel.docType === 'manual' ||
-                      invoiceModel.docType === 'excel'
-                    " [readonly]="(formState === 'submitted' || formState === 'cancel') && invoiceModel.docType === 'po'" />
+                    [(ngModel)]="invoiceModel.PgrmDocNo" (input)="onPoNoInputChange($event)" [disabled]="
+                      invoiceModel.PgrmDocType === 'manual' ||
+                      invoiceModel.PgrmDocType === 'excel'
+                    " [readonly]="(formState === 'submitted' || formState === 'cancel') && invoiceModel.PgrmDocType === 'po'" />
                 </div>
               </div>
             </div>
@@ -183,8 +183,8 @@
                     </tr>
                     <tr *ngFor="let s of lookupSuggestions" style="cursor: pointer"
                       (click)="selectVendorItemFromModal(s)">
-                      <td>{{ s.vendorItemCode }}</td>
-                      <td>{{ s.vendorItemName }}</td>
+                      <td>{{ s.VendorItemCode }}</td>
+                      <td>{{ s.VendorItemName }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -254,8 +254,8 @@
                             </div>
                           </td>
                           <td>
-                            <input type="text" class="table-input" [(ngModel)]="item.barcode" name="barcode{{ i }}"
-                              placeholder="Barcode" [readOnly]="formState === 'submitted' || formState === 'cancel'"/>
+                            <input type="text" class="table-input" [(ngModel)]="item.barcode" name="barcode{{ i }}" #barcodeRef="ngModel" [ngClass]="{ 'is-invalid': !item.barcode && invoiceForm.submitted }" required
+                              placeholder="Barcode" [readOnly]="formState === 'submitted' || formState === 'cancel'" />
                           </td>
                           <td>
                             <input type="number" class="table-input number-input" [(ngModel)]="item.mrp"
@@ -331,7 +331,7 @@
               <div class="form-group">
                 <label for="remark" class="form-label">Remark</label>
                 <textarea id="remark" name="remark" class="form-control" rows="3"
-                  [(ngModel)]="invoiceModel.remarks" [readOnly]="formState === 'submitted'"></textarea>
+                  [(ngModel)]="invoiceModel.PgrmRemarks" [readOnly]="formState === 'submitted'"></textarea>
               </div>
             </div>
           </div>

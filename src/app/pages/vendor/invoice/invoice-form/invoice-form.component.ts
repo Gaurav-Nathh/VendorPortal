@@ -55,27 +55,28 @@ export class InvoiceFormComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   invoiceModel: Pgrmain = {
-    mKey: '',
-    cmpId: 1,
-    brnId: 0,
-    vType: 'PGR',
-    vNo: '',
-    vNoSeq: 0,
-    vNoPrefix: '',
-    refNo: '',
-    refDate: '',
-    acmId: 0,
-    netAmount: 0,
-    remarks: '',
-    statusCode: 1,
-    addUser: '',
-    addDate: '',
-    modUser: '',
-    modDate: '',
-    for_BrnName: '',
-    docNo: '',
-    docType: 'manual',
-    details: [],
+    PgrmMKey: '',
+    PgrmCmpId: 1,
+    PgrmBrnId: 0,
+    PgrmVType: 'PGR',
+    PgrmVNo: '',
+    PgrmVNoSeq: 0,
+    PgrmVNoPrefix: '',
+    PgrmRefNo: '',
+    PgrmRefDate: '',
+    PgrmAcmId: 0,
+    PgrmNetAmount: 0,
+    PgrmRemarks: '',
+    PgrmStatusCode: 1,
+    PgrmAddUser: '',
+    PgrmAddDate: '',
+    PgrmModUser: '',
+    PgrmModDate: '',
+    PgrmForBrnId: 0,
+    PgrmForBrnName: '',
+    PgrmDocNo: '',
+    PgrmDocType: 'manual',
+    PGRDetails: [],
   };
 
   private acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
@@ -94,7 +95,7 @@ export class InvoiceFormComponent {
     this.poNumberInput$
       .pipe(debounceTime(600), distinctUntilChanged())
       .subscribe((poNumber: string) => {
-        if (this.invoiceModel.docType === 'po' && poNumber.trim()) {
+        if (this.invoiceModel.PgrmDocType === 'po' && poNumber.trim()) {
           this.loadPOData(poNumber.trim());
         }
       });
@@ -113,13 +114,17 @@ export class InvoiceFormComponent {
     Promise.all([
     this.vendorInvoiceServie.getBranches(acmId, type).toPromise().then((res) => {
       this.branchList = res?.BranchList || [];
+      console.log('branch', this.branchList)
       if (!this.isEditMode) {
         const defaultBranch = this.branchList.find(
           (b) => b.Text.toUpperCase() === 'DELHI'
         );
         if (defaultBranch) {
           this.defaultBrn = defaultBranch.Text;
-          this.invoiceModel.for_BrnName = defaultBranch.Text;
+          this.defaultBranchId = Number(defaultBranch.Id);
+          // this.invoiceModel.PgrmForBrnName = defaultBranch.Text;
+          this.invoiceModel.PgrmForBrnId = Number(defaultBranch.Id);
+
         }
       }
     }),
@@ -160,20 +165,20 @@ export class InvoiceFormComponent {
       this.invoiceModel = res;
 
       // Format date
-      if (res.refDate) {
-        const dateObj = new Date(res.refDate);
+      if (res.PgrmRefDate) {
+        const dateObj = new Date(res.PgrmRefDate);
         const yyyy = dateObj.getFullYear();
         const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
         const dd = String(dateObj.getDate()).padStart(2, '0');
-        this.invoiceModel.refDate = `${yyyy}-${mm}-${dd}`;
+        this.invoiceModel.PgrmRefDate = `${yyyy}-${mm}-${dd}`;
       }
 
       this.items = await Promise.all(
-        res.details.map(async (d) => {
+        res.PGRDetails.map(async (d) => {
           let vendorItems: any[] = [];
           try {
             const result = await this.vendorInvoiceServie
-              .searchVendorItems(d.itemCode, this.acmId)
+              .searchVendorItems(d.PgrdItemCode, this.acmId)
               .toPromise();
             vendorItems = result ?? [];
           } catch {
@@ -181,32 +186,33 @@ export class InvoiceFormComponent {
           }
 
           const matched = vendorItems.find(
-            (item: any) => item.vendorItemCode === d.itemCode
+            (item: any) => item.vendorItemCode === d.PgrdItemCode
           );
+          console.log('item vendorItemcode', matched)
 
           if (!matched) {
-            alert(`Item "${d.itemCode}" is not mapped`);
+            alert(`Item "${d.PgrdItemCode}" is not mapped`);
             return this.createNewItem();
           }
 
           const itemDetails = await this.vendorInvoiceServie
-            .getItemDetails(matched.itmId, this.acmId)
+            .getItemDetails(matched.ItmId, this.acmId)
             .toPromise()
             .catch(() => null);
 
           return {
-            rowNo: d.rowNo,
-            itemId: d.itemId,
-            myItemCode: d.itemCode,
+            rowNo: d.PgrdRowNo,
+            itemId: d.PgrdItemId,
+            myItemCode: d.PgrdItemCode,
             myItemName: matched.vendorItemName,
             itemCode: itemDetails?.itemCode || '',
             itemName: itemDetails?.itemName || '',
-            barcode: d.barcode,
-            mrp: d.mrp,
-            qty: d.quantity,
-            rate: d.rate,
-            discount: d.discountAmount,
-            gstAmount: d.gstAmount || 0,
+            barcode: d.PgrdBarcode,
+            mrp: d.PgrdMRP,
+            qty: d.PgrdQuantity,
+            rate: d.PgrdRate,
+            discount: d.PgrdDiscountAmount,
+            gstAmount: d.PgrdGstAmount || 0,
             showDropdown: false,
             suggestions: [],
           };
@@ -229,13 +235,13 @@ export class InvoiceFormComponent {
 
   private generateNewVnoAndMKey(): Promise<void> {
   return new Promise((resolve, reject) => {
-    this.vendorInvoiceServie.generateVno(this.invoiceModel.vType).subscribe({
+    this.vendorInvoiceServie.generateVno(this.invoiceModel.PgrmVType).subscribe({
       next: (data) => {
         this.generatedNumber = data.vNo;
-        this.invoiceModel.vNo = data.vNo;
-        this.invoiceModel.vNoSeq = data.vNoSeq;
-        this.invoiceModel.vNoPrefix = data.vNoPrefix;
-        this.invoiceModel.mKey = data.mKey;
+        this.invoiceModel.PgrmVNo = data.vNo;
+        this.invoiceModel.PgrmVNoSeq = data.vNoSeq;
+        this.invoiceModel.PgrmVNoPrefix = data.vNoPrefix;
+        this.invoiceModel.PgrmMKey = data.mKey;
         this.mkey = data.mKey;
 
         resolve(); 
@@ -251,7 +257,7 @@ export class InvoiceFormComponent {
 
 
   onCreatedByChange() {
-    if (this.invoiceModel.docType === 'excel') {
+    if (this.invoiceModel.PgrmDocType === 'excel') {
       const modalEl = this.excelImportModal.nativeElement;
       new bootstrap.Modal(modalEl).show();
     }
@@ -352,6 +358,7 @@ export class InvoiceFormComponent {
       .searchVendorItems(query, this.acmId)
       .subscribe((res) => {
         this.lookupSuggestions = res;
+        console.log('serach', this.lookupSuggestions)
       });
   }
 
@@ -359,15 +366,15 @@ export class InvoiceFormComponent {
     const index = this.activeItemIndex;
     if (index === -1) return;
 
-    this.items[index].myItemCode = selected.vendorItemCode;
-    this.items[index].myItemName = selected.vendorItemName;
-    this.items[index].itemId = selected.itmId;
+    this.items[index].myItemCode = selected.VendorItemCode;
+    this.items[index].myItemName = selected.VendorItemName;
+    this.items[index].itemId = selected.ItmId;
 
     this.vendorInvoiceServie
-      .getItemDetails(selected.itmId, this.acmId)
+      .getItemDetails(selected.ItmId, this.acmId)
       .subscribe((itemDetail) => {
-        this.items[index].itemCode = itemDetail.itemCode;
-        this.items[index].itemName = itemDetail.itemName;
+        this.items[index].itemCode = itemDetail.ItemCode;
+        this.items[index].itemName = itemDetail.ItemName;
       });
 
     this.closeItemLookupModal();
@@ -453,7 +460,7 @@ export class InvoiceFormComponent {
         let itemDetails: any = null;
         try {
           itemDetails = await this.vendorInvoiceServie
-            .getItemDetails(matched.itmId, this.acmId)
+            .getItemDetails(matched.ItmId, this.acmId)
             .toPromise();
         } catch (error) {
           itemDetails = null;
@@ -637,7 +644,7 @@ export class InvoiceFormComponent {
     this.invoiceForm.resetForm();
 
        this.invoiceForm.form.patchValue({
-          for_BrnName: this.defaultBrn,
+          for_BrnId: this.defaultBranchId,
           docType: 'manual',
         });
       
@@ -663,7 +670,7 @@ export class InvoiceFormComponent {
   enableEditMode(): void {
     this.isLoading = true;
     setTimeout(() => {
-      this.mkey = this.invoiceModel.mKey;
+      this.mkey = this.invoiceModel.PgrmMKey;
       this.formState = 'edit';
       this.isEditMode = true;
       this.isLoading = false;
@@ -690,24 +697,24 @@ export class InvoiceFormComponent {
 
   private resetInvoiceModel(): void {
     Object.assign(this.invoiceModel, {
-      mKey: '',
-      cmpId: 1,
-      brnId: 0,
-      vType: 'PGR',
-      refNo: '',
-      refDate: '',
-      acmId: 0,
-      netAmount: 0,
-      remarks: '',
-      statusCode: 1,
-      addUser: '',
-      addDate: '',
-      modUser: '',
-      modDate: '',
-      for_BrnName: this.defaultBrn,
-      docNo: '',
-      docType: 'manual',
-      details: [],
+      PgrmMKey: '',
+      PgrmCmpId: 1,
+      PgrmBrnId: 0,
+      PgrmVType: 'PGR',
+      PgrmRefNo: '',
+      PgrmRefDate: '',
+      PgrmAcmId: 0,
+      PgrmNetAmount: 0,
+      PgrmRemarks: '',
+      PgrmStatusCode: 1,
+      PgrmAddUser: '',
+      PgrmAddDate: '',
+      PgrmModUser: '',
+      PgrmModDate: '',
+      PgrmForBrnId: this.defaultBranchId,
+      PgrmDocNo: '',
+      PgrmDocType: 'manual',
+      PGRDetails: [],
     });
   }
 
@@ -756,48 +763,49 @@ export class InvoiceFormComponent {
       const net = gross - discount + gst;
 
       return {
-        rowNo: item.rowNo || index + 1,
-        itemId: item.itemId || 0,
-        mrp: item.mrp,
-        rate: item.rate || 0,
-        quantity: item.qty,
-        grossAmount: gross,
-        discountAmount: discount,
-        gstAmount: gst,
-        barcode: item.barcode || '',
-        itemCode: item.myItemCode || '',
-        itemName: item.myItemName || '',
-        net: net,
+        PgrdRowNo: item.rowNo || index + 1,
+        PgrdItemId: item.itemId || 0,
+        PgrdMRP: item.mrp,
+        PgrdRate: item.rate || 0,
+        PgrdQuantity: item.qty,
+        PgrdGrossAmount: gross,
+        PgrdDiscountAmount: discount,
+        PgrdGstAmount: gst,
+        PgrdBarcode: item.barcode || '',
+        PgrdItemCode: item.myItemCode || '',
+        PgrdItemName: item.myItemName || '',
+        // net: net,
       };
     });
 
     // Final invoice model
-    this.invoiceModel.cmpId = cmpId;
-    this.invoiceModel.brnId = brnId;
-    this.invoiceModel.acmId = acmId;
-    this.invoiceModel.addUser = user;
-    this.invoiceModel.modUser = '';
-    this.invoiceModel.addDate = now;
-    this.invoiceModel.modDate = now;
-    this.invoiceModel.statusCode = 1;
-    this.invoiceModel.details = details;
+    this.invoiceModel.PgrmCmpId = cmpId;
+    this.invoiceModel.PgrmBrnId = brnId;
+    this.invoiceModel.PgrmAcmId = acmId;
+    this.invoiceModel.PgrmAddUser = user;
+    this.invoiceModel.PgrmModUser = '';
+    this.invoiceModel.PgrmAddDate = now;
+    this.invoiceModel.PgrmModDate = now;
+    this.invoiceModel.PgrmStatusCode = 1;
+    this.invoiceModel.PGRDetails = details;
+    this.invoiceModel.PgrmVDate = now;
 
-    if (this.invoiceModel.refDate && this.invoiceModel.refDate.includes('/')) {
-      const [dd, mm, yyyy] = this.invoiceModel.refDate.split('/');
-      this.invoiceModel.refDate = `${yyyy}-${mm}-${dd}`; // Convert to ISO format
+    if (this.invoiceModel.PgrmRefDate && this.invoiceModel.PgrmRefDate.includes('/')) {
+      const [dd, mm, yyyy] = this.invoiceModel.PgrmRefDate.split('/');
+      this.invoiceModel.PgrmRefDate = `${yyyy}-${mm}-${dd}`; // Convert to ISO format
     }
 
     // Net amount
-    this.invoiceModel.netAmount = details.reduce(
+    this.invoiceModel.PgrmNetAmount = details.reduce(
       (sum, d) =>
-        sum + (d.grossAmount - (d.discountAmount || 0) + (d.gstAmount || 0)),
+        sum + (d.PgrdGrossAmount - (d.PgrdDiscountAmount || 0) + (d.PgrdGstAmount || 0)),
       0
     );
 
     console.log('model', this.invoiceModel);
 
     if (this.isEditMode && this.mkey) {
-      this.invoiceModel.mKey = this.mkey;
+      this.invoiceModel.PgrmMKey = this.mkey;
 
       this.vendorInvoiceServie.updateInvoice(this.invoiceModel).subscribe({
         next: (res) => {
