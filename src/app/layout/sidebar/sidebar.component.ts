@@ -108,7 +108,7 @@ export class SidebarComponent {
     {
       text: 'Goods Receipts',
       icon: 'fa-solid fa-receipt',
-      route: '/page-under-construction',
+      route: '/goods-receipts',
     },
     {
       text: 'Payment',

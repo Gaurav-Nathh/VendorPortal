@@ -87,6 +87,15 @@ export const vendorRoutes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'goods-receipts',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/vendor/goods-receipts/goods-receipts.component').then(
+        (c) => c.GoodsReceiptsComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'invoices',
     pathMatch: 'full',
     loadComponent: () =>
