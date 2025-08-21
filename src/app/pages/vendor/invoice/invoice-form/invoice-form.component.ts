@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { DecimalLimitDirective } from '../../../../directives/decimal-limit.directive';
 import { Pgrmain, Pgrdetail } from '../../../../Models/Invoice/invoice.model';
+import { UserService } from '../../../../services/shared/user-service/user.service';
 
 declare var bootstrap: any;
 
@@ -78,12 +79,13 @@ export class InvoiceFormComponent {
     PGRDetails: [],
   };
 
-  private acmId = sessionStorage.getItem('UsrLinkAcmId') || '';
+  private acmId = '0';
 
   constructor(
     private vendorInvoiceServie: InvoiceService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private userService: UserService
   ) {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -101,6 +103,7 @@ export class InvoiceFormComponent {
   }
 
   ngOnInit(): void {
+    this.acmId = String(this.userService._user?.UsrLinkAcmId ?? '0');
     this.isLoading = true;
     this.items = [this.createNewItem()];
     const today = new Date();
@@ -110,26 +113,27 @@ export class InvoiceFormComponent {
     const type = 'MOBILEAPP';
 
     Promise.all([
-    this.vendorInvoiceServie.getBranches(acmId, type).toPromise().then((res) => {
-      this.branchList = res?.BranchList || [];
-      console.log('branch', this.branchList)
-      if (!this.isEditMode) {
-        const defaultBranch = this.branchList.find(
-          (b) => b.Text.toUpperCase() === 'DELHI'
-        );
-        if (defaultBranch) {
-          this.defaultBrn = defaultBranch.Text;
-          this.defaultBranchId = Number(defaultBranch.Id);
-          // this.invoiceModel.PgrmForBrnName = defaultBranch.Text;
-          this.invoiceModel.PgrmForBrnId = Number(defaultBranch.Id);
-
-        }
-      }
-    }),
-    this.initMkeyOrLoadInvoice(), 
-  ])
-    .finally(() => {
-      this.isLoading = false; 
+      this.vendorInvoiceServie
+        .getBranches(acmId, type)
+        .toPromise()
+        .then((res) => {
+          this.branchList = res?.BranchList || [];
+          console.log('branch', this.branchList);
+          if (!this.isEditMode) {
+            const defaultBranch = this.branchList.find(
+              (b) => b.Text.toUpperCase() === 'DELHI'
+            );
+            if (defaultBranch) {
+              this.defaultBrn = defaultBranch.Text;
+              this.defaultBranchId = Number(defaultBranch.Id);
+              // this.invoiceModel.PgrmForBrnName = defaultBranch.Text;
+              this.invoiceModel.PgrmForBrnId = Number(defaultBranch.Id);
+            }
+          }
+        }),
+      this.initMkeyOrLoadInvoice(),
+    ]).finally(() => {
+      this.isLoading = false;
     });
 
     this.lookupInputSubject
@@ -184,7 +188,7 @@ export class InvoiceFormComponent {
           const matched = vendorItems.find(
             (item: any) => item.vendorItemCode === d.PgrdItemCode
           );
-          console.log('item vendorItemcode', matched)
+          console.log('item vendorItemcode', matched);
 
           if (!matched) {
             alert(`Item "${d.PgrdItemCode}" is not mapped`);
@@ -226,24 +230,30 @@ export class InvoiceFormComponent {
   }
 
   private generateNewVnoAndMKey(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    this.vendorInvoiceServie.generateVno(this.invoiceModel.PgrmVType).subscribe({
-      next: (data) => {
-        this.generatedNumber = data.vNo;
-        this.invoiceModel.PgrmVNo = data.vNo;
-        this.invoiceModel.PgrmVNoSeq = data.vNoSeq;
-        this.invoiceModel.PgrmVNoPrefix = data.vNoPrefix;
-        this.invoiceModel.PgrmMKey = data.mKey;
-        this.mkey = data.mKey;
+    return new Promise((resolve, reject) => {
+      this.vendorInvoiceServie
+        .generateVno(this.invoiceModel.PgrmVType)
+        .subscribe({
+          next: (data) => {
+            this.generatedNumber = data.vNo;
+            this.invoiceModel.PgrmVNo = data.vNo;
+            this.invoiceModel.PgrmVNoSeq = data.vNoSeq;
+            this.invoiceModel.PgrmVNoPrefix = data.vNoPrefix;
+            this.invoiceModel.PgrmMKey = data.mKey;
+            this.mkey = data.mKey;
 
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error generating VNo', err);
-          Swal.fire('Error', 'Failed to generate new invoice number', 'error');
-          reject(err);
-        },
-      });
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error generating VNo', err);
+            Swal.fire(
+              'Error',
+              'Failed to generate new invoice number',
+              'error'
+            );
+            reject(err);
+          },
+        });
     });
   }
 
@@ -343,7 +353,7 @@ export class InvoiceFormComponent {
       .searchVendorItems(query, this.acmId)
       .subscribe((res) => {
         this.lookupSuggestions = res;
-        console.log('serach', this.lookupSuggestions)
+        console.log('serach', this.lookupSuggestions);
       });
   }
 
@@ -622,11 +632,10 @@ export class InvoiceFormComponent {
 
       this.invoiceForm.resetForm();
 
-       this.invoiceForm.form.patchValue({
-          for_BrnId: this.defaultBranchId,
-          docType: 'manual',
-        });
-      
+      this.invoiceForm.form.patchValue({
+        for_BrnId: this.defaultBranchId,
+        docType: 'manual',
+      });
 
       this.invoiceForm.form.markAsPristine();
       this.invoiceForm.form.markAsUntouched();
@@ -726,10 +735,14 @@ export class InvoiceFormComponent {
     const now = new Date().toISOString();
 
     // Set from session
-    const cmpId = Number(sessionStorage.getItem('UsrCtrlCmpId') || '0');
-    const brnId = Number(sessionStorage.getItem('UsrBrnId') || '0');
-    const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || '0');
-    const user = sessionStorage.getItem('UsrAddUser') || '';
+    // const cmpId = Number(sessionStorage.getItem('UsrCtrlCmpId') || '0');
+    const cmpId = this.userService._user?.UsrCCmpId || 0;
+    // const brnId = Number(sessionStorage.getItem('UsrBrnId') || '0');
+    const brnId = this.userService._user?.UsrBrnId || 0;
+    // const acmId = Number(sessionStorage.getItem('UsrLinkAcmId') || '0');
+
+    // const user = sessionStorage.getItem('UsrAddUser') || '';
+    const user = this.userService._user?.UsrAddUser || '';
 
     const details: Pgrdetail[] = this.items.map((item, index) => {
       const gross = item.qty * item.rate;
@@ -756,7 +769,7 @@ export class InvoiceFormComponent {
     // Final invoice model
     this.invoiceModel.PgrmCmpId = cmpId;
     this.invoiceModel.PgrmBrnId = brnId;
-    this.invoiceModel.PgrmAcmId = acmId;
+    this.invoiceModel.PgrmAcmId = Number(this.acmId ?? 0);
     this.invoiceModel.PgrmAddUser = user;
     this.invoiceModel.PgrmModUser = '';
     this.invoiceModel.PgrmAddDate = now;
@@ -765,7 +778,10 @@ export class InvoiceFormComponent {
     this.invoiceModel.PGRDetails = details;
     this.invoiceModel.PgrmVDate = now;
 
-    if (this.invoiceModel.PgrmRefDate && this.invoiceModel.PgrmRefDate.includes('/')) {
+    if (
+      this.invoiceModel.PgrmRefDate &&
+      this.invoiceModel.PgrmRefDate.includes('/')
+    ) {
       const [dd, mm, yyyy] = this.invoiceModel.PgrmRefDate.split('/');
       this.invoiceModel.PgrmRefDate = `${yyyy}-${mm}-${dd}`; // Convert to ISO format
     }
@@ -773,7 +789,10 @@ export class InvoiceFormComponent {
     // Net amount
     this.invoiceModel.PgrmNetAmount = details.reduce(
       (sum, d) =>
-        sum + (d.PgrdGrossAmount - (d.PgrdDiscountAmount || 0) + (d.PgrdGstAmount || 0)),
+        sum +
+        (d.PgrdGrossAmount -
+          (d.PgrdDiscountAmount || 0) +
+          (d.PgrdGstAmount || 0)),
       0
     );
 
