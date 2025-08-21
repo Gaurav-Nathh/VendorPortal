@@ -16,6 +16,14 @@
           <button class="top-action-btn" (click)="exportSalesOrdersToExcel()">
             <i class="fa-solid fa-download"></i>
           </button>
+          <button class="top-action-btn" (click)="reportGenerator.openModal()">
+            <i class="fa-solid fa-file-arrow-down"></i>
+          </button>
+
+          <app-report-generator
+            #reportGenerator
+            [listType]="'PSO'"
+          ></app-report-generator>
         </div>
       </div>
       <!-- <div class="dashboard-header">

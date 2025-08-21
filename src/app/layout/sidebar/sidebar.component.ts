@@ -103,7 +103,7 @@ export class SidebarComponent {
     {
       text: 'Invoice',
       icon: 'fa-solid fa-file-lines',
-      route: '/invoice',
+      route: '/invoices',
     },
     {
       text: 'Goods Receipts',

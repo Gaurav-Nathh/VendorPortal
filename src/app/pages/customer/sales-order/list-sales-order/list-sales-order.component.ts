@@ -10,10 +10,11 @@ import * as FileSaver from 'file-saver';
 import * as ExcelJS from 'exceljs';
 import { SharedService } from '../../../../services/shared/shared.service';
 import { UserService } from '../../../../services/shared/user-service/user.service';
+import { ReportGeneratorComponent } from '../../../common/report-generator/report-generator.component';
 
 @Component({
   selector: 'app-list-sales-order',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ReportGeneratorComponent],
   templateUrl: './list-sales-order.component.html',
   styleUrl: './list-sales-order.component.scss',
 })
@@ -193,6 +194,14 @@ export class ListSalesOrderComponent implements OnInit {
           console.error('Failed to search orders:', err);
         },
       });
+  }
+
+  handleReport(event: {
+    startDate: string;
+    endDate: string;
+    listType: string;
+  }) {
+    console.log('Report request:', event);
   }
 
   refreshOrders() {

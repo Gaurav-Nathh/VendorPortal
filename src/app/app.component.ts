@@ -16,13 +16,7 @@ import { UtilityService } from './services/utility/utility.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterModule,
-    CommonModule,
-    NavbarComponent,
-    SidebarComponent,
-  ],
+  imports: [RouterOutlet, RouterModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
@@ -110,57 +104,61 @@ export class AppComponent implements OnInit {
         window.location.href = this.config.getLoginPageUrl();
         return;
       } else {
-        this.isInitialized = true;
         this.router.navigate(['/login']);
       }
+      this.isInitialized = true;
       // window.location.href = this.config.getLoginPageUrl();
-      // return;
-    }
-
-    const decryptedData = this.decryptData(userData ?? '');
-    this.domain = decryptedData.AboutDomain;
-    this.userLghId = decryptedData.UserLghId;
-    this.userId = decryptedData.user;
-
-    this.loginModel.userName = decryptedData.UserName;
-    this.loginModel.password = decryptedData.Password;
-    this.loginModel.lghLocation = decryptedData.Location;
-    this.loginModel.lghPincode = decryptedData.PinCode;
-    this.loginModel.lghBrowser = this.utilityService.getBrowserName();
-    this.loginModel.lghOs = this.utilityService.getOSName();
-    this.loginModel.lghIpaddress = decryptedData.UserIp;
-    // this.loginModel.headerCode
-    this.loginModel.lastSoftwareUpdate = '';
-    this.loginModel.cmpUsers = false;
-    this.loginModel.portalUsers = false;
-    this.loginModel.lghId = decryptedData.UserLghId;
-    // this.loginModel.isMobileLogin
-
-    sessionStorage.setItem('Domain', this.domain);
-    sessionStorage.setItem('UsrId', this.userId);
-
-    this.location.replaceState(this.router.url.split('?')[0]);
-
-    this.authService.resolveDomain(this.domain).subscribe({
-      next: (response) => {
-        this.authService.login(this.loginModel).subscribe({
-          next: (response: any) => {
-            // this.setRoutes();
-            this.isInitialized = true;
-            const logHisId = sessionStorage.getItem('UsrLghId');
-            if (logHisId != '') {
-              this.sessionService.startSession();
-            }
-          },
-          error: () => {
-            this.isInitialized = true;
-          },
-        });
-      },
-      error: (error) => {
+      return;
+    } else {
+      const decryptedData = this.decryptData(userData ?? '');
+      if (!decryptedData) {
         this.isInitialized = true;
-      },
-    });
+        return;
+      }
+      this.domain = decryptedData.AboutDomain;
+      this.userLghId = decryptedData.UserLghId;
+      this.userId = decryptedData.user;
+
+      this.loginModel.userName = decryptedData.UserName;
+      this.loginModel.password = decryptedData.Password;
+      this.loginModel.lghLocation = decryptedData.Location;
+      this.loginModel.lghPincode = decryptedData.PinCode;
+      this.loginModel.lghBrowser = this.utilityService.getBrowserName();
+      this.loginModel.lghOs = this.utilityService.getOSName();
+      this.loginModel.lghIpaddress = decryptedData.UserIp;
+      // this.loginModel.headerCode
+      this.loginModel.lastSoftwareUpdate = '';
+      this.loginModel.cmpUsers = false;
+      this.loginModel.portalUsers = false;
+      this.loginModel.lghId = decryptedData.UserLghId;
+      // this.loginModel.isMobileLogin
+
+      sessionStorage.setItem('Domain', this.domain);
+      sessionStorage.setItem('UsrId', this.userId);
+
+      this.location.replaceState(this.router.url.split('?')[0]);
+
+      this.authService.resolveDomain(this.domain).subscribe({
+        next: (response) => {
+          this.authService.login(this.loginModel).subscribe({
+            next: (response: any) => {
+              // this.setRoutes();
+              this.isInitialized = true;
+              const logHisId = sessionStorage.getItem('UsrLghId');
+              if (logHisId != '') {
+                this.sessionService.startSession();
+              }
+            },
+            error: () => {
+              this.isInitialized = true;
+            },
+          });
+        },
+        error: (error) => {
+          this.isInitialized = true;
+        },
+      });
+    }
   }
 
   // setRoutes() {

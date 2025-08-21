@@ -87,7 +87,7 @@ export const vendorRoutes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'invoice',
+    path: 'invoices',
     pathMatch: 'full',
     loadComponent: () =>
       import('./pages/vendor/invoice/view-invoice/view-invoice.component').then(
