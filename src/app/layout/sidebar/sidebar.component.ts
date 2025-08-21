@@ -127,11 +127,11 @@ export class SidebarComponent {
         },
       ],
     },
-    {
-      text: 'Statements',
-      icon: 'fa-solid fa-file-invoice-dollar',
-      route: '/page-under-construction',
-    },
+    // {
+    //   text: 'Statements',
+    //   icon: 'fa-solid fa-file-invoice-dollar',
+    //   route: '/page-under-construction',
+    // },
   ];
 
   customerMenu: MenuItem[] = [
@@ -199,11 +199,11 @@ export class SidebarComponent {
         },
       ],
     },
-    {
-      text: 'Statements',
-      icon: 'fa-solid fa-file-invoice-dollar',
-      route: '/page-under-construction',
-    },
+    // {
+    //   text: 'Statements',
+    //   icon: 'fa-solid fa-file-invoice-dollar',
+    //   route: '/page-under-construction',
+    // },
   ];
 
   private buildMenu() {
