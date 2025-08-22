@@ -21,6 +21,7 @@ import { debounceTime, elementAt, filter, Subject, Subscription } from 'rxjs';
 import { Product } from '../../Models/customer/product.model';
 import { CatalougeType } from '../../Models/customer/catalougeType.modal';
 import { UserService } from '../../services/shared/user-service/user.service';
+import { ApiConfigService } from '../../services/api-config/api-config.service';
 
 declare var bootstrap: any;
 
@@ -95,9 +96,7 @@ export class ShoppingCartComponent {
   currentModalFilter: FilterCategory | null = null;
   inStock: boolean = true;
   withImage: boolean = true;
-  // productImgUrl: string =
-  //   'https://apptest-bng.s3.ap-south-1.amazonaws.com/Efacto%20Test/ITEM/';
-  productImgUrl: string = 'https://apptest-bng.s3.ap-south-1.amazonaws.com/';
+  productImgUrl: string = '';
   products: any[] = [];
   cart: any[] = [];
   catalougeProducts: any[] = [];
@@ -119,7 +118,8 @@ export class ShoppingCartComponent {
     private salesOrderService: SalesOrderService,
     private renderer: Renderer2,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private config: ApiConfigService
   ) {
     this.filters.forEach((filter) => {
       this.selectedFilters[filter.title] = [];
@@ -127,6 +127,7 @@ export class ShoppingCartComponent {
   }
 
   ngOnInit() {
+    this.productImgUrl = this.config.getAWSS3BucketUrl();
     this.brnId = this.userService._user?.UsrBrnId ?? 0;
     this.sharedService.cartMode$.subscribe((mode) => {
       this.CartMode = mode;
@@ -769,7 +770,7 @@ export class ShoppingCartComponent {
     vdate: '',
     cmpId: 1,
     mkey: '',
-    withStock: false,
+    withStock: true,
     allowNegStock: true,
     brnType: '',
     itemType: '',
@@ -787,7 +788,7 @@ export class ShoppingCartComponent {
     fromPrice: 0,
     toPrice: 0,
     stockFilter: true,
-    withImage: false,
+    withImage: true,
     orderCatelogName: '',
   };
 

@@ -13,6 +13,7 @@ export class ApiConfigService {
   private logInPageUrl: string = '';
   private isProduction: boolean = false;
   private efactoAppUrl: string = '';
+  private AWSS3BucketUrl: string = '';
   // private logInPageUrl: string = 'http://127.0.0.1:5501/';
 
   constructor() {}
@@ -24,7 +25,7 @@ export class ApiConfigService {
       this.logInPageUrl = '/login';
     } else {
       this.isProduction = true;
-      this.logInPageUrl = 'https://erp.efacto.cloud/';
+      this.logInPageUrl = 'https://erptest.efacto.cloud/';
     }
   }
 
@@ -32,13 +33,18 @@ export class ApiConfigService {
     return this.efactoAppUrl;
   }
 
-  setConfig(apiUrl: string, apiKey: string): void {
+  setConfig(apiUrl: string, apiKey: string, awsS3Url: string): void {
     this.apiUrl = apiUrl;
     this.apiKey = apiKey;
+    this.AWSS3BucketUrl = awsS3Url;
   }
 
   getLoginPageUrl(): string {
     return this.logInPageUrl;
+  }
+
+  getAWSS3BucketUrl(): string {
+    return this.AWSS3BucketUrl;
   }
 
   getApiUrl(): string {
