@@ -10,7 +10,7 @@ import * as FileSaver from 'file-saver';
 import * as ExcelJS from 'exceljs';
 import { SharedService } from '../../../../services/shared/shared.service';
 import { UserService } from '../../../../services/shared/user-service/user.service';
-import { ReportGeneratorComponent } from '../../../common/report-generator/report-generator.component';
+import { ReportGeneratorComponent } from '../../../../components/report-generator/report-generator.component';
 
 @Component({
   selector: 'app-list-sales-order',
