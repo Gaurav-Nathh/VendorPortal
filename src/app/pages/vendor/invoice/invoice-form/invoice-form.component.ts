@@ -649,7 +649,7 @@ export class InvoiceFormComponent {
   goToList(): void {
     this.isEditMode = false;
     this.vendorInvoiceServie.clearMKey();
-    this.router.navigate(['/invoice']);
+    this.router.navigate(['/invoices']);
   }
 
   enableEditMode(): void {
