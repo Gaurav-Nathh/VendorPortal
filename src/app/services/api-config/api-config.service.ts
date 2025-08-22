@@ -24,7 +24,7 @@ export class ApiConfigService {
       this.logInPageUrl = '/login';
     } else {
       this.isProduction = true;
-      this.logInPageUrl = 'http://127.0.0.1:5501/';
+      this.logInPageUrl = 'https://erp.efacto.cloud/';
     }
   }
 
