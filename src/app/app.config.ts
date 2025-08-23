@@ -21,15 +21,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter([...commonRoutes, ...customerRoute, ...vendorRoutes]),
 
-    makeEnvironmentProviders([
-      {
-        provide: 'APP_INIT',
-        useFactory: () => {
-          const configService = inject(ApiConfigService);
-          configService.initialize();
-          return true;
-        },
-      },
-    ]),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initApp,
+      deps: [ApiConfigService],
+      multi: true,
+    },
   ],
 };

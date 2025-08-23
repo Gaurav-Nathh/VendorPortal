@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { UserService } from '../../../services/shared/user-service/user.service';
-import { ReportGeneratorService } from '../../../services/shared/report-generator/report-generator.service';
+import { UserService } from '../../services/shared/user-service/user.service';
+import { ReportGeneratorService } from '../../services/shared/report-generator/report-generator.service';
 import Swal from 'sweetalert2';
-import { ReportGenratedResponse } from '../../../Models/Common/generated-report.model';
+import { ReportGenratedResponse } from '../../Models/Common/generated-report.model';
 
 @Component({
   selector: 'app-report-generator',
@@ -72,7 +72,7 @@ export class ReportGeneratorComponent {
             timer: 2000,
             timerProgressBar: true,
           });
-          this.closeModal();
+          this.fetchReports();
         },
         error: (err) => {
           this.loading = false;

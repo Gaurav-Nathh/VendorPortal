@@ -43,7 +43,8 @@ export class AuthService {
           if (response?.DomainCode.CmpApiUrl && response?.DomainCode.CmpKey) {
             this.apiConfigService.setConfig(
               response.DomainCode.CmpApiUrl,
-              response.DomainCode.CmpKey
+              response.DomainCode.CmpKey,
+              response.DomainCode.CmpDocUrl
             );
           }
           return response.DomainCode;
