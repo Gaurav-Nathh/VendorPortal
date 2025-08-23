@@ -162,7 +162,9 @@ export class InvoiceFormComponent {
       if (!res) {
         throw new Error('Invoice response is undefined');
       }
+      console.log("response invoice ", res)
       this.invoiceModel = res;
+      console.log("invoice ", this.invoiceModel)
 
       // Format date
       if (res.PgrmRefDate) {
@@ -184,9 +186,9 @@ export class InvoiceFormComponent {
           } catch {
             vendorItems = [];
           }
-
+          console.log("vendorItem",vendorItems);
           const matched = vendorItems.find(
-            (item: any) => item.vendorItemCode === d.PgrdItemCode
+            (item: any) => item.VendorItemCode === d.PgrdItemCode
           );
           console.log('item vendorItemcode', matched);
 
@@ -204,7 +206,7 @@ export class InvoiceFormComponent {
             rowNo: d.PgrdRowNo,
             itemId: d.PgrdItemId,
             myItemCode: d.PgrdItemCode,
-            myItemName: matched.vendorItemName,
+            myItemName: matched.VendorItemName,
             itemCode: itemDetails?.itemCode || '',
             itemName: itemDetails?.itemName || '',
             barcode: d.PgrdBarcode,

@@ -42,7 +42,7 @@
             <th class="text-center">Bill No.</th>
             <th class="text-center">Bill Date</th>
             <th class="text-center">Item Count</th>
-            <th class="text-end">Net Amount</th>
+            <th class="text-end">Total Amount</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
@@ -50,8 +50,7 @@
           <ng-container *ngFor="let invoice of invoiceList; let i = index">
             <tr class="align-middle">
               <td>{{ i + 1 + (currentPage - 1) * itemsPerPage }}</td>
-              <td>{{ getBranchName(invoice.PgrmForBrnId) }}</td>
-              <!-- <td>{{ invoice.PgrmForBrnId }}</td> -->
+              <td>{{ invoice.PgrmForBrnName}}</td>
               <td>{{ invoice.PgrmVNo }}</td>
               <td class="text-center">
                 {{ invoice.PgrmVDate | date : "dd-MM-yyyy" }}
@@ -71,7 +70,7 @@
                 </button>
               </td>
               <td class="text-end">
-                {{ calculateNetAmount(invoice.PGRDetails) | currency : "INR" }}
+                {{ invoice.PgrmNetAmount | currency : "INR" }}
               </td>
 
               <td class="text-center actions-container">
@@ -116,7 +115,7 @@
                           <th class="text-center">Quantity</th>
                           <th class="text-end">MRP</th>
                           <th class="text-end">Rate</th>
-                          <th class="text-end">Amount</th>
+                          <th class="text-end">Net Amount</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -144,7 +143,7 @@
                             <th colspan="6"  class="text-end pe-3 fw-bold">Total</th>
                             <th>
                               {{
-                                getTotalAmount(invoice.PGRDetails) | currency : "INR"
+                                invoice.PgrmNetAmount| currency : "INR"
                               }}
                             </th>
                           </tr>

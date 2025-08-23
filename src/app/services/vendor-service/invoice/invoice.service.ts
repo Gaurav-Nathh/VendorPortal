@@ -38,7 +38,7 @@ export class InvoiceService {
 
   private mkey: string | null = null;
 
-  constructor(private http: HttpClient, private config: ApiConfigService) {}
+  constructor(private http: HttpClient, private config: ApiConfigService) { }
 
   getBranches(
     acmId: number,
@@ -110,13 +110,13 @@ export class InvoiceService {
   }
 
   getInvoiceByMKey(mkey: string): Observable<Pgrmain> {
-    return this.http.get<Pgrmain>(`${this.config.getApiUrl()}/PGRMain/${mkey}`);
+    const headers = this.config.getHeader();
+    return this.http.get<Pgrmain>(`${this.config.getApiUrl()}/PGR/${mkey}`,{ headers });
   }
 
   updateInvoice(data: Pgrmain): Observable<any> {
-    return this.http.put(`${this.config.getApiUrl()}/PGR/Update`, data, {
-      responseType: 'text' as 'json'
-    });
+    const headers = this.config.getHeader();
+    return this.http.put(`${this.config.getApiUrl()}/PGR/Update`, data, { headers });
   }
 
   generateVno(
@@ -138,14 +138,14 @@ export class InvoiceService {
   getPaginatedInvoices(
     pageNumber: number,
     pageSize: number,
-    searchTerm: string = ''
+    search: string = ''
   ): Observable<any> {
     let params = new HttpParams()
-      .set('pageNumber', pageNumber.toString())
-      .set('pageSize', pageSize.toString());
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
-    if (searchTerm && searchTerm.trim()) {
-      params = params.set('search', searchTerm.trim());
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
     }
     const headers = this.config.getHeader();
 
