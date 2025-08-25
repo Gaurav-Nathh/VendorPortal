@@ -4,6 +4,22 @@
       <div class="page-title">
         <span>Orders</span>
         <div class="d-flex gap-2">
+          <div class="report-status">
+            <span
+              *ngIf="latestReportStatus === 'Processing...'"
+              class="text-warning"
+            >
+              Processing....
+            </span>
+            <span
+              *ngIf="latestReportStatus === 'Download'"
+              class="text-primary"
+              style="cursor: pointer"
+              (click)="downloadLatestReport(latestReport!)"
+            >
+              Download
+            </span>
+          </div>
           <input
             type="text"
             class="search"
@@ -23,6 +39,7 @@
           <app-report-generator
             #reportGenerator
             [listType]="'PSO'"
+            (genratedReports)="onReportGenerated($event)"
           ></app-report-generator>
         </div>
       </div>

@@ -11,7 +11,7 @@ import {
   providedIn: 'root',
 })
 export class ReportGeneratorService {
-  private apiUrl = 'https://localhost:7133/api/ReportGenration';
+  private apiUrl = 'https://localhost:7133/api/PortalReport/ReportGenration';
 
   constructor(private http: HttpClient, private config: ApiConfigService) {}
 
@@ -30,5 +30,16 @@ export class ReportGeneratorService {
     return this.http.get<ReportGenratedResponse[]>(
       `${this.apiUrl}/GetReport?acmId=${acmId}&listType=${listType}`
     );
+  }
+
+  markAsDownloaded(acmId: number, reqId: number) {
+    this.http
+      .put(`${this.apiUrl}/mark-downloaded/${acmId}/${reqId}`, {})
+      .subscribe({
+        next: () => {},
+        error: (error) => {
+          console.error('Failed to mark report as downloaded:', error);
+        },
+      });
   }
 }

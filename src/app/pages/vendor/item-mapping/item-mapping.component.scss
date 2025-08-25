@@ -8,9 +8,6 @@ $column-border: 1px solid #dee2e6;
 $hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 $transition: all 0.3s ease;
 
-
-
-
 /* Global custom scrollbar styles (optional) */
 * {
   scrollbar-width: thin; /* Firefox */
@@ -46,7 +43,7 @@ $transition: all 0.3s ease;
 .page-container {
   display: flex;
   flex-direction: column;
- 
+
   position: relative;
   height: 90vh; /* Fixed height */
   overflow: hidden; /* Prevent any scrolling */
@@ -56,7 +53,6 @@ $transition: all 0.3s ease;
 }
 
 /* Search container - now relative positioned */
-
 
 /* Pagination container - now relative positioned */
 .pagination-container {
@@ -69,7 +65,7 @@ $transition: all 0.3s ease;
   flex-shrink: 0; /* Don't shrink */
   width: 100%;
   bottom: 0;
-  left:0;
+  left: 0;
   /* Remove margin-top: auto to prevent it from pushing beyond viewport */
 }
 
@@ -289,7 +285,6 @@ $transition: all 0.3s ease;
   border: 1px solid red !important;
 }
 
-
 .input-des {
   width: 100%;
   max-width: 240px;
@@ -299,27 +294,25 @@ $transition: all 0.3s ease;
   font-size: 0.85rem;
   transition: $transition;
   background-color: #f8fafc;
-  
-  
+
   &:focus {
     border-color: $primary-color;
     box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
     outline: none;
     background-color: white;
   }
-  
+
   &:disabled {
     background-color: #f1f5f9;
     color: #64748b;
     border-color: #e2e8f0;
   }
-  
+
   &::placeholder {
     color: #94a3b8;
     font-size: 0.8rem;
   }
 }
-
 
 .btn {
   transition: $transition;
@@ -327,11 +320,11 @@ $transition: all 0.3s ease;
   font-weight: 500;
   padding: 8px 16px;
   font-size: 0.85rem;
-  
+
   &.btn-outline-primary {
     border-color: $primary-color;
     color: $primary-color;
-    
+
     &:hover {
       background-color: $primary-color;
       border-color: $primary-color;
@@ -340,11 +333,11 @@ $transition: all 0.3s ease;
       box-shadow: 0 4px 8px rgba(67, 97, 238, 0.2);
     }
   }
-  
+
   &.btn-primary {
     background-color: $primary-color;
     border-color: $primary-color;
-    
+
     &:hover {
       background-color: $primary-dark;
       border-color: $primary-dark;
@@ -352,20 +345,25 @@ $transition: all 0.3s ease;
       box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
     }
   }
-  
+
   &.btn-sm {
-     padding: 6px 12px;
-  font-size: 0.8rem;
-  min-width: 70px; // Ensures consistent width regardless of label
-  text-align: center;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-width: 70px; // Ensures consistent width regardless of label
+    text-align: center;
   }
 }
-
-
 
 .button-group {
   display: flex;
   justify-content: flex-end;
+
+  .report-status {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    font-size: 0.9rem;
+  }
 
   .refresh-btn {
     background: linear-gradient(135deg, #3a56d4 0%, #506ef5 100%);
@@ -409,9 +407,6 @@ $transition: all 0.3s ease;
   }
 }
 
-
-
-
 .custom-search-bar {
   position: relative;
   width: 350px;
@@ -445,7 +440,6 @@ $transition: all 0.3s ease;
     transition: color 0.2s;
   }
 }
-
 
 .orders-table tbody tr:nth-child(odd) {
   background-color: #ffffff; // Light gray

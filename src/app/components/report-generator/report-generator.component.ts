@@ -19,6 +19,7 @@ import { ReportGenratedResponse } from '../../Models/Common/generated-report.mod
 })
 export class ReportGeneratorComponent {
   @Input() listType: string = '';
+  @Output() genratedReports = new EventEmitter<ReportGenratedResponse[]>();
 
   isOpen: boolean = false;
   form: FormGroup;
@@ -87,6 +88,7 @@ export class ReportGeneratorComponent {
           });
         },
       });
+      this.closeModal();
     }
   }
 
@@ -98,6 +100,7 @@ export class ReportGeneratorComponent {
         next: (res) => {
           this.reports = res;
           this.loading = false;
+          this.genratedReports.emit(this.reports);
         },
         error: (err) => {
           this.loading = false;

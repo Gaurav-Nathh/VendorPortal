@@ -1,124 +1,169 @@
 <div class="page-container">
-
   <!-- Search & Filter -->
-  <div class="rounded shadow-sm p-3 search-container d-flex justify-content-between">
-    
-      
- <div class="custom-search-bar">
-  <input
-    type="text"
-    class="search-input"
-    placeholder="Search items..."
-    [(ngModel)]="searchText"
-    (ngModelChange)="onSearchChange($event)"
-  />
-  <i class="bi bi-search search-icon"></i>
-</div>
+  <div
+    class="rounded shadow-sm p-3 search-container d-flex justify-content-between"
+  >
+    <div class="custom-search-bar">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search items..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange($event)"
+      />
+      <i class="bi bi-search search-icon"></i>
+    </div>
 
-
-
-
-        <div class="button-group">
-                
-                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
-                    <i class="fas fa-sync"></i>
-                </button>
-            </div>
-     
-   
+    <div class="button-group">
+      <div class="report-status">
+        <span
+          *ngIf="latestReportStatus === 'Processing...'"
+          class="text-warning"
+        >
+          Processing....
+        </span>
+        <span
+          *ngIf="latestReportStatus === 'Download'"
+          class="text-primary"
+          style="cursor: pointer"
+          (click)="downloadLatestReport(latestReport!)"
+        >
+          Download
+        </span>
+      </div>
+      <button
+        class="refresh-btn btn-3"
+        aria-label="referse"
+        (click)="referseData()"
+      >
+        <i class="fas fa-sync"></i>
+      </button>
+      <button class="refresh-btn btn-3" (click)="reportGenerator.openModal()">
+        <i class="fa-solid fa-file-arrow-down"></i>
+      </button>
+      <app-report-generator
+        #reportGenerator
+        [listType]="'ITM'"
+        (genratedReports)="onReportGenerated($event)"
+      >
+      </app-report-generator>
+    </div>
   </div>
-<div class="dashboard-container">
-  <!-- Desktop Table -->
- <!-- Enhanced Table with Column Lines and Row Gaps -->
-<div class="orders-table-container">
-  <table class="orders-table w-100">
-    <thead >
-      <tr>
-        <th class="py-3 px-3 fw-semibold">Item Code</th>
-        <th class="py-3 px-3 fw-semibold">Item Name</th>
-        <th class="py-3 px-3 fw-semibold">My Item Code</th>
-        <th class="py-3 px-3 fw-semibold">My Item Name</th>
-        <th class="py-3 px-3 fw-semibold">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of paginatedData" class="mb-2">
-        <td 
-          [attr.title]="item.ItmCode" 
-          data-bs-toggle="tooltip"
-          [ngClass]="{'text-start': isNaN(item.ItmCode), 'text-end': !isNaN(item.ItmCode)}">
-          {{ item.ItmCode?.length > 25 ? (item.ItmCode | slice:0:25) + '...' : item.ItmCode }}
-        </td>
-        
-        <td 
-          [attr.title]="item.ItmName" 
-          data-bs-toggle="tooltip" 
-          [ngClass]="{'text-start': isNaN(item.ItmName), 'text-end': !isNaN(item.ItmName)}">
-          {{ item.ItmName?.length > 25 ? (item.ItmName | slice:0:25) + '...' : item.ItmName }}
-        </td>
-        
-        <td>
-          <input
-            type="text"
-            class="input-des"
-            [(ngModel)]="item.ItmItvPrdCode"
-            [disabled]="!item.isEditing"
-            placeholder="Enter Code"
-            [attr.aria-label]="'Item code for ' + item.ItmName" />
-        </td>
-        
-        <td>
-          <input
-            type="text"
-            class="input-des"
-            [(ngModel)]="item.ItmItvPrdName"
-            [disabled]="!item.isEditing"
-            placeholder="Enter Name"
-            [attr.aria-label]="'Item name for ' + item.ItmName" />
-        </td>
-        
-        <td>
-          <button 
-            *ngIf="!item.isEditing" 
-            class="btn btn-outline-primary btn-sm" 
-            (click)="enableEditing(item)"
-            [attr.aria-label]="'Edit ' + item.ItmName">
-            Edit
-          </button>
-          <button 
-            *ngIf="item.isEditing" 
-            class="btn btn-primary btn-sm" 
-            (click)="saveItem(item)"
-            [attr.aria-label]="'Save changes for ' + item.ItmName">
-            Save
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-</div>
+  <div class="dashboard-container">
+    <!-- Desktop Table -->
+    <!-- Enhanced Table with Column Lines and Row Gaps -->
+    <div class="orders-table-container">
+      <table class="orders-table w-100">
+        <thead>
+          <tr>
+            <th class="py-3 px-3 fw-semibold">Item Code</th>
+            <th class="py-3 px-3 fw-semibold">Item Name</th>
+            <th class="py-3 px-3 fw-semibold">My Item Code</th>
+            <th class="py-3 px-3 fw-semibold">My Item Name</th>
+            <th class="py-3 px-3 fw-semibold">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paginatedData" class="mb-2">
+            <td
+              [attr.title]="item.ItmCode"
+              data-bs-toggle="tooltip"
+              [ngClass]="{
+                'text-start': isNaN(item.ItmCode),
+                'text-end': !isNaN(item.ItmCode)
+              }"
+            >
+              {{
+                item.ItmCode?.length > 25
+                  ? (item.ItmCode | slice : 0 : 25) + "..."
+                  : item.ItmCode
+              }}
+            </td>
 
+            <td
+              [attr.title]="item.ItmName"
+              data-bs-toggle="tooltip"
+              [ngClass]="{
+                'text-start': isNaN(item.ItmName),
+                'text-end': !isNaN(item.ItmName)
+              }"
+            >
+              {{
+                item.ItmName?.length > 25
+                  ? (item.ItmName | slice : 0 : 25) + "..."
+                  : item.ItmName
+              }}
+            </td>
 
-<div class="pagination-container">
-<div class="d-flex justify-content-end align-items-center mt-3 pagination-container">
-  <button 
-    class="btn btn-sm btn-secondary me-2" 
-    [disabled]="currentPage === 1" 
-    (click)="goToPreviousPage()">
-    Prev
-  </button>
+            <td>
+              <input
+                type="text"
+                class="input-des"
+                [(ngModel)]="item.ItmItvPrdCode"
+                [disabled]="!item.isEditing"
+                placeholder="Enter Code"
+                [attr.aria-label]="'Item code for ' + item.ItmName"
+              />
+            </td>
 
-  <span class="fw-semibold">
-    Page {{ currentPage }} of {{ totalPages }}
-  </span>
+            <td>
+              <input
+                type="text"
+                class="input-des"
+                [(ngModel)]="item.ItmItvPrdName"
+                [disabled]="!item.isEditing"
+                placeholder="Enter Name"
+                [attr.aria-label]="'Item name for ' + item.ItmName"
+              />
+            </td>
 
-  <button 
-    class="btn btn-sm btn-secondary ms-2" 
-    [disabled]="currentPage === totalPages" 
-    (click)="goToNextPage()">
-    Next
-  </button>
-</div>
-</div>
+            <td>
+              <button
+                *ngIf="!item.isEditing"
+                class="btn btn-outline-primary btn-sm"
+                (click)="enableEditing(item)"
+                [attr.aria-label]="'Edit ' + item.ItmName"
+              >
+                Edit
+              </button>
+              <button
+                *ngIf="item.isEditing"
+                class="btn btn-primary btn-sm"
+                (click)="saveItem(item)"
+                [attr.aria-label]="'Save changes for ' + item.ItmName"
+              >
+                Save
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="pagination-container">
+    <div
+      class="d-flex justify-content-end align-items-center mt-3 pagination-container"
+    >
+      <button
+        class="btn btn-sm btn-secondary me-2"
+        [disabled]="currentPage === 1"
+        (click)="goToPreviousPage()"
+      >
+        Prev
+      </button>
+
+      <span class="fw-semibold">
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button
+        class="btn btn-sm btn-secondary ms-2"
+        [disabled]="currentPage === totalPages"
+        (click)="goToNextPage()"
+      >
+        Next
+      </button>
+    </div>
+  </div>
 </div>

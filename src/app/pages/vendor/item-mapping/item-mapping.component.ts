@@ -3,6 +3,10 @@ import { ItemMappingService } from '../../../services/vendor-service/item-mappin
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ReportGenratedResponse } from '../../../Models/Common/generated-report.model';
+import { ReportGeneratorService } from '../../../services/shared/report-generator/report-generator.service';
+import { HttpClient } from '@angular/common/http';
+import { ReportGeneratorComponent } from '../../../components/report-generator/report-generator.component';
 
 export interface Item {
   ItmCode: string;
@@ -21,16 +25,21 @@ export interface ItemMappingResponse {
 @Component({
   selector: 'app-item-mapping',
   standalone: true,
-  imports: [FormsModule, CommonModule, MatTooltipModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    MatTooltipModule,
+    ReportGeneratorComponent,
+  ],
   templateUrl: './item-mapping.component.html',
   styleUrl: './item-mapping.component.scss',
 })
 export class ItemMappingComponent {
-  //variables
-  searchTimeout: any; // To hold the timeout ID for search delay
-
+  searchTimeout: any;
   currentPage: number = 1;
   itemsPerPage: number = 20;
+  latestReportStatus: string | null = null;
+  latestReport: ReportGenratedResponse | null = null;
 
   get paginatedData() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -56,7 +65,11 @@ export class ItemMappingComponent {
   isNaN = isNaN;
 
   itemMapping: ItemMapping = new ItemMapping();
-  constructor(private itemMappingService: ItemMappingService) {}
+  constructor(
+    private itemMappingService: ItemMappingService,
+    private reportGeneratorService: ReportGeneratorService,
+    private http: HttpClient
+  ) {}
   ngOnInit() {
     this.getData();
   }
@@ -135,5 +148,53 @@ export class ItemMappingComponent {
 
   deleteItem(item: any) {
     this.filteredItems = this.filteredItems.filter((i) => i !== item);
+  }
+
+  onReportGenerated(reports: ReportGenratedResponse[]) {
+    if (!reports || reports.length === 0) {
+      this.latestReportStatus = null;
+      this.latestReport = null;
+      return;
+    }
+
+    const hadPending = reports.some((r) => r.status === 'Pending');
+    if (hadPending) {
+      this.latestReportStatus = 'Processing...';
+      this.latestReport = null;
+      return;
+    }
+
+    this.latestReport = reports.reduce((latest, current) =>
+      new Date(current.reqDate) > new Date(latest.reqDate) ? current : latest
+    );
+
+    if (this.latestReport.isDownloaded === false) {
+      this.latestReportStatus = 'Download';
+    } else {
+      this.latestReportStatus = 'Downloaded';
+    }
+  }
+
+  downloadLatestReport(report: ReportGenratedResponse) {
+    if (!report || !report.fileUrl) {
+      return;
+    }
+
+    this.http.get(report.fileUrl, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.download = report.fileName || 'report.xlsx';
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.reportGeneratorService.markAsDownloaded(
+          report.acmId,
+          report.reqId
+        );
+      },
+      error: (error) => {},
+    });
+    // window.open(report.fileUrl, '_blank');
   }
 }

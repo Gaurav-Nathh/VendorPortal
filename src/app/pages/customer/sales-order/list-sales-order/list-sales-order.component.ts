@@ -11,6 +11,9 @@ import * as ExcelJS from 'exceljs';
 import { SharedService } from '../../../../services/shared/shared.service';
 import { UserService } from '../../../../services/shared/user-service/user.service';
 import { ReportGeneratorComponent } from '../../../../components/report-generator/report-generator.component';
+import { ReportGenratedResponse } from '../../../../Models/Common/generated-report.model';
+import { HttpClient } from '@angular/common/http';
+import { ReportGeneratorService } from '../../../../services/shared/report-generator/report-generator.service';
 
 @Component({
   selector: 'app-list-sales-order',
@@ -37,6 +40,8 @@ export class ListSalesOrderComponent implements OnInit {
   openIndexes = new Set<number>();
   isOrderLoading: boolean = false;
   acmId: number = 0;
+  latestReportStatus: string | null = null;
+  latestReport: ReportGenratedResponse | null = null;
 
   private searchOrderNoSubject = new Subject<string>();
 
@@ -45,7 +50,9 @@ export class ListSalesOrderComponent implements OnInit {
     private router: Router,
     private salesOrderService: SalesOrderService,
     private sharedServrice: SharedService,
-    private userService: UserService
+    private userService: UserService,
+    private reportGeneratorService: ReportGeneratorService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -72,6 +79,54 @@ export class ListSalesOrderComponent implements OnInit {
   //   this.router.navigate(['/customer/items/create-order']);
   //   console.log(this.sharedServrice.getCartMode());
   // }
+
+  onReportGenerated(reports: ReportGenratedResponse[]) {
+    if (!reports || reports.length === 0) {
+      this.latestReportStatus = null;
+      this.latestReport = null;
+      return;
+    }
+
+    const hadPending = reports.some((r) => r.status === 'Pending');
+    if (hadPending) {
+      this.latestReportStatus = 'Processing...';
+      this.latestReport = null;
+      return;
+    }
+
+    this.latestReport = reports.reduce((latest, current) =>
+      new Date(current.reqDate) > new Date(latest.reqDate) ? current : latest
+    );
+
+    if (this.latestReport.isDownloaded === false) {
+      this.latestReportStatus = 'Download';
+    } else {
+      this.latestReportStatus = 'Downloaded';
+    }
+  }
+
+  downloadLatestReport(report: ReportGenratedResponse) {
+    if (!report || !report.fileUrl) {
+      return;
+    }
+
+    this.http.get(report.fileUrl, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.download = report.fileName || 'report.xlsx';
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.reportGeneratorService.markAsDownloaded(
+          report.acmId,
+          report.reqId
+        );
+      },
+      error: (error) => {},
+    });
+    // window.open(report.fileUrl, '_blank');
+  }
 
   editSO(so: any) {
     this.shoppingCartService.enableEditing();

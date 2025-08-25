@@ -16,4 +16,5 @@ export interface ReportGenratedResponse {
   fileGenrationDate?: string;
   status: string;
   fileName?: string;
+  isDownloaded: boolean;
 }
