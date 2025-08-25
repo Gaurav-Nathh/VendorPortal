@@ -23,30 +23,33 @@ export class ViewInvoiceComponent {
   totalRecords: number = 0;
   searchTerm: string = '';
   branchList: any[] = [];
+  branchMap: { [key: number]: string } = {};
 
   constructor(private invoiceService: InvoiceService, private router: Router) { }
 
   ngOnInit() {
-    // console.log("view- branch");
-    // await this.loadBranches();
-    console.log("branchList", this.branchList);
-    const acmId = 0;
-    const type = 'MOBILEAPP';
-    this.invoiceService.getBranches(acmId, type).toPromise().then((res) => {
+    this.isLoading = true;
+    this.invoiceService.getBranches(0, 'MOBILEAPP').toPromise().then((res) => {
       this.branchList = res?.BranchList || [];
       console.log("branchList", this.branchList);
+      this.branchMap = this.branchList.reduce((acc, b) => {
+        acc[b.Id] = b.Text;
+        return acc;
+      }, {} as { [key: number]: string });
+
+      this.fetchInvoices();
     })
-    this.fetchInvoices();
   }
 
   fetchInvoices(): void {
-    this.isLoading = true;
-
     this.invoiceService
       .getPaginatedInvoices(this.currentPage, this.itemsPerPage, this.searchTerm)
       .subscribe({
         next: (res) => {
-          this.invoiceList = res.data;
+          this.invoiceList = res.data.map((inv: Pgrmain) => ({
+            ...inv,
+            PgrmForBrnName: this.branchMap[inv.PgrmForBrnId] || 'Unknown'
+          }));
           this.totalRecords = res.totalRecords;
           this.isLoading = false;
           console.log('list data', this.invoiceList)
@@ -60,18 +63,7 @@ export class ViewInvoiceComponent {
 
 
 
-  calculateNetAmount(details: any[]): number {
-    return Array.isArray(details)
-      ? details.reduce(
-        (sum, d) =>
-          sum +
-          (d.grossAmount || 0) -
-          (d.discountAmount || 0) +
-          (d.gstAmount || 0),
-        0
-      )
-      : 0;
-  }
+
 
   deleteInvoice(mkey: string) {
     Swal.fire({
@@ -127,16 +119,7 @@ export class ViewInvoiceComponent {
     return this.openIndexes.has(index);
   }
 
-  getTotalAmount(items: any[]): number {
-    return items.reduce((sum, item) => {
-      const qty = Number(item.quantity || 0);
-      const rate = Number(item.rate || 0);
-      const discount = Number(item.discountAmount || 0);
-      const gst = Number(item.gstAmount || 0);
-      const lineTotal = qty * rate - discount + gst;
-      return sum + lineTotal;
-    }, 0);
-  }
+
 
   goToPreviousPage(): void {
     if (this.currentPage > 1) {
@@ -168,13 +151,5 @@ export class ViewInvoiceComponent {
 
   reloadInvoices(): void {
     this.fetchInvoices();
-  }
-
-  getBranchName(branchId: string | number): string {
-    const branch = this.branchList.find(b => Number(b.Id) === Number(branchId));
-    return branch ? branch.Text : 'Unknown';
-  }
-
-  async loadBranches() {
   }
 }
