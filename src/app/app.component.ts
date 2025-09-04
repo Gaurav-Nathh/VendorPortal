@@ -54,10 +54,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     const domain: string = sessionStorage.getItem('Domain') || '';
     if (domain != '') {
-      console.log('Website is reloaded here');
       this.authService.resolveDomain(domain).subscribe({
         next: (response) => {
-          console.log(response);
           const usrId = sessionStorage.getItem('UsrId');
           if (usrId) {
             this.userService.fetchUser(Number(usrId)).subscribe({

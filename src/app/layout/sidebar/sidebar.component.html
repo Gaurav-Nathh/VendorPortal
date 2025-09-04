@@ -29,11 +29,11 @@
             routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: true }"
             class="menu-link"
-            [attr.data-bs-toggle]="item.submenu ? 'collapse' : null"
+          >
+            <!-- [attr.data-bs-toggle]="item.submenu ? 'collapse' : null"
             [attr.data-bs-target]="
               item.submenu ? '#collapse-' + item.text.toLowerCase() : null
-            "
-          >
+            " -->
             <div class="icon">
               <i class="{{ item.icon }}"></i>
             </div>
