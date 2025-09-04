@@ -118,7 +118,7 @@ export class InvoiceFormComponent {
         .toPromise()
         .then((res) => {
           this.branchList = res?.BranchList || [];
-          console.log('branch', this.branchList);
+          // console.log('branch', this.branchList);
           if (!this.isEditMode) {
             const defaultBranch = this.branchList.find(
               (b) => b.Text.toUpperCase() === 'DELHI'
@@ -162,9 +162,9 @@ export class InvoiceFormComponent {
       if (!res) {
         throw new Error('Invoice response is undefined');
       }
-      console.log("response invoice ", res)
+      // console.log("response invoice ", res)
       this.invoiceModel = res;
-      console.log("invoice ", this.invoiceModel)
+      // console.log("invoice ", this.invoiceModel)
 
       // Format date
       if (res.PgrmRefDate) {
@@ -186,11 +186,11 @@ export class InvoiceFormComponent {
           } catch {
             vendorItems = [];
           }
-          console.log("vendorItem",vendorItems);
+          // console.log("vendorItem",vendorItems);
           const matched = vendorItems.find(
             (item: any) => item.VendorItemCode === d.PgrdItemCode
           );
-          console.log('item vendorItemcode', matched);
+          // console.log('item vendorItemcode', matched);
 
           if (!matched) {
             alert(`Item "${d.PgrdItemCode}" is not mapped`);
@@ -355,7 +355,7 @@ export class InvoiceFormComponent {
       .searchVendorItems(query, this.acmId)
       .subscribe((res) => {
         this.lookupSuggestions = res;
-        console.log('serach', this.lookupSuggestions);
+        // console.log('serach', this.lookupSuggestions);
       });
   }
 
@@ -706,7 +706,7 @@ export class InvoiceFormComponent {
   }
 
   submitInvoice() {
-    this.isLoading = true;
+    // this.isLoading = true;
 
     this.invoiceForm.onSubmit(new Event('submit'));
 
@@ -733,7 +733,7 @@ export class InvoiceFormComponent {
     if (hasInvalidItem) {
       return;
     }
-
+    this.isLoading = true;
     const now = new Date().toISOString();
 
     // Set from session
