@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter([...commonRoutes, ...customerRoute, ...vendorRoutes]),
 
-    // { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
 
     {
       provide: APP_INITIALIZER,
