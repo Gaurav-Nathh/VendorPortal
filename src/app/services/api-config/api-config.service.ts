@@ -38,6 +38,7 @@ export class ApiConfigService {
     this.apiUrl = apiUrl;
     this.apiKey = apiKey;
     this.AWSS3BucketUrl = awsS3Url;
+    console.log(this.apiUrl);
   }
 
   getLoginPageUrl(): string {
