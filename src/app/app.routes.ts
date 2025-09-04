@@ -133,13 +133,13 @@ export const commonRoutes: Routes = [
     children: [
       {
         path: '',
-        // redirectTo: 'dashboard',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
-        loadComponent: () =>
-          import('./pages/common/dashboard/dashboard.component').then(
-            (c) => c.DashboardComponent
-          ),
-        canActivate: [authGuard],
+        // loadComponent: () =>
+        //   import('./pages/common/dashboard/dashboard.component').then(
+        //     (c) => c.DashboardComponent
+        //   ),
+        // canActivate: [authGuard],
       },
       {
         path: 'dashboard',
