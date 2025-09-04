@@ -7,6 +7,7 @@ import { Injectable } from '@angular/core';
 export class ApiConfigService {
   // private apiUrl = 'https://efactoapitest.efacto.cloud/api';
   // private apiKey = '140-9299-524-TEST';
+  // private logInPageUrl: string = 'http://127.0.0.1:5501/';
 
   private apiUrl: string = '';
   private apiKey: string = '';
@@ -14,7 +15,6 @@ export class ApiConfigService {
   private isProduction: boolean = false;
   private efactoAppUrl: string = '';
   private AWSS3BucketUrl: string = '';
-  // private logInPageUrl: string = 'http://127.0.0.1:5501/';
 
   constructor() {}
 
