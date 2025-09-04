@@ -5,11 +5,15 @@ import { InvoiceService } from '../../../../services/vendor-service/invoice/invo
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { Pgrmain } from '../../../../Models/Invoice/invoice.model';
+import { ReportGenratedResponse } from '../../../../Models/Common/generated-report.model';
+import { HttpClient } from '@angular/common/http';
+import { ReportGeneratorService } from '../../../../services/shared/report-generator/report-generator.service';
+import { ReportGeneratorComponent } from '../../../../components/report-generator/report-generator.component';
 
 @Component({
   selector: 'app-view-invoice',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, ReportGeneratorComponent],
   templateUrl: './view-invoice.component.html',
   styleUrl: './view-invoice.component.scss',
 })
@@ -24,46 +28,101 @@ export class ViewInvoiceComponent {
   searchTerm: string = '';
   branchList: any[] = [];
   branchMap: { [key: number]: string } = {};
+  latestReportStatus: string | null = null;
+  latestReport: ReportGenratedResponse | null = null;
 
-  constructor(private invoiceService: InvoiceService, private router: Router) { }
+  constructor(
+    private invoiceService: InvoiceService,
+    private router: Router,
+    private http: HttpClient,
+    private reportGeneratorService: ReportGeneratorService
+  ) {}
 
   ngOnInit() {
     this.isLoading = true;
-    this.invoiceService.getBranches(0, 'MOBILEAPP').toPromise().then((res) => {
-      this.branchList = res?.BranchList || [];
-      console.log("branchList", this.branchList);
-      this.branchMap = this.branchList.reduce((acc, b) => {
-        acc[b.Id] = b.Text;
-        return acc;
-      }, {} as { [key: number]: string });
+    this.invoiceService
+      .getBranches(0, 'MOBILEAPP')
+      .toPromise()
+      .then((res) => {
+        this.branchList = res?.BranchList || [];
+        this.branchMap = this.branchList.reduce((acc, b) => {
+          acc[b.Id] = b.Text;
+          return acc;
+        }, {} as { [key: number]: string });
 
-      this.fetchInvoices();
-    })
+        this.fetchInvoices();
+      });
+  }
+
+  onReportGenerated(reports: ReportGenratedResponse[]) {
+    if (!reports || reports.length === 0) {
+      this.latestReportStatus = null;
+      this.latestReport = null;
+      return;
+    }
+
+    const hadPending = reports.some((r) => r.status === 'Pending');
+    if (hadPending) {
+      this.latestReportStatus = 'Processing...';
+      this.latestReport = null;
+      return;
+    }
+
+    this.latestReport = reports.reduce((latest, current) =>
+      new Date(current.reqDate) > new Date(latest.reqDate) ? current : latest
+    );
+
+    if (this.latestReport.isDownloaded === false) {
+      this.latestReportStatus = 'Download';
+    } else {
+      this.latestReportStatus = 'Downloaded';
+    }
+  }
+
+  downloadLatestReport(report: ReportGenratedResponse) {
+    if (!report || !report.fileUrl) {
+      return;
+    }
+
+    this.http.get(report.fileUrl, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.download = report.fileName || 'report.xlsx';
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.reportGeneratorService.markAsDownloaded(
+          report.acmId,
+          report.reqId
+        );
+      },
+      error: (error) => {},
+    });
+    // window.open(report.fileUrl, '_blank');
   }
 
   fetchInvoices(): void {
     this.invoiceService
-      .getPaginatedInvoices(this.currentPage, this.itemsPerPage, this.searchTerm)
+      .getPaginatedInvoices(
+        this.currentPage,
+        this.itemsPerPage,
+        this.searchTerm
+      )
       .subscribe({
         next: (res) => {
           this.invoiceList = res.data.map((inv: Pgrmain) => ({
             ...inv,
-            PgrmForBrnName: this.branchMap[inv.PgrmForBrnId] || 'Unknown'
+            PgrmForBrnName: this.branchMap[inv.PgrmForBrnId] || 'Unknown',
           }));
           this.totalRecords = res.totalRecords;
           this.isLoading = false;
-          console.log('list data', this.invoiceList)
         },
         error: (err) => {
-          console.error('Failed to load invoices:', err);
           this.isLoading = false;
         },
       });
   }
-
-
-
-
 
   deleteInvoice(mkey: string) {
     Swal.fire({
@@ -83,7 +142,6 @@ export class ViewInvoiceComponent {
             Swal.fire('Deleted!', 'Invoice has been deleted.', 'success');
           },
           error: (err) => {
-            console.error('Error deleting invoice:', err);
             Swal.fire('Error!', 'Failed to delete invoice.', 'error');
           },
         });
@@ -118,8 +176,6 @@ export class ViewInvoiceComponent {
   isOpen(index: number): boolean {
     return this.openIndexes.has(index);
   }
-
-
 
   goToPreviousPage(): void {
     if (this.currentPage > 1) {

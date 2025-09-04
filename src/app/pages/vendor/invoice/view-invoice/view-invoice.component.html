@@ -7,13 +7,43 @@
           <button class="top-action-btn" (click)="reloadInvoices()">
             <i class="fa-solid fa-arrows-rotate"></i>
           </button>
+          <button class="top-action-btn" (click)="reportGenerator.openModal()">
+            <i class="fa-solid fa-file-arrow-down"></i>
+          </button>
+          <app-report-generator
+            #reportGenerator
+            [listType]="'PGR'"
+            (genratedReports)="onReportGenerated($event)"
+          ></app-report-generator>
           <!-- <button class="top-action-btn">
             <i class="fa-solid fa-download"></i>
           </button> -->
         </div>
       </div>
       <div class="page-title-header">
-        <input type="text" class="search" placeholder="Search" [(ngModel)]="searchTerm" (input)="onSearchChange()"/>
+        <div class="report-status">
+          <span
+            *ngIf="latestReportStatus === 'Processing...'"
+            class="text-warning"
+          >
+            Processing....
+          </span>
+          <span
+            *ngIf="latestReportStatus === 'Download'"
+            class="text-primary"
+            style="cursor: pointer"
+            (click)="downloadLatestReport(latestReport!)"
+          >
+            Download
+          </span>
+        </div>
+        <input
+          type="text"
+          class="search"
+          placeholder="Search"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+        />
         <button class="btn create-btn" [routerLink]="['/invoice-form']">
           <i class="bi bi-plus-lg"></i> Create Invoice
         </button>
@@ -50,7 +80,7 @@
           <ng-container *ngFor="let invoice of invoiceList; let i = index">
             <tr class="align-middle">
               <td>{{ i + 1 + (currentPage - 1) * itemsPerPage }}</td>
-              <td>{{ invoice.PgrmForBrnName}}</td>
+              <td>{{ invoice.PgrmForBrnName }}</td>
               <td>{{ invoice.PgrmVNo }}</td>
               <td class="text-center">
                 {{ invoice.PgrmVDate | date : "dd-MM-yyyy" }}
@@ -59,14 +89,23 @@
               <td class="text-center">
                 {{ invoice.PgrmRefDate | date : "dd-MM-yyyy" }}
               </td>
-              <td class="text-center">{{ invoice.PGRDetails.length || 0 }}
-                <button class="action-btn ms-2" type="button" (click)="toggleDetails(i)"
-                  [attr.aria-expanded]="isOpen(i)" [attr.data-bs-target]="'#collapse' + i"
-                  [attr.aria-controls]="'collapse' + i">
-                  <i class="bi" [ngClass]="{
-                        'bi-eye-fill': !isOpen(i),
-                        'bi-eye-slash-fill': isOpen(i)
-                      }"></i>
+              <td class="text-center">
+                {{ invoice.PGRDetails.length || 0 }}
+                <button
+                  class="action-btn ms-2"
+                  type="button"
+                  (click)="toggleDetails(i)"
+                  [attr.aria-expanded]="isOpen(i)"
+                  [attr.data-bs-target]="'#collapse' + i"
+                  [attr.aria-controls]="'collapse' + i"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="{
+                      'bi-eye-fill': !isOpen(i),
+                      'bi-eye-slash-fill': isOpen(i)
+                    }"
+                  ></i>
                 </button>
               </td>
               <td class="text-end">
@@ -75,17 +114,28 @@
 
               <td class="text-center actions-container">
                 <div class="action-dropdown dropdown">
-                  <button class="action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button
+                    class="action-btn"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="bi bi-three-dots"></i>
                   </button>
                   <ul class="dropdown-menu">
                     <li>
-                      <a class="dropdown-item" (click)="editInvoice(invoice.PgrmMKey)">
+                      <a
+                        class="dropdown-item"
+                        (click)="editInvoice(invoice.PgrmMKey)"
+                      >
                         <i class="fa-solid fa-pen-to-square me-2"></i> Edit
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" (click)="deleteInvoice(invoice.PgrmMKey)">
+                      <a
+                        class="dropdown-item"
+                        (click)="deleteInvoice(invoice.PgrmMKey)"
+                      >
                         <i class="fa-solid fa-trash me-2"></i> Delete
                       </a>
                     </li>
@@ -97,11 +147,19 @@
               <td colspan="9" class="row-open">
                 <div class="collapse-container">
                   <div class="mb-3 mx-4">
-                    <div class="d-flex justify-content-between align-items-center px-4 py-3">
-                      <h6 class="mb-0 fw-bold text-center" style="color: var(--color-blue)">
+                    <div
+                      class="d-flex justify-content-between align-items-center px-4 py-3"
+                    >
+                      <h6
+                        class="mb-0 fw-bold text-center"
+                        style="color: var(--color-blue)"
+                      >
                         <i class="bi bi-receipt-cutoff me-2"></i>Invoice Items
                       </h6>
-                      <span class="badge" style="background-color: var(--color-blue)">
+                      <span
+                        class="badge"
+                        style="background-color: var(--color-blue)"
+                      >
                         {{ invoice.PGRDetails.length }} items
                       </span>
                     </div>
@@ -119,41 +177,43 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let item of invoice.PGRDetails; let j = index">
+                        <tr
+                          *ngFor="let item of invoice.PGRDetails; let j = index"
+                        >
                           <td>{{ j + 1 }}</td>
                           <td>{{ item.PgrdItemCode }}</td>
                           <td>{{ item.PgrdItemName }}</td>
                           <td class="text-center">{{ item.PgrdQuantity }}</td>
-                          <td class="text-end">{{ item.PgrdMRP | currency: 'INR' }}</td>
-                          <td class="text-end">{{ item.PgrdRate | currency: 'INR' }}</td>
+                          <td class="text-end">
+                            {{ item.PgrdMRP | currency : "INR" }}
+                          </td>
+                          <td class="text-end">
+                            {{ item.PgrdRate | currency : "INR" }}
+                          </td>
                           <td class="text-end text-success fw-semibold">
                             {{
-                            item.PgrdQuantity * item.PgrdRate -
-                            (item.PgrdDiscountAmount || 0) +
-                            (item.PgrdGstAmount || 0) | number : "1.2-2"
+                              item.PgrdQuantity * item.PgrdRate -
+                                (item.PgrdDiscountAmount || 0) +
+                                (item.PgrdGstAmount || 0) | number : "1.2-2"
                             }}
                           </td>
                         </tr>
                       </tbody>
                       <thead>
-                          <tr
-                            class="text-end"
-                            style="background-color: #e6f9e7"
-                          >
-                            <th colspan="6"  class="text-end pe-3 fw-bold">Total</th>
-                            <th>
-                              {{
-                                invoice.PgrmNetAmount| currency : "INR"
-                              }}
-                            </th>
-                          </tr>
-                        </thead>
+                        <tr class="text-end" style="background-color: #e6f9e7">
+                          <th colspan="6" class="text-end pe-3 fw-bold">
+                            Total
+                          </th>
+                          <th>
+                            {{ invoice.PgrmNetAmount | currency : "INR" }}
+                          </th>
+                        </tr>
+                      </thead>
                     </table>
                   </div>
                 </div>
               </td>
             </tr>
-
           </ng-container>
         </tbody>
       </table>
@@ -174,11 +234,18 @@
     </div>
   </div>
 
-  <div *ngIf="invoiceList.length >= 1" class="footer-container d-flex justify-content-between align-items-center">
+  <div
+    *ngIf="invoiceList.length >= 1"
+    class="footer-container d-flex justify-content-between align-items-center"
+  >
     <div>
       <label for="pageSize" class="me-2">Page Size:</label>
-      <select id="pageSize" class="form-select d-inline-block w-auto" [(ngModel)]="itemsPerPage"
-        (change)="onPageSizeChange()">
+      <select
+        id="pageSize"
+        class="form-select d-inline-block w-auto"
+        [(ngModel)]="itemsPerPage"
+        (change)="onPageSizeChange()"
+      >
         <option *ngFor="let size of pageSizes" [value]="size">
           {{ size }}
         </option>
@@ -186,11 +253,19 @@
     </div>
 
     <div>
-      <button class="btn btn-sm btn-secondary me-2" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+      <button
+        class="btn btn-sm btn-secondary me-2"
+        (click)="goToPreviousPage()"
+        [disabled]="currentPage === 1"
+      >
         Previous
       </button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button class="btn btn-sm btn-secondary ms-2" (click)="goToNextPage()" [disabled]="currentPage >= totalPages">
+      <button
+        class="btn btn-sm btn-secondary ms-2"
+        (click)="goToNextPage()"
+        [disabled]="currentPage >= totalPages"
+      >
         Next
       </button>
     </div>

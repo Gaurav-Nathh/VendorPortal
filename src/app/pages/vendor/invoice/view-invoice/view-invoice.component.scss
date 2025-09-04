@@ -57,6 +57,13 @@
       margin-top: 0.6rem;
       margin-bottom: 0.8rem;
 
+      .report-status {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        font-size: 0.9rem;
+      }
+
       .search {
         border: 2px solid var(--color-bg);
         border-radius: 0.5rem;
@@ -129,7 +136,7 @@
         border-bottom: none;
       }
 
-        .action-btn {
+      .action-btn {
         width: 2rem;
         height: 2rem;
         border-radius: 0.5rem;
@@ -145,7 +152,6 @@
           background: #f1f5f9;
         }
       }
-
     }
 
     .primary-row {
@@ -233,9 +239,6 @@
       align-items: center;
       // justify-content: space-between;
       justify-content: center;
-
-
-
 
       .action-dropdown {
         .dropdown-menu {
