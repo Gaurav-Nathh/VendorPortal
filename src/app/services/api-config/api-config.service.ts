@@ -27,6 +27,7 @@ export class ApiConfigService {
       this.isProduction = true;
       this.logInPageUrl = 'https://erptest.efacto.cloud/';
     }
+    console.log('app is initialized');
   }
 
   getEfactoAppUrl(): string {
