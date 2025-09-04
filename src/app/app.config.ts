@@ -8,6 +8,7 @@ import {
 import {
   PreloadAllModules,
   provideRouter,
+  withHashLocation,
   withPreloading,
 } from '@angular/router';
 
@@ -24,9 +25,12 @@ export function initApp(configService: ApiConfigService) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter([...commonRoutes, ...customerRoute, ...vendorRoutes]),
+    provideRouter(
+      [...commonRoutes, ...customerRoute, ...vendorRoutes],
+      withHashLocation()
+    ),
 
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    // { provide: LocationStrategy, useClass: HashLocationStrategy },
 
     {
       provide: APP_INITIALIZER,
