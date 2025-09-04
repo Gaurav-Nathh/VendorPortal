@@ -221,7 +221,7 @@ export class InvoiceFormComponent {
         })
       );
     } catch (err) {
-      console.error('Error loading invoice:', err);
+      // console.error('Error loading invoice:', err);
       alert('Failed to load invoice');
       this.router.navigate(['/view-invoice']);
     }
@@ -247,7 +247,7 @@ export class InvoiceFormComponent {
             resolve();
           },
           error: (err) => {
-            console.error('Error generating VNo', err);
+            // console.error('Error generating VNo', err);
             Swal.fire(
               'Error',
               'Failed to generate new invoice number',
@@ -809,7 +809,7 @@ export class InvoiceFormComponent {
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Update error:', err);
+          // console.error('Update error:', err);
           Swal.fire('Error!', 'Failed to update invoice', 'error');
         },
       });
@@ -823,7 +823,7 @@ export class InvoiceFormComponent {
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Create error:', err);
+          // console.error('Create error:', err);
           Swal.fire('Error!', 'Failed to create invoice', 'error');
         },
       });
