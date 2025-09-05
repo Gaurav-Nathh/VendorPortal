@@ -31,20 +31,10 @@ function initializeAppConfig() {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    // provideRouter(
-    //   [...commonRoutes, ...customerRoute, ...vendorRoutes],
-    //   withHashLocation()
-    // ),
-
-    provideRouter([...commonRoutes, ...customerRoute, ...vendorRoutes]),
-
+    provideRouter(
+      [...commonRoutes, ...customerRoute, ...vendorRoutes],
+      withHashLocation()
+    ),
     provideAppInitializer(initializeAppConfig),
-
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: initApp,
-    //   deps: [ApiConfigService],
-    //   multi: true,
-    // },
   ],
 };
