@@ -33,8 +33,9 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(
       [...commonRoutes, ...customerRoute, ...vendorRoutes],
-      withHashLocation()
+      withPreloading(PreloadAllModules)
     ),
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
     provideAppInitializer(initializeAppConfig),
   ],
 };
