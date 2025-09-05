@@ -30,8 +30,6 @@ export const appConfig: ApplicationConfig = {
       withHashLocation()
     ),
 
-    // { provide: LocationStrategy, useClass: HashLocationStrategy },
-
     {
       provide: APP_INITIALIZER,
       useFactory: initApp,
