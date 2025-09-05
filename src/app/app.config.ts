@@ -3,7 +3,12 @@ import {
   ApplicationConfig,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter, withHashLocation } from '@angular/router';
+import {
+  PreloadAllModules,
+  provideRouter,
+  withHashLocation,
+  withPreloading,
+} from '@angular/router';
 
 import { commonRoutes, customerRoute, vendorRoutes } from './app.routes';
 import { ApiConfigService } from './services/api-config/api-config.service';
@@ -18,7 +23,10 @@ export function initApp(configService: ApiConfigService) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter([...commonRoutes, ...customerRoute, ...vendorRoutes]),
+    provideRouter(
+      [...commonRoutes, ...customerRoute, ...vendorRoutes],
+      withPreloading(PreloadAllModules)
+    ),
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy,
