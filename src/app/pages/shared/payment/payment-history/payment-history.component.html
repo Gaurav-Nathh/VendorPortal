@@ -1,52 +1,168 @@
 <div class="page-container">
+  <div class="main-container flex-fill overflow-auto">
+    <div class="">
+      <div class="page-title">
+        <span>Payment</span>
+        <div class="d-flex gap-2">
+          <input
+            type="text"
+            class="search"
+            placeholder="Search..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="applySearch()"
+          />
+          <button class="top-action-btn" (click)="referseData()">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button class="top-action-btn" (click)="exportToExcel()">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
+    <!-- Table -->
+    <div
+      *ngIf="!isLoading; else loader"
+      class="flex-fill orders-table-container mt-3"
+    >
+      <table class="orders-table w-100">
+        <thead class="" style="position: sticky; top: 0; z-index: 1">
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Vtype</th>
+            <th class="text-center">No.</th>
+            <th class="text-center">Particular</th>
+            <th class="text-center">Debit</th>
+            <th class="text-end">Credit</th>
+            <th class="text-center">Narration</th>
+            <th class="text-center">Trn. No.</th>
+            <th class="text-center">Trn. Date.</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let item of paginatedData; let i = index">
+            <!-- Main Row -->
+            <tr class="align-middle">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <span>{{ item.Date | date : "dd-MM-yyyy" }}</span>
+              </td>
+              <td>
+                <span class="text-start">{{ item.Vtype }}</span>
+              </td>
+              <td class="text-truncate">
+                <span>{{ item["No."] }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ item.Particular }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ item.Debit }}</span>
+              </td>
+              <td class="text-end">
+                <span>{{
+                  item.Credit"
+                }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ item.Narration }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ item["Trn. No."] }}</span>
+              </td>
+              <td class="text-center">
+                <span>{{ item["Trn. Date"] }}</span>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+      <div
+        class="d-flex align-items-center justify-content-center"
+        style="height: 95%"
+        *ngIf="paginatedData.length == 0"
+      >
+        <div
+          class="d-flex flex-column align-items-center justify-content-center"
+        >
+          <i class="bi bi-file-earmark-text-fill fs-2"></i>
+          <span>No records found</span>
+        </div>
+      </div>
+    </div>
+    <ng-template #loader>
+      <div class="loaderContainer">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-center">Getting orders...</p>
+      </div>
+    </ng-template>
+  </div>
+  <div *ngIf="paginatedData.length >= 1" class="footer-container">
+    <div>
+      <button
+        class="btn btn-sm btn-secondary me-2"
+        (click)="goToPreviousPage()"
+        [disabled]="currentPage === 1"
+      >
+        Prev
+      </button>
 
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
 
-  <!-- Search & Filter -->
- <div class=" rounded shadow-sm p-3 search-container">
-
-
-  
-     
-       
-       <div class="d-flex justify-content-between align-items-center w-100">
-   <div class="custom-search-bar">
-  <input
-  type="text"
-  class="search-input"
-  placeholder="Search..."
-  [(ngModel)]="searchText"
-  (ngModelChange)="applySearch()"
-/>
-
-  <i class="bi bi-search search-icon"></i>
-</div>
-
-  <div class="d-flex gap-4">
-      <div class="button-group">
-                
-                <button class="refresh-btn btn-3" aria-label="referse" (click)="referseData()">
-                    <i class="fas fa-sync"></i>
-                </button>
-            </div>
-    <button class="btn btn-outline-primary" (click)=" exportToExcel()">
-      <i class="bi bi-box-arrow-up"></i> Export
-    </button>
+      <button
+        class="btn btn-sm btn-secondary ms-2"
+        (click)="goToNextPage()"
+        [disabled]="currentPage >= totalPages"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </div>
 
-      
+<!-- <div class="page-container">
+  <div class="rounded shadow-sm p-3 search-container">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <div class="custom-search-bar">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search..."
+          [(ngModel)]="searchText"
+          (ngModelChange)="applySearch()"
+        />
 
-</div>
-<div class="dashboard-container">
+        <i class="bi bi-search search-icon"></i>
+      </div>
 
-  <!-- Desktop Table -->
- 
-    <div class="orders-table-container ">
-   <table class="orders-table w-100 ">
-  <thead >
-    <tr >
-      <th class="py-3 px-3 fw-semibold  text-center">Date</th>
+      <div class="d-flex gap-4">
+        <div class="button-group">
+          <button
+            class="refresh-btn btn-3"
+            aria-label="referse"
+            (click)="referseData()"
+          >
+            <i class="fas fa-sync"></i>
+          </button>
+        </div>
+        <button class="btn btn-outline-primary" (click)="exportToExcel()">
+          <i class="bi bi-box-arrow-up"></i> Export
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="dashboard-container">
+
+    <div class="orders-table-container">
+      <table class="orders-table w-100">
+        <thead>
+          <tr>
+            <th class="py-3 px-3 fw-semibold text-center">Date</th>
             <th class="py-3 px-3 fw-semibold text-start">Vtype</th>
             <th class="py-3 px-3 fw-semibold text-start">No.</th>
             <th class="py-3 px-3 fw-semibold text-start">Particular</th>
@@ -54,116 +170,127 @@
             <th class="py-3 px-3 fw-semibold text-end">Credit</th>
             <th class="py-3 px-3 fw-semibold">Narration</th>
             <th class="py-3 px-3 fw-semibold" class="text-end">Trn. No.</th>
-            <th class="py-3 px-3 fw-semibold"  class="text-center">Trn. Date</th>
-            
-    </tr>
-  </thead>
-  <tbody  id="receipt-accordion" >
-    <ng-container *ngFor="let item of paginatedData; let i = index">
-      <tr class=" " >
-       <td   class="text-center">
-        {{ item.Date | date: 'dd-MM-yyyy' }}
-      </td>
-      <td [attr.title]="item.Vtype" data-bs-toggle="tooltip" class="text-start">
-        {{ item.Vtype}}
-      </td>
-      <td [attr.title]="item['No.']" data-bs-toggle="tooltip" class="text-truncate" style="max-width: 150px;">
-        {{ item['No.']}}
-      </td>
-      <td [attr.title]="item.Particular" data-bs-toggle="tooltip"  class="text-truncate" style="max-width: 150px;">
-        {{ item.Particular}}
-      </td>
-       <td  class="text-end">
-        {{ item.Debit}}
-      </td>
-      <td  class="text-end">
-        {{ item.Credit}}
-      </td>
-      <td [attr.title]="item.Narration" data-bs-toggle="tooltip" class="text-truncate" style="max-width: 150px;">
-  {{ item.Narration }}
-</td>
+            <th class="py-3 px-3 fw-semibold" class="text-center">Trn. Date</th>
+          </tr>
+        </thead>
+        <tbody id="receipt-accordion">
+          <ng-container *ngFor="let item of paginatedData; let i = index">
+            <tr class=" ">
+              <td class="text-center">
+                {{ item.Date | date : "dd-MM-yyyy" }}
+              </td>
+              <td
+                [attr.title]="item.Vtype"
+                tooltip="{{ item.Vtype }}"
+                class="text-start"
+              >
+                {{ item.Vtype }}
+              </td>
+              <td
+                [attr.title]="item['No.']"
+                data-bs-toggle="tooltip"
+                class="text-truncate"
+                style="max-width: 150px"
+              >
+                {{ item["No."] }}
+              </td>
+              <td
+                [attr.title]="item.Particular"
+                data-bs-toggle="tooltip"
+                class="text-truncate"
+                style="max-width: 150px"
+              >
+                {{ item.Particular }}
+              </td>
+              <td class="text-end">
+                {{ item.Debit }}
+              </td>
+              <td class="text-end">
+                {{ item.Credit }}
+              </td>
+              <td
+                [attr.title]="item.Narration"
+                data-bs-toggle="tooltip"
+                class="text-truncate"
+                style="max-width: 150px"
+              >
+                {{ item.Narration }}
+              </td>
 
-       <td [attr.title]="item['Trn. No.']" data-bs-toggle="tooltip" class="text-end">
-        {{ item['Trn. No.']}}
-      </td>
-       <td  class="text-center">
-        {{ item['Trn. Date'] | date: 'dd-MM-yyyy'}}
-      </td>
-      
-      
-  
-      
-      </tr>
-
-    
-
-
-    </ng-container>
-  </tbody>
-</table>
-
+              <td
+                [attr.title]="item['Trn. No.']"
+                data-bs-toggle="tooltip"
+                class="text-end"
+              >
+                {{ item["Trn. No."] }}
+              </td>
+              <td class="text-center">
+                {{ item["Trn. Date"] | date : "dd-MM-yyyy" }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
     </div>
- 
- <div class="summary-table-container">
-  <table class="w-100 table table-bordered bg-light text-dark">
-    <tbody>
-      <!-- Opening Balance -->
-      <tr class="fw-semibold">
-        <td class="fw-bold">Opening Balance:</td> <!-- Label under Date -->
-        <td colspan="4"></td> <!-- Vtype, No., Particular, Debit -->
-        <td class="text-end fw-bold">{{ tble[0].OPCREDIT | number:'1.2-2' }}</td> <!-- Credit -->
-        <td colspan="3"></td> <!-- Narration, Trn. No., Trn. Date -->
-      </tr>
 
-      <!-- Current Total -->
-      <tr class="fw-semibold">
-        <td class="fw-bold">Current Total:</td> <!-- Label under Date -->
-        <td colspan="3"></td> <!-- Vtype, No., Particular -->
-        <td class="text-end fw-bold">{{ tble[0].DEBIT | number:'1.2-2' }}</td> <!-- Debit -->
-        <td class="text-end fw-bold">{{ tble[0].CREDIT | number:'1.2-2' }}</td> <!-- Credit -->
-        <td colspan="3"></td> <!-- Narration, Trn. No., Trn. Date -->
-      </tr>
+    <div class="summary-table-container">
+      <table class="w-100 table table-bordered bg-light text-dark">
+        <tbody>
+          <tr class="fw-semibold">
+            <td class="fw-bold">Opening Balance:</td>
+            <td colspan="4"></td>
+            <td class="text-end fw-bold">
+              {{ tble[0]?.OPCREDIT | number : "1.2-2" }}
+            </td>
+            <td colspan="3"></td>
+          </tr>
 
-      <!-- Closing Balance -->
-      <tr class="fw-semibold">
-        <td class="fw-bold">Closing Balance:</td> <!-- Label under Date -->
-        <td colspan="4"></td> <!-- Vtype, No., Particular, Debit -->
-        <td class="text-end fw-bold">{{ tble[0].BALCREDIT | number:'1.2-2' }}</td> <!-- Credit -->
-        <td colspan="3"></td> <!-- Narration, Trn. No., Trn. Date -->
-      </tr>
-    </tbody>
-  </table>
-</div>
+          <tr class="fw-semibold">
+            <td class="fw-bold">Current Total:</td>
+            <td colspan="3"></td>
+            <td class="text-end fw-bold">
+              {{ tble[0]?.DEBIT | number : "1.2-2" }}
+            </td>
+            <td class="text-end fw-bold">
+              {{ tble[0]?.CREDIT | number : "1.2-2" }}
+            </td>
+            <td colspan="3"></td>
+          </tr>
 
+          <tr class="fw-semibold">
+            <td class="fw-bold">Closing Balance:</td>
+            <td colspan="4"></td>
+            <td class="text-end fw-bold">
+              {{ tble[0]?.BALCREDIT | number : "1.2-2" }}
+            </td>
+            <td colspan="3"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
+    <div class="pagination-container">
+      <div class="d-flex justify-content-end align-items-center mt-3">
+        <button
+          class="btn btn-sm btn-secondary me-2"
+          [disabled]="currentPage === 1"
+          (click)="goToPreviousPage()"
+        >
+          Prev
+        </button>
 
+        <span class="fw-semibold">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
 
-
-
-
-<div class="pagination-container">
-
-
- <div class="d-flex justify-content-end align-items-center mt-3">
-  <button 
-    class="btn btn-sm btn-secondary me-2" 
-    [disabled]="currentPage === 1" 
-    (click)="goToPreviousPage()">
-    Prev
-  </button>
-
-  <span class="fw-semibold">
-    Page {{ currentPage }} of {{ totalPages }}
-  </span>
-
-  <button 
-    class="btn btn-sm btn-secondary ms-2" 
-    [disabled]="currentPage === totalPages" 
-    (click)="goToNextPage()">
-    Next
-  </button>
-</div>
-
-
-</div>
-</div>
+        <button
+          class="btn btn-sm btn-secondary ms-2"
+          [disabled]="currentPage === totalPages"
+          (click)="goToNextPage()"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->

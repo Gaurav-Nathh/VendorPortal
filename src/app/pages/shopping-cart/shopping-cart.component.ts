@@ -1,6 +1,5 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
-// import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import {
   AfterViewInit,

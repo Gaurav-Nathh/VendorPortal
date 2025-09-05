@@ -86,7 +86,7 @@ export class SidebarComponent {
     {
       text: 'Dashboard',
       icon: 'bi bi-grid-1x2-fill',
-      route: '/',
+      route: '/dashboard',
     },
 
     {
@@ -127,41 +127,19 @@ export class SidebarComponent {
         },
       ],
     },
-    // {
-    //   text: 'Statements',
-    //   icon: 'fa-solid fa-file-invoice-dollar',
-    //   route: '/page-under-construction',
-    // },
   ];
 
   customerMenu: MenuItem[] = [
     {
       text: 'Dashboard',
       icon: 'bi bi-grid-1x2-fill',
-      route: '/',
+      route: '/dashboard',
     },
     {
       text: 'Orders',
       icon: 'bi bi-file-earmark-check-fill',
       route: '/all-orders',
     },
-    // {
-    //   text: 'Create Order',
-    //   icon: 'fa-solid fa-cart-shopping',
-    //   isSubmenuOpen: false,
-    //   submenu: [
-    //     {
-    //       text: 'Items',
-    //       icon: 'fa-solid fa-cubes',
-    //       route: '/customer/items/create-order',
-    //     },
-    //     {
-    //       text: 'Catalogue',
-    //       icon: 'fa-solid fa-box',
-    //       route: '/customer/catalouge/create-order',
-    //     },
-    //   ],
-    // },
     {
       text: 'Order by Items',
       icon: 'fa-solid fa-cubes',

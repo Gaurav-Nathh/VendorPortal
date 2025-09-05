@@ -1,12 +1,11 @@
 import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { PaymentServiceService } from '../../../../services/vendor-service/payment/payment-service.service';
 import { CommonModule } from '@angular/common';
-import { Tooltip } from 'bootstrap';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { FormsModule } from '@angular/forms';
 import * as ExcelJS from 'exceljs';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { UserService } from '../../../../services/shared/user-service/user.service';
 
 export interface AccountTransaction {
@@ -37,20 +36,13 @@ export interface AccountTransaction {
   styleUrl: './payment-history.component.scss',
 })
 export class PaymentHistoryComponent {
-  @ViewChildren('tooltipRef') tooltips!: QueryList<ElementRef>;
-
-  ngAfterViewInit() {
-    this.tooltips.forEach((tooltipEl: ElementRef) => {
-      new Tooltip(tooltipEl.nativeElement);
-    });
-  }
-
   constructor(
     public statementService: PaymentServiceService,
     private userService: UserService
   ) {}
   data: AccountTransaction[] = [];
   tble: any[] = [];
+  isLoading: boolean = false;
 
   searchText: string = '';
   filteredItems: AccountTransaction[] = [];
@@ -66,11 +58,13 @@ export class PaymentHistoryComponent {
   }
 
   AcntStament() {
+    this.isLoading = true;
     this.statementService.accountStatement().subscribe({
       next: (response: any) => {
         this.data = response.ReportData.Table.reverse();
         this.tble = response.ReportData.Table1;
         this.filteredItems = [...this.data]; // initialize filtered data
+        this.isLoading = false;
       },
     });
   }

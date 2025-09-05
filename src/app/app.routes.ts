@@ -18,16 +18,14 @@ export const customerRoute: Routes = [
         (c) => c.ShoppingCartComponent
       ),
     canActivate: [authGuard],
-    children: [
-      {
-        path: 'create-order',
-        loadComponent: () =>
-          import('./pages/shopping-cart/shopping-cart.component').then(
-            (c) => c.ShoppingCartComponent
-          ),
-        canActivate: [authGuard],
-      },
-    ],
+  },
+  {
+    path: 'items/create-order',
+    loadComponent: () =>
+      import('./pages/shopping-cart/shopping-cart.component').then(
+        (c) => c.ShoppingCartComponent
+      ),
+    canActivate: [authGuard],
   },
   {
     path: 'catalouge',
@@ -36,16 +34,14 @@ export const customerRoute: Routes = [
         (c) => c.ShoppingCartComponent
       ),
     canActivate: [authGuard],
-    children: [
-      {
-        path: 'create-order',
-        loadComponent: () =>
-          import('./pages/shopping-cart/shopping-cart.component').then(
-            (c) => c.ShoppingCartComponent
-          ),
-        canActivate: [authGuard],
-      },
-    ],
+  },
+  {
+    path: 'catalouge/create-order',
+    loadComponent: () =>
+      import('./pages/shopping-cart/shopping-cart.component').then(
+        (c) => c.ShoppingCartComponent
+      ),
+    canActivate: [authGuard],
   },
   {
     path: 'my-orders',
@@ -133,13 +129,11 @@ export const commonRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-        // loadComponent: () =>
-        //   import('./pages/common/dashboard/dashboard.component').then(
-        //     (c) => c.DashboardComponent
-        //   ),
-        // canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/common/dashboard/dashboard.component').then(
+            (c) => c.DashboardComponent
+          ),
+        canActivate: [authGuard],
       },
       {
         path: 'dashboard',
@@ -202,62 +196,4 @@ export const commonRoutes: Routes = [
     path: '**',
     redirectTo: 'dashboard',
   },
-  ///////
-  // {
-  //   path: '',
-  //   redirectTo: 'dashboard',
-  //   pathMatch: 'full',
-  // },
-  // {
-  //   path: 'dashboard',
-  //   loadComponent: () =>
-  //     import('./pages/common/dashboard/dashboard.component').then(
-  //       (c) => c.DashboardComponent
-  //     ),
-  //   canActivate: [authGuard],
-  // },
-  // {
-  //   path: 'payment-pending',
-  //   pathMatch: 'full',
-  //   loadComponent: () =>
-  //     import(
-  //       './pages/shared/payment/payment-pending/payment-pending.component'
-  //     ).then((c) => c.PaymentPendingComponent),
-  //   canActivate: [authGuard],
-  // },
-  // {
-  //   path: 'payment-history',
-  //   pathMatch: 'full',
-  //   loadComponent: () =>
-  //     import(
-  //       './pages/shared/payment/payment-history/payment-history.component'
-  //     ).then((c) => c.PaymentHistoryComponent),
-  //   canActivate: [authGuard],
-  // },
-  // {
-  //   path: 'profile',
-  //   pathMatch: 'full',
-  //   loadComponent: () =>
-  //     import('./components/update-profile/update-profile.component').then(
-  //       (c) => c.UpdateProfileComponent
-  //     ),
-  //   canActivate: [authGuard],
-  // },
-  // {
-  //   path: 'update-password',
-  //   pathMatch: 'full',
-  //   loadComponent: () =>
-  //     import('./components/update-password/update-password.component').then(
-  //       (c) => c.UpdatePasswordComponent
-  //     ),
-  //   canActivate: [authGuard],
-  // },
-  // {
-  //   path: 'settings',
-  //   pathMatch: 'full',
-  //   loadComponent: () =>
-  //     import('./components/settings/settings.component').then(
-  //       (c) => c.SettingsComponent
-  //     ),
-  // },
 ];

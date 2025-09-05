@@ -25,9 +25,11 @@
         <li *ngFor="let item of currentMenu" class="menu-item">
           <a
             (click)="toggleSubmenu(item, $event)"
-            [routerLink]="item.route"
+            [routerLink]="item.submenu ? null : item.route"
             routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLinkActiveOptions]="{
+              exact: item.route === '/dashboard' || item.route === '/'
+            }"
             class="menu-link"
             [attr.data-bs-toggle]="item.submenu ? 'collapse' : null"
             [attr.data-bs-target]="
