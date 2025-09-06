@@ -264,6 +264,14 @@
   }
 }
 
+.totals-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr; /* match your table */
+  background: #d6f5d6;
+  font-weight: semi-bold;
+  padding: 8px 10px;
+}
+
 /* Ensure the container-fluid doesn't add extra margin */
 .container-fluid {
   margin-bottom: 0; /* Remove margin */

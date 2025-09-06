@@ -47,21 +47,22 @@
    <table class="orders-table w-100 ">
   <thead >
     <tr >
-      <th class="py-3 px-3 fw-semibold ">Date</th>
+      <!-- <th class="py-3 px-3 fw-semibold ">Date</th>
             <th class="py-3 px-3 fw-semibold text-center">Type</th>
-            <th class="py-3 px-3 fw-semibold text-center">Ref No.</th>
+            <th class="py-3 px-3 fw-semibold text-center">Ref No.</th> -->
+            <th class="py-3 px-3 fw-semibold text-center">Party</th>
             <th class="py-3 px-3 fw-semibold text-end">Invoice</th>
             <th class="py-3 px-3 fw-semibold text-end">Payment</th>
             <th class="py-3 px-3 fw-semibold text-end">Adjustment</th>
             <th class="py-3 px-3 fw-semibold text-end">Balance</th>
-            <th class="py-3 px-3 fw-semibold text-center">Due Date</th>
-            <th class="py-3 px-3 fw-semibold text-end">Over Due</th>
+            <!-- <th class="py-3 px-3 fw-semibold text-center">Due Date</th>
+            <th class="py-3 px-3 fw-semibold text-end">Over Due</th> -->
     </tr>
   </thead>
   <tbody  id="receipt-accordion" >
     <ng-container *ngFor="let item of paginatedData; let i = index"><!-- paginatedData -->
       <tr class=" " >
-       <td >
+       <!-- <td >
         {{ item.BILLDATE }}
       </td>
        <td >
@@ -69,9 +70,12 @@
       </td>
      <td [attr.title]="item.BILLNO" data-bs-toggle="tooltip">
         {{ item.BILLNO }}
+      </td> -->
+      <td> 
+        {{ item.WISE }}
       </td>
       <td  class="text-end">
-        {{ item.BALANCE}}
+        {{ item.BILLAMT}}
       </td>
        <td  class="text-end">
         {{ item.PAYAMT}}
@@ -82,12 +86,12 @@
           <td  class="text-end">
         {{ item.BALANCE}}
       </td>
-       <td  class="text-center">
+       <!-- <td  class="text-center">
         {{ item.DUEDATE}}
       </td>
        <td  class="text-end">
         {{ item.OVERDUE}}
-      </td>
+      </td> -->
 
       
 
@@ -111,18 +115,14 @@
 
    <!-- Totals Row Below the Table -->
 <!-- Totals Table -->
-<table class="w-100 total ">
-  <tbody>
-    <tr class="fw-semibold text-dark border-top">
-      <td colspan="3"></td> <!-- Skips: Date, Type, Ref No. -->
-      <td class="text-end">{{ totalInvoice | number:'1.2-2' }}</td> <!-- Invoice -->
-      <td class="text-end">{{ totalPayment | number:'1.2-2' }}</td> <!-- Payment -->
-      <td class="text-end">{{ totalAdjustment | number:'1.2-2' }}</td> <!-- Adjustment -->
-      <td class="text-end">{{ totalBalance | number:'1.2-2' }}</td> <!-- Balance -->
-      <td colspan="2"></td> <!-- Due Date, Over Due -->
-    </tr>
-  </tbody>
-</table>
+<div class="totals-bar">
+  <div class="text-end">Totals:</div>
+  <div class="text-end">{{ totalInvoice | number:'1.2-2' }} {{ totalInvoice < 0 ? 'Cr' : 'Dr' }} </div>
+  <div class="text-end">{{ totalPayment | number:'1.2-2' }} {{ totalPayment < 0 ? 'Cr' : 'Dr' }}</div>
+  <div class="text-end">{{ totalAdjustment | number:'1.2-2' }} {{ totalAdjustment < 0 ? 'Cr' : 'Dr' }}</div>
+  <div class="text-end">{{ totalBalance | number:'1.2-2' }}  {{ totalBalance < 0 ? 'Cr' : 'Dr' }}</div>
+</div>
+
 
 
 

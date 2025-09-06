@@ -11,9 +11,9 @@ BrnLevel: string = 'BO';
   DateType: string = 'REF DATE';    // decoded
   OutsRefType: string = 'ALL';
   PeriodType: string = 'TODAY';
-  ViewType: string = 'DETAIL';
+  ViewType: string = 'SUMMARY';
   Status?: string = '';             // optional, not provided
-  GroupId: number = 15;
+  GroupId: number = 47;
   Vtype?: string = '';              // optional, not provided
   InvType?: string = '';            // optional, not provided
   BalanceAmt?: number;              // optional, not provided
