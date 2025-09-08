@@ -55,8 +55,9 @@ export class PaymentPendingComponent {
     const text = this.searchText.toLowerCase();
     this.filteredItems = this.data.filter(
       (item) =>
-        item.BILLTYPE?.toLowerCase().includes(text) ||
-        item.BILLNO?.toLowerCase().includes(text)
+        // item.WISE?.toLowerCase().includes(text) ||
+        // item.BILLNO?.toLowerCase().includes(text)
+        item.WISE?.toLowerCase().includes(text)
     );
     this.currentPage = 1;
   }
@@ -66,7 +67,7 @@ export class PaymentPendingComponent {
       next: (response: any) => {
         this.data = response.ReportData.Table;
         this.filteredItems = response.ReportData.Table;
-
+        console.log('DATA', this.data);
         this.calculateTotals();
       },
     });
