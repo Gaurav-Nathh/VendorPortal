@@ -33,7 +33,7 @@ export class PaymentPendingComponent {
   totalAdjustment: number = 0;
   totalBalance: number = 0;
   currentPage: number = 1;
-  itemsPerPage: number = 16;
+  itemsPerPage: number = 50;
   filteredItems: OutstandingBill[] = [];
   private acmName: string = '';
   private UsrName: string = '';
@@ -55,9 +55,8 @@ export class PaymentPendingComponent {
     const text = this.searchText.toLowerCase();
     this.filteredItems = this.data.filter(
       (item) =>
-        // item.WISE?.toLowerCase().includes(text) ||
-        // item.BILLNO?.toLowerCase().includes(text)
-        item.WISE?.toLowerCase().includes(text)
+        item.WISE?.toLowerCase().includes(text) ||
+        item.BILLNO?.toLowerCase().includes(text)
     );
     this.currentPage = 1;
   }

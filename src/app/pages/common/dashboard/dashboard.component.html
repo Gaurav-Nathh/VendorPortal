@@ -12,7 +12,7 @@
           <i class="bi bi-clock text-black"></i>
           Pending Paymentt
         </div>
-        <div class="card-value">₹{{ pendAmt }} {{ pendAmt < 0 ? 'Cr' : 'Dr' }}</div>
+        <div class="card-value">₹{{  pendAmt < 0 ? pendAmt * -1 : pendAmt}} {{ pendAmt < 0 ? 'Cr' : 'Dr' }}</div>
       </div>
       <div class="progress-indicator"></div>
     </div>

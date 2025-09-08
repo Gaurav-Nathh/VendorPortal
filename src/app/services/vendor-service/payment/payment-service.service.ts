@@ -30,7 +30,7 @@ export class PaymentServiceService {
     // const UsrCode = sessionStorage.getItem('UsrCode') ?? '';
     const UsrCode = this.userService._user?.UsrCode;
 
-    // this.paymentModel.WiseDesc = acmName;
+    this.paymentModel.WiseDesc = acmName;
     this.paymentModel.BrnId = UseBrnId ? +UseBrnId : undefined;
     this.paymentModel.FyrId = fryId ? +fryId : undefined;
     this.paymentModel.User = UsrCode ?? '';
