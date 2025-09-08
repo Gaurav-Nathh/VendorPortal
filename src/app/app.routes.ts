@@ -20,6 +20,13 @@ export const customerRoute: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'qr',
+    loadComponent: () =>
+      import('./pages/common/qr/qr.component').then((c) => c.QrComponent),
+    canActivate: [authGuard],
+  },
+
+  {
     path: 'items/create-order',
     loadComponent: () =>
       import('./pages/shopping-cart/shopping-cart.component').then(

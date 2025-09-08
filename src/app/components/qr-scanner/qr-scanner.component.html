@@ -1,0 +1,55 @@
+<div class="container">
+  <div *ngIf="scannerEnabled" class="scanner-container">
+    <zxing-scanner
+      [enable]="scannerEnabled"
+      [device]="selectedDevice"
+      [formats]="formatsEnabled"
+      (camerasFound)="onCamerasFound($event)"
+      (scanSuccess)="onScanSuccess($event)"
+      (scanError)="onScanError($event)"
+      class="scanner"
+    >
+    </zxing-scanner>
+  </div>
+  <div class="scanner-controls">
+    <button
+      (click)="startScanner()"
+      [disabled]="scannerEnabled"
+      class="btn btn-primary"
+    >
+      Start Scanner
+    </button>
+    <button
+      (click)="stopScanner()"
+      [disabled]="!scannerEnabled"
+      class="btn btn-secondary"
+    >
+      Stop Scanner
+    </button>
+    <button (click)="clearResult()" class="btn btn-warning">
+      Clear Results
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="scannedData" class="scanned-data">
+    <h3>Scanned Information:</h3>
+    <div class="data-card">
+      <p><strong>Name:</strong> {{ scannedData.name }}</p>
+      <p><strong>Email:</strong> {{ scannedData.email }}</p>
+      <p><strong>Phone:</strong> {{ scannedData.phone || "Not provided" }}</p>
+      <p>
+        <strong>Address:</strong> {{ scannedData.address || "Not provided" }}
+      </p>
+      <p><strong>Notes:</strong> {{ scannedData.notes || "Not provided" }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="qrResult && !scannedData" class="raw-result">
+    <h3>Raw QR Content:</h3>
+    <pre>{{ qrResult }}</pre>
+  </div>
+</div>

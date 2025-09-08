@@ -1,0 +1,24 @@
+<div class="qr-container">
+  <div class="top-info">
+    <span>QR Code Information System</span>
+    <nav>
+      <button
+        (click)="currentView = 'generator'"
+        [class.active]="currentView === 'generator'"
+      >
+        Generate QR
+      </button>
+      <button
+        (click)="currentView = 'scanner'"
+        [class.active]="currentView === 'scanner'"
+      >
+        Scan QR
+      </button>
+    </nav>
+  </div>
+
+  <div class="qr-main">
+    <app-qr-generator *ngIf="currentView === 'generator'"></app-qr-generator>
+    <app-qr-scanner *ngIf="currentView === 'scanner'"></app-qr-scanner>
+  </div>
+</div>

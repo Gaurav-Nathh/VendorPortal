@@ -27,19 +27,18 @@
       class="flex-fill orders-table-container mt-3"
     >
       <table class="orders-table w-100">
-        <thead class="" style="position: sticky; top: 0; z-index: 1">
+        <thead class="">
           <tr>
             <th>#</th>
-            <th>Date</th>
+            <th class="text-center">Date</th>
             <th>Vtype</th>
-            <th class="text-center">No.</th>
-            <th class="text-center">Particular</th>
+            <th>No.</th>
+            <th>Particular</th>
             <th class="text-center">Debit</th>
             <th class="text-end">Credit</th>
-            <th class="text-center">Narration</th>
-            <th class="text-center">Trn. No.</th>
+            <th>Narration</th>
+            <th>Trn. No.</th>
             <th class="text-center">Trn. Date.</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -47,16 +46,16 @@
             <!-- Main Row -->
             <tr class="align-middle">
               <td>{{ i + 1 }}</td>
-              <td>
+              <td class="text-center">
                 <span>{{ item.Date | date : "dd-MM-yyyy" }}</span>
               </td>
               <td>
-                <span class="text-start">{{ item.Vtype }}</span>
+                <span>{{ item.Vtype }}</span>
               </td>
-              <td class="text-truncate">
+              <td>
                 <span>{{ item["No."] }}</span>
               </td>
-              <td class="text-center">
+              <td>
                 <span>{{ item.Particular }}</span>
               </td>
               <td class="text-center">
@@ -65,10 +64,10 @@
               <td class="text-end">
                 <span>{{ item.Credit }}</span>
               </td>
-              <td class="text-center">
+              <td >
                 <span>{{ item.Narration }}</span>
               </td>
-              <td class="text-center">
+              <td>
                 <span>{{ item["Trn. No."] }}</span>
               </td>
               <td class="text-center">

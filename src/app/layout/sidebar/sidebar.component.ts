@@ -141,6 +141,11 @@ export class SidebarComponent {
       route: '/all-orders',
     },
     {
+      text: 'QR',
+      icon: 'fa-solid fa-qrcode',
+      route: '/qr',
+    },
+    {
       text: 'Order by Items',
       icon: 'fa-solid fa-cubes',
       route: '/items/create-order',

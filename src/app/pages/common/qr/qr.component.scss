@@ -1,0 +1,41 @@
+.qr-container {
+  .top-info {
+    flex: 0 0 auto;
+    text-align: center;
+    background-color: var(--color-bg-secondry);
+    padding: 0.4rem;
+    border-radius: 0.6rem;
+
+    span {
+      font-size: 1.6rem;
+    }
+
+    nav {
+      margin-top: 1rem;
+      margin-bottom: 0.4rem;
+      button {
+        padding: 2px 3px;
+        margin: 0 10px;
+        cursor: pointer;
+        background-color: var(--color-bg-secondry);
+      }
+    }
+
+    nav button.active {
+      border-bottom: 2px solid var(--color-blue);
+    }
+  }
+
+  .qr-main {
+    flex: 1 1 auto;
+    overflow: auto;
+    background-color: var(--color-bg-secondry);
+    margin-top: 0.4rem;
+    padding: 0.4rem;
+    border-radius: 0.6rem;
+  }
+}
+
+.bord {
+  border: 2px solid red;
+}

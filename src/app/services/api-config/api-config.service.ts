@@ -20,7 +20,10 @@ export class ApiConfigService {
 
   initialize(): void {
     const currentUrl = window.location.href;
-    if (currentUrl.includes('localhost:')) {
+    if (
+      currentUrl.includes('localhost:') ||
+      currentUrl.includes('192.168.1.7:4200')
+    ) {
       this.isProduction = false;
       this.logInPageUrl = '/login';
     } else {

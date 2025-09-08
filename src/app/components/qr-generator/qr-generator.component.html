@@ -1,0 +1,255 @@
+<div class="container">
+  <p>Please fillout the form,this inoformation will be converted to QR Code.</p>
+  <div class="char-counter">
+    <div class="char-counter-header">
+      <span>Character Count: {{ currentCharCount }} / {{ maxCharLimit }}</span>
+      <span
+        [class.text-danger]="isOverLimit"
+        [class.text-warning]="
+          !isOverLimit && currentCharCount > charCountWarning
+        "
+      >
+        {{
+          isOverLimit
+            ? "⚠️ Over Limit!"
+            : currentCharCount > charCountWarning
+            ? "⚠️ Approaching Limit"
+            : "✓ Within Limit"
+        }}
+      </span>
+    </div>
+
+    <div class="progress">
+      <div
+        class="progress-bar"
+        [style.width]="getProgressPercentage() + '%'"
+        [style.background-color]="getProgressBarColor()"
+      >
+        {{ getProgressPercentage().toFixed(1) }}%
+      </div>
+    </div>
+
+    <div class="char-counter-info">
+      <small
+        >QR codes can store up to {{ maxCharLimit }} characters. Larger data may
+        not scan reliably.</small
+      >
+    </div>
+  </div>
+
+  <div *ngIf="isGenerated" class="qr-result">
+    <h3>Generated QR Code:</h3>
+    <img [src]="qrCodeDataUrl" alt="QR Code" class="qr-image" />
+    <button (click)="downloadQRCode()" class="btn btn-success download-btn">
+      Download QR Code
+    </button>
+  </div>
+  <!-- <form
+    (ngSubmit)="generateQRCode()"
+    #qrForm="ngForm"
+    (input)="updateCharCount()"
+  >
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        [(ngModel)]="formData.name"
+        required
+        class="form-control"
+        maxlength="100"
+      />
+      <div class="char-hint">Characters: {{ getFieldCharCount("name") }}</div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="formData.email"
+        required
+        class="form-control"
+        maxlength="100"
+      />
+      <div class="char-hint">Characters: {{ getFieldCharCount("email") }}</div>
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone:</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        [(ngModel)]="formData.phone"
+        class="form-control"
+        maxlength="20"
+      />
+      <div class="char-hint">Characters: {{ getFieldCharCount("phone") }}</div>
+    </div>
+
+    <div class="form-group">
+      <label for="address">Address:</label>
+      <textarea
+        id="address"
+        name="address"
+        [(ngModel)]="formData.address"
+        class="form-control"
+        maxlength="500"
+        placeholder="Maximum 500 characters"
+      ></textarea>
+      <div class="char-hint">
+        Characters: {{ getFieldCharCount("address") }} / 500
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Notes:</label>
+      <textarea
+        id="notes"
+        name="notes"
+        [(ngModel)]="formData.notes"
+        class="form-control"
+        maxlength="2000"
+        placeholder="Maximum 2000 characters"
+      ></textarea>
+      <div class="char-hint">
+        Characters: {{ getFieldCharCount("notes") }} / 2000
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button
+        type="submit"
+        [disabled]="!qrForm.form.valid || isOverLimit"
+        class="btn btn-primary"
+      >
+        {{ isOverLimit ? "Data Too Large" : "Generate QR Code" }}
+      </button>
+      <button type="button" (click)="resetForm()" class="btn btn-secondary">
+        Reset
+      </button>
+    </div>
+  </form> -->
+  <form
+    (ngSubmit)="generateQRCode()"
+    #qrForm="ngForm"
+    (input)="updateCharCount()"
+    class="container-fluid p-0"
+  >
+    <div class="row">
+      <!-- Name Field -->
+      <div class="col-md-6 col-12">
+        <div class="form-group">
+          <label for="name" class="form-label">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="formData.name"
+            required
+            class="form-control"
+            maxlength="100"
+          />
+          <div class="char-hint">
+            Characters: {{ getFieldCharCount("name") }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="col-md-6 col-12">
+        <div class="form-group">
+          <label for="email" class="form-label">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="formData.email"
+            required
+            class="form-control"
+            maxlength="100"
+          />
+          <div class="char-hint">
+            Characters: {{ getFieldCharCount("email") }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone Field -->
+      <div class="col-md-6 col-12">
+        <div class="form-group">
+          <label for="phone" class="form-label">Phone:</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            [(ngModel)]="formData.phone"
+            class="form-control"
+            maxlength="20"
+          />
+          <div class="char-hint">
+            Characters: {{ getFieldCharCount("phone") }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Field (Full Width) -->
+      <div class="col-12">
+        <div class="form-group">
+          <label for="address" class="form-label">Address:</label>
+          <textarea
+            id="address"
+            name="address"
+            [(ngModel)]="formData.address"
+            class="form-control"
+            maxlength="500"
+            placeholder="Maximum 500 characters"
+            rows="3"
+          ></textarea>
+          <div class="char-hint">
+            Characters: {{ getFieldCharCount("address") }} / 500
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes Field (Full Width) -->
+      <div class="col-12">
+        <div class="form-group">
+          <label for="notes" class="form-label">Notes:</label>
+          <textarea
+            id="notes"
+            name="notes"
+            [(ngModel)]="formData.notes"
+            class="form-control"
+            maxlength="2000"
+            placeholder="Maximum 2000 characters"
+            rows="4"
+          ></textarea>
+          <div class="char-hint">
+            Characters: {{ getFieldCharCount("notes") }} / 2000
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group mt-4">
+      <button
+        type="submit"
+        [disabled]="!qrForm.form.valid || isOverLimit"
+        class="btn btn-primary me-2"
+      >
+        {{ isOverLimit ? "Data Too Large" : "Generate QR Code" }}
+      </button>
+      <button type="button" (click)="resetForm()" class="btn btn-secondary">
+        Reset
+      </button>
+    </div>
+  </form>
+  <div *ngIf="isOverLimit" class="alert alert-warning">
+    <strong>Warning!</strong> Your data exceeds the QR code capacity limit by
+    {{ currentCharCount - maxCharLimit }} characters. Please reduce your input.
+  </div>
+</div>
