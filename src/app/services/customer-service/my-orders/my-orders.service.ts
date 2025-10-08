@@ -39,4 +39,15 @@ export class MyOrdersService {
       }
     );
   }
+
+  getSOByMkey(SomMkey: string): Observable<any> {
+    const headers = this.config.getHeader();
+
+    return this.http.get<any>(
+      `${this.config.getApiUrl()}/SO/${SomMkey}`,
+      {
+        headers,
+      }
+    );
+  }
 }

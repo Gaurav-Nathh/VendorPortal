@@ -14,7 +14,7 @@ import { SharedService } from '../../services/shared/shared.service';
 import Swal from 'sweetalert2';
 import { ShoppingCartService } from '../../services/shoppingCart-service/shopping-cart.service';
 import { Router } from '@angular/router';
-import { PSOMain } from '../../Models/SalesOrder/SalesOrder';
+import { PSOMain, SODetail, SOMain } from '../../Models/SalesOrder/SalesOrder';
 import { SalesOrderService } from '../../services/customer-service/sales-order/sales-order.service';
 import { debounceTime, elementAt, filter, Subject, Subscription } from 'rxjs';
 import { Product } from '../../Models/customer/product.model';
@@ -72,6 +72,8 @@ export class ShoppingCartComponent {
   }
 
   searchText: string = '';
+  somType: string = 'Customer Order';
+  somDocType: string = 'DIRECT'
   sortByDropDownOpen = false;
   categoryDropDownOpen = false;
   filterTopDropDownOpen = false;
@@ -100,7 +102,8 @@ export class ShoppingCartComponent {
   cart: any[] = [];
   catalougeProducts: any[] = [];
   itemDetailsResponse: any[] = [];
-  salesOrder: PSOMain = {} as PSOMain;
+  // salesOrder: PSOMain = {} as PSOMain;
+  salesOrder: SOMain = {} as SOMain;
   isCartEditing = false;
   catalougeSuggestions: any[] = [];
   catalougeSearchString: Subject<string> = new Subject<string>();
@@ -110,7 +113,10 @@ export class ShoppingCartComponent {
   actId = 1;
   brnId: number = 0;
   CartMode: string = '';
-
+  VoucherTypeList: any = [];
+  BtpCode: string = 'SO';
+  modelVnoPrefix: string = '';
+  modelVtype: string = '';
   constructor(
     private shoppingCartService: ShoppingCartService,
     private sharedService: SharedService,
@@ -137,8 +143,10 @@ export class ShoppingCartComponent {
         this.isCartEditing = value;
       }
     );
-
-    this.setEditableItems();
+    this.BindDropDown(this.BtpCode);
+    this.GetVoucherPrefix();
+    // this.setEditableItems();
+    this.setEditableItemsSO();
 
     this.getCatalougeList();
 
@@ -488,6 +496,7 @@ export class ShoppingCartComponent {
             price.ShowPrice = price.MRP;
             price.Stock = price.Vstock + price.Fstock;
             this.products.push(item);
+            console.log('prod',this.products)
             if (this.CartMode === 'catalouge') {
               this.catalougeProducts.push(item);
             }
@@ -1037,43 +1046,209 @@ export class ShoppingCartComponent {
       return;
     }
 
+    // if (this.isCartEditing) {
+    //   const editableItem = this.salesOrderService.getEditableItem();
+    //   this.salesOrder = {
+    //     psomMKey: editableItem.mkey,
+    //     psomItmCount: this.cart.length,
+    //     psomItmQty: this.cart.reduce(
+    //       (sum, item) => sum + (item.ItmQty || 0),
+    //       0
+    //     ),
+    //     psomNetAmount: this.cart.reduce(
+    //       (sum, item) =>
+    //         sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
+    //       0
+    //     ),
+    //     psomModUser: this.userService._user?.UsrAddUser,
+    //     psoDetails: this.cart.map((item) => {
+    //       const price = item.Itemprices[0];
+    //       const qty = item.ItmQty || 1;
+    //       const rate = price?.MRP || 0;
+
+    //       return {
+    //         psodItmId: item.ItmId,
+    //         psodPack: price?.Pack || '',
+    //         psodMRP: rate,
+    //         psodRate: rate,
+    //         psodQty: qty,
+    //         psodUnitId: item.ItmUntId || 0,
+    //         psodUnitFactor: price?.UnitFactor || 1,
+    //         psodNetAmount: qty * rate,
+    //         psodStock: price?.Stock || 0,
+    //         psodBaseQty: qty * (price?.UnitFactor || 1),
+    //         psodBaseUnitId: item.ItmBaseUntId || 0,
+    //         psodRemarks: '',
+    //       };
+    //     }),
+    //   };
+    //   this.salesOrderService.updateSalesOrder(this.salesOrder).subscribe({
+    //     next: (res) => {
+    //       this.closeCartModal();
+    //       Swal.fire({
+    //         icon: 'success',
+    //         title: 'Checkout successful',
+    //         showConfirmButton: false,
+    //         timer: 1000,
+    //       });
+    //       this.salesOrderService.clearEditableItem();
+    //       this.cart = [];
+    //       this.router.navigate(['/all-orders']);
+    //     },
+    //     error: (err) => {
+    //       Swal.fire({
+    //         toast: true,
+    //         icon: 'error',
+    //         title: 'We were not able to update your order.',
+    //         position: 'top-end',
+    //         showConfirmButton: false,
+    //         timer: 3000,
+    //         timerProgressBar: true,
+    //         didOpen: (toast) => {
+    //           toast.addEventListener('mouseenter', Swal.stopTimer);
+    //           toast.addEventListener('mouseleave', Swal.resumeTimer);
+    //         },
+    //       });
+    //     },
+    //   });
+    // }else {
+    //   this.salesOrder = {
+    //     // psomCmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
+    //     psomCmpId: this.userService._user?.UsrCCmpId,
+    //     // psomBrnId: Number(sessionStorage.getItem('UsrBrnId')),
+    //     psomBrnId: this.userService._user?.UsrBrnId,
+    //     // psomAcmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
+    //     psomAcmId: this.userService._user?.UsrLinkAcmId,
+    //     psomVtype: 'PSO',
+    //     psomItmCount: this.cart.length,
+    //     psomItmQty: this.cart.reduce(
+    //       (sum, item) => sum + (item.ItmQty || 0),
+    //       0
+    //     ),
+    //     psomNetAmount: this.cart.reduce(
+    //       (sum, item) =>
+    //         sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
+    //       0
+    //     ),
+    //     psomOrderType: sessionStorage.getItem('cartMode') || '',
+    //     psomStatus: 'CREATED',
+    //     psomStatusCode: 1,
+    //     // psomAddUser: sessionStorage.getItem('UsrAddUser') || '',
+    //     psomAddUser: this.userService._user?.UsrAddUser,
+    //     psomModUser: '',
+    //     psoDetails: this.cart.map((item) => {
+    //       const price = item.Itemprices[0];
+    //       const qty = item.ItmQty || 1;
+    //       const rate = price?.MRP || 0;
+
+    //       return {
+    //         psodItmId: item.ItmId,
+    //         psodPack: price?.Pack || '',
+    //         psodMRP: rate,
+    //         psodRate: rate,
+    //         psodQty: qty,
+    //         psodUnitId: item.ItmUntId || 0,
+    //         psodUnitFactor: price?.UnitFactor || 1,
+    //         psodNetAmount: qty * rate,
+    //         psodStock: price?.Stock || 0,
+    //         psodBaseQty: qty * (price?.UnitFactor || 1),
+    //         psodBaseUnitId: item.ItmBaseUntId || 0,
+    //         psodRemarks: '',
+    //       };
+    //     }),
+    // };
+
+    //   this.salesOrderService.postSalesOrder(this.salesOrder).subscribe({
+    //     next: (res) => {
+    //       this.closeCartModal();
+    //       Swal.fire({
+    //         icon: 'success',
+    //         title: 'Checkout successful',
+    //         showConfirmButton: false,
+    //         timer: 1000,
+    //       });
+    //       this.cart = [];
+    //       this.router.navigate(['/all-orders']);
+    //     },
+    //     error: (err) => {
+    //       Swal.fire({
+    //         toast: true,
+    //         icon: 'error',
+    //         title: 'We were not able to create your order.',
+    //         position: 'top-end',
+    //         showConfirmButton: false,
+    //         timer: 3000,
+    //         timerProgressBar: true,
+    //         didOpen: (toast) => {
+    //           toast.addEventListener('mouseenter', Swal.stopTimer);
+    //           toast.addEventListener('mouseleave', Swal.resumeTimer);
+    //         },
+    //       });
+    //     },
+    //   });
+    // }
+    const now = new Date();
+    const somFyrId = now.getFullYear() % 100;
+    const gstRateMap: Record<number, number> = {
+        0: 4,
+        5: 1,
+        12: 2,
+        18: 3,
+        28: 5,
+        40: 6
+      };
+      console
     if (this.isCartEditing) {
       const editableItem = this.salesOrderService.getEditableItem();
+      console.log('ed',editableItem)
       this.salesOrder = {
-        psomMKey: editableItem.mkey,
-        psomItmCount: this.cart.length,
-        psomItmQty: this.cart.reduce(
-          (sum, item) => sum + (item.ItmQty || 0),
-          0
-        ),
-        psomNetAmount: this.cart.reduce(
+        SomMkey: editableItem.SO.SomMkey,
+        SomCmpId: this.userService._user?.UsrCCmpId && this.userService._user?.UsrCCmpId !== 0 ? this.userService._user.UsrCCmpId : 1,
+        SomBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SomAcmId: this.userService._user?.UsrLinkAcmId ?? 0,
+        SomVtype: this.modelVtype,
+        SomShpBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SomNetAmt: this.cart.reduce(
           (sum, item) =>
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
           0
         ),
-        psomModUser: this.userService._user?.UsrAddUser,
-        psoDetails: this.cart.map((item) => {
+        SomStsCode: 0,
+        SomFyrId: somFyrId,
+        SomIsJSonBase: true,
+        SomVdate: now,
+        SomBtpCode: this.BtpCode,
+        SomModUser: this.userService._user?.UsrAddUser,
+        SoDetails: this.cart.map((item, index) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
-
+          // const gst = parseFloat(price.Gst.match(/\d+(\.\d+)?/)![0]);
+          console.log('p',price)
           return {
-            psodItmId: item.ItmId,
-            psodPack: price?.Pack || '',
-            psodMRP: rate,
-            psodRate: rate,
-            psodQty: qty,
-            psodUnitId: item.ItmUntId || 0,
-            psodUnitFactor: price?.UnitFactor || 1,
-            psodNetAmount: qty * rate,
-            psodStock: price?.Stock || 0,
-            psodBaseQty: qty * (price?.UnitFactor || 1),
-            psodBaseUnitId: item.ItmBaseUntId || 0,
-            psodRemarks: '',
+            SodItmId: item.ItmId,
+            SodRowNo: index + 1,
+            SodSomMkey: item.ItmSodMKey,
+            SodQty: qty,
+            SodUntId: item.ItmPackUntId,
+            SodPack: item.ItmUntId,
+            SodNetAmt: qty * rate,
+            SodBaseUntId: 1,
+            SodStock: 2,
+            SodRemarks: '',
+            SodGstId: price.GstId || 0,
+            SodMrp: rate,
+            SodRate: rate,
+            SodUnitFactor: price?.UnitFactor || 1,
+            SodBaseQty: qty * (price?.UnitFactor || 1),
+            SodItmName: item.ItmName || '',
+            SodItmCode: item.ItmCode || '',
+            // SodItmUnitFactorType: price.UnitFactorType || '',
+            SodBaseUntCode: item.ItmBaseUntCode, 
           };
         }),
       };
-      this.salesOrderService.updateSalesOrder(this.salesOrder).subscribe({
+      this.salesOrderService.updateSO(this.salesOrder).subscribe({
         next: (res) => {
           this.closeCartModal();
           Swal.fire({
@@ -1102,54 +1277,68 @@ export class ShoppingCartComponent {
           });
         },
       });
-    } else {
+    }
+    else {
+      console.log('Cart before creating SO:', this.cart);
       this.salesOrder = {
-        // psomCmpId: Number(sessionStorage.getItem('UsrCtrlCmpId')),
-        psomCmpId: this.userService._user?.UsrCCmpId,
-        // psomBrnId: Number(sessionStorage.getItem('UsrBrnId')),
-        psomBrnId: this.userService._user?.UsrBrnId,
-        // psomAcmId: Number(sessionStorage.getItem('UsrLinkAcmId')),
-        psomAcmId: this.userService._user?.UsrLinkAcmId,
-        psomVtype: 'PSO',
-        psomItmCount: this.cart.length,
-        psomItmQty: this.cart.reduce(
-          (sum, item) => sum + (item.ItmQty || 0),
-          0
-        ),
-        psomNetAmount: this.cart.reduce(
+        SomCmpId: this.userService._user?.UsrCCmpId && this.userService._user?.UsrCCmpId !== 0 ? this.userService._user.UsrCCmpId : 1,
+        SomBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SomAcmId: this.userService._user?.UsrLinkAcmId ?? 0,
+        SomVtype: this.modelVtype,
+        SomType: this.somType,
+        SomDocType: this.somDocType,
+        SomVnoPrefix: this.modelVnoPrefix,
+        SomNetAmt: this.cart.reduce(
           (sum, item) =>
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
           0
         ),
-        psomOrderType: sessionStorage.getItem('cartMode') || '',
-        psomStatus: 'CREATED',
-        psomStatusCode: 1,
-        // psomAddUser: sessionStorage.getItem('UsrAddUser') || '',
-        psomAddUser: this.userService._user?.UsrAddUser,
-        psomModUser: '',
-        psoDetails: this.cart.map((item) => {
+        SomStsCode: 0,
+        SomAddUser: this.userService._user?.UsrAddUser,
+        SomFyrId: somFyrId,
+        SomModUser: '',
+        SomIsJSonBase: true,
+        SomAddDate: now,
+        SomRefDate: now,
+        SomShpDlvDate: now,
+        SomLcDate: now,
+        SomLcExpDate: now,
+        SomDlvDate: now,
+        SomVdate: now,
+        SomBtpCode: this.BtpCode,
+        SomShpBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SoDetails: this.cart.map((item, index) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
+          const gstRate = item.Itemprices[0];
+          const sodGstId = gstRate.GstRate;
 
           return {
-            psodItmId: item.ItmId,
-            psodPack: price?.Pack || '',
-            psodMRP: rate,
-            psodRate: rate,
-            psodQty: qty,
-            psodUnitId: item.ItmUntId || 0,
-            psodUnitFactor: price?.UnitFactor || 1,
-            psodNetAmount: qty * rate,
-            psodStock: price?.Stock || 0,
-            psodBaseQty: qty * (price?.UnitFactor || 1),
-            psodBaseUnitId: item.ItmBaseUntId || 0,
-            psodRemarks: '',
-          };
+            SodItmId: item.ItmId,
+            SodRowNo: index + 1,
+            SodPack: price?.Pack || '',
+            SodMrp: rate,
+            SodRate: rate,
+            SodQty: qty,
+            SodUntId: item.ItmPackUntId || 0,
+            SodUnitFactor: price?.UnitFactor || 1,
+            SodNetAmt: qty * rate,
+            SodStock: price?.Stock || 0,
+            SodBaseQty: qty * (price?.UnitFactor || 1),
+            SodBaseUntId: item.ItmBaseUntId || 0,
+            SodRemarks: '',
+            SodGstId: gstRateMap[sodGstId],
+            SodItmName: price.ItmName || '',
+            SodItmCode: item.ItmCode || '',
+            SodItmUnitFactorType: price.UnitFactorType || '',
+            SodBaseUntCode: item.ItmBaseUntCode || '', 
+          } as SODetail;
         }),
       };
+      console.log('creating..', this.salesOrder);
 
-      this.salesOrderService.postSalesOrder(this.salesOrder).subscribe({
+      this.salesOrderService.postSO(this.salesOrder).subscribe({
         next: (res) => {
           this.closeCartModal();
           Swal.fire({
@@ -1180,25 +1369,56 @@ export class ShoppingCartComponent {
     }
   }
 
-  setEditableItems() {
-    const editableItem = this.salesOrderService.getEditableItem();
-    if (!editableItem?.psoItems?.length) return;
+  // setEditableItems() {
+  //   const editableItem = this.salesOrderService.getEditableItem();
+  //   if (!editableItem?.psoItems?.length) return;
 
-    this.cart = editableItem.psoItems.map((psoItem: any) => {
+  //   this.cart = editableItem.psoItems.map((psoItem: any) => {
+  //     const item: any = {
+  //       ItmId: psoItem.itmId,
+  //       ItmCode: psoItem.itmCode,
+  //       ItmName: psoItem.itmName,
+  //       ItmMrp: 0.0,
+  //       ItmQty: psoItem.qty,
+  //       Itemprices: [
+  //         {
+  //           MRP: psoItem.mrp,
+  //           ShowPrice: psoItem.mrp,
+  //         },
+  //       ],
+  //     };
+  //     return item;
+  //   });
+  // }
+
+   setEditableItemsSO() {
+    const editableItem = this.salesOrderService.getEditableItem();
+    console.log("editables", editableItem)
+    if (!editableItem?.SO?.SoDetails?.length) return;
+
+    this.cart = editableItem.SO.SoDetails.map((detail: any) => {
       const item: any = {
-        ItmId: psoItem.itmId,
-        ItmCode: psoItem.itmCode,
-        ItmName: psoItem.itmName,
+        ItmId: detail.SodItmId,
+        ItmSodMKey: detail.SodSomMkey,
+        ItmUntId: detail.SodPack,
+        ItmCode: detail.SodItmCode,
+        ItmName: detail.SodItmName,
         ItmMrp: 0.0,
-        ItmQty: psoItem.qty,
+        ItmQty: detail.SodQty,
+        ItmStock: detail.SodStock,
+        ItmBaseUntCode: detail.SodBaseUntCode,
+        ItmBaseUntId: detail.SodBaseUntId,
+        ItmPackUntId: detail.SodUntId,
         Itemprices: [
           {
-            MRP: psoItem.mrp,
-            ShowPrice: psoItem.mrp,
+            MRP: detail.SodMrp,
+            ShowPrice: detail.SodMrp,
+            GstId: detail.SodGstId,
+            UnitFactor: detail.SodUnitFactor,
           },
         ],
       };
-
+      console.log('item', item)
       return item;
     });
   }
@@ -1242,4 +1462,30 @@ export class ShoppingCartComponent {
       });
     }
   }
+
+  BindDropDown(BtpCode: any) {
+    this.salesOrderService.BindDropDown(BtpCode).subscribe((res: any) => {
+      // console.log('voucher list', res.VoucherTypeList);
+
+      this.VoucherTypeList = res.VoucherTypeList;
+      this.modelVtype = res.VoucherTypeList[1]['Id'];
+      // console.log('saleorder ', this.salesOrder);
+    })
+  }
+
+  GetVoucherPrefix() {
+    const now = new Date();
+    var Vtype = 'SOM';
+    var BrnId = this.userService._user?.UsrBrnId ?? 0;
+    var FyrId = now.getFullYear() % 100;
+    var Vdate = now;
+    var AcmId = this.userService._user?.UsrLinkAcmId ?? 0;
+
+    this.salesOrderService.GetVoucherPrefix(Vtype,BrnId,FyrId,Vdate,AcmId).subscribe((res: any) => {
+      // console.log('res', res);
+      this.modelVnoPrefix = res.VNOPREFFIX;
+      // console.log('saleorder ', this.salesOrder);
+    })
+  }
+
 }
