@@ -117,6 +117,9 @@ export class ShoppingCartComponent {
   BtpCode: string = 'SO';
   modelVnoPrefix: string = '';
   modelVtype: string = '';
+  bookType: string = 'SO';
+  somTId: string = '';
+
   constructor(
     private shoppingCartService: ShoppingCartService,
     private sharedService: SharedService,
@@ -145,6 +148,7 @@ export class ShoppingCartComponent {
     );
     this.BindDropDown(this.BtpCode);
     this.GetVoucherPrefix();
+    this.GetTId();
     // this.setEditableItems();
     this.setEditableItemsSO();
 
@@ -496,7 +500,7 @@ export class ShoppingCartComponent {
             price.ShowPrice = price.MRP;
             price.Stock = price.Vstock + price.Fstock;
             this.products.push(item);
-            console.log('prod',this.products)
+            // console.log('prod',this.products)
             if (this.CartMode === 'catalouge') {
               this.catalougeProducts.push(item);
             }
@@ -1200,7 +1204,7 @@ export class ShoppingCartComponent {
       console
     if (this.isCartEditing) {
       const editableItem = this.salesOrderService.getEditableItem();
-      console.log('ed',editableItem)
+      // console.log('ed',editableItem)
       this.salesOrder = {
         SomMkey: editableItem.SO.SomMkey,
         SomCmpId: this.userService._user?.UsrCCmpId && this.userService._user?.UsrCCmpId !== 0 ? this.userService._user.UsrCCmpId : 1,
@@ -1224,7 +1228,7 @@ export class ShoppingCartComponent {
           const qty = item.ItmQty || 1;
           const rate = price?.MRP || 0;
           // const gst = parseFloat(price.Gst.match(/\d+(\.\d+)?/)![0]);
-          console.log('p',price)
+          // console.log('p',price)
           return {
             SodItmId: item.ItmId,
             SodRowNo: index + 1,
@@ -1279,7 +1283,7 @@ export class ShoppingCartComponent {
       });
     }
     else {
-      console.log('Cart before creating SO:', this.cart);
+      // console.log('Cart before creating SO:', this.cart);
       this.salesOrder = {
         SomCmpId: this.userService._user?.UsrCCmpId && this.userService._user?.UsrCCmpId !== 0 ? this.userService._user.UsrCCmpId : 1,
         SomBrnId: this.userService._user?.UsrBrnId ?? 0,
@@ -1299,10 +1303,11 @@ export class ShoppingCartComponent {
         SomModUser: '',
         SomIsJSonBase: true,
         SomAddDate: now,
-        SomRefDate: now,
         SomShpDlvDate: now,
         SomLcDate: now,
         SomLcExpDate: now,
+        SomTId: this.somTId,
+        SomRemarks: '',
         SomDlvDate: now,
         SomVdate: now,
         SomBtpCode: this.BtpCode,
@@ -1313,7 +1318,9 @@ export class ShoppingCartComponent {
           const rate = price?.MRP || 0;
           const gstRate = item.Itemprices[0];
           const sodGstId = gstRate.GstRate;
-
+          const StokcValue = this.cart[0].Itemprices[0].Stock;
+          const remarks = StokcValue < 0 ? 'STOCK NOT AVAILABLE' : 'STOCK AVAILABLE'
+          // console.log('cart', this.cart[0].Itemprices[0].Stock)
           return {
             SodItmId: item.ItmId,
             SodRowNo: index + 1,
@@ -1327,7 +1334,7 @@ export class ShoppingCartComponent {
             SodStock: price?.Stock || 0,
             SodBaseQty: qty * (price?.UnitFactor || 1),
             SodBaseUntId: item.ItmBaseUntId || 0,
-            SodRemarks: '',
+            SodRemarks: remarks,
             SodGstId: gstRateMap[sodGstId],
             SodItmName: price.ItmName || '',
             SodItmCode: item.ItmCode || '',
@@ -1336,7 +1343,7 @@ export class ShoppingCartComponent {
           } as SODetail;
         }),
       };
-      console.log('creating..', this.salesOrder);
+      // console.log('creating..', this.salesOrder);
 
       this.salesOrderService.postSO(this.salesOrder).subscribe({
         next: (res) => {
@@ -1393,7 +1400,7 @@ export class ShoppingCartComponent {
 
    setEditableItemsSO() {
     const editableItem = this.salesOrderService.getEditableItem();
-    console.log("editables", editableItem)
+    // console.log("editables", editableItem)
     if (!editableItem?.SO?.SoDetails?.length) return;
 
     this.cart = editableItem.SO.SoDetails.map((detail: any) => {
@@ -1418,7 +1425,7 @@ export class ShoppingCartComponent {
           },
         ],
       };
-      console.log('item', item)
+      // console.log('item', item)
       return item;
     });
   }
@@ -1487,5 +1494,16 @@ export class ShoppingCartComponent {
       // console.log('saleorder ', this.salesOrder);
     })
   }
+
+  GetTId() {
+    var TrnId = this.GetTransactionNumber()
+    this.somTId = TrnId ? this.bookType + TrnId : '';
+  }
+
+  GetTransactionNumber() {
+    var Date1 = new Date();
+    return Date1.getTime();
+  }
+
 
 }
