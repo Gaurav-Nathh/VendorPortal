@@ -357,7 +357,7 @@
   </section>
 
   <section *ngIf="CartMode === 'catalouge'" id="filterTop" class="screen">
-    <div
+    <!-- <div
       class="category-box"
       #categoryCatalougeContainer
       [class.show]="categoryDropDownOpen"
@@ -379,6 +379,7 @@
       <ul
         class="custom-scrollBar dropdown-menu"
         style="max-height: 90%; overflow-y: auto"
+        (click)="$event.stopPropagation()"
       >
         <li
           *ngFor="let item of itemCatalougeList"
@@ -392,7 +393,60 @@
           {{ item.Text }}
         </li>
       </ul>
-    </div>
+    </div> -->
+    <div
+  class="category-box position-relative"
+  #categoryCatalougeContainer
+  [class.show]="categoryDropDownOpen"
+
+>
+  
+  <button
+    *ngIf="!showSearch"
+    class="p-2 fs-6 d-flex align-items-center justify-content-between w-100"
+    type="button"
+    (click)="toggleSearch(true)"
+  >
+    Select Catalogue
+    <i class="fa-solid fa-chevron-down"></i>
+  </button>
+
+ 
+  <div *ngIf="showSearch" class="position-relative w-100">
+    <input
+      type="text"
+      class="form-control p-2"
+      placeholder="Search Catalogue..."
+      [(ngModel)]="searchCatalogue"
+      (focus)="categoryDropDownOpen = true"
+      (input)="filterCatalogues()"
+    />
+
+    <ul
+      *ngIf="categoryDropDownOpen"
+      class="custom-scrollBar dropdown-menu show w-100 mt-1"
+      style="max-height: 250px; overflow-y: auto; position: absolute; z-index: 1000;"
+    >
+      <li
+        *ngFor="let item of filteredCatalogueList"
+        (click)="selectCatalouges(item)"
+        class="dropdown-item text-truncate"
+        style="cursor: pointer"
+        [tooltip]="item.Text"
+        placement="top"
+        container="body"
+      >
+        {{ item.Text }}
+      </li>
+
+      <li *ngIf="filteredCatalogueList.length === 0" class="dropdown-item disabled">
+        No results found
+      </li>
+    </ul>
+  </div>
+</div>
+
+
     <div id="filterTopContainer" class="">
       <div id="listContainer" class="">
         <div
