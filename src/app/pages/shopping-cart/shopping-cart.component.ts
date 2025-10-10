@@ -119,6 +119,9 @@ export class ShoppingCartComponent {
   modelVtype: string = '';
   bookType: string = 'SO';
   somTId: string = '';
+  filteredCatalogueList: any[] = [];
+  showSearch = false;
+  searchCatalogue: string = '';
 
   constructor(
     private shoppingCartService: ShoppingCartService,
@@ -168,6 +171,14 @@ export class ShoppingCartComponent {
     document.addEventListener('click', this.handleOutsideClick.bind(this));
   }
 
+  @HostListener('document:click', ['$event'])
+  onOutsideClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.category-box')) {
+      this.toggleSearch(false);
+    }
+  }
+
   handleOutsideClick(event: any) {
     if (!event.target.closest('.catalouge-dropdown')) {
       this.catalougeDropdownOpen = false;
@@ -184,10 +195,25 @@ export class ShoppingCartComponent {
   //   );
   // }
 
-  selectCatalouge(catalouge: CatalougeType): void {
-    const exists = this.selectedCatalouges.some((c) => c.Id === catalouge.Id);
+  // selectCatalouge(catalouge: CatalougeType): void {
+  //   const exists = this.selectedCatalouges.some((c) => c.Id === catalouge.Id);
+  //   if (!exists) {
+  //     this.selectedCatalouges.push(catalouge);
+  //     this.getCatalougeItems();
+  //   }
+  // }
+
+  selectCatalouges(item: any) {
+    this.selectCatalouge(item); // your existing function
+    this.toggleSearch(false);   // switch back to button after select
+  }
+
+  selectCatalouge(item: any): void {
+    this.searchCatalogue = item.Text; // Show selected text
+    this.categoryDropDownOpen = false; // Close dropdown
+    const exists = this.selectedCatalouges.some((c) => c.Id === item.Id);
     if (!exists) {
-      this.selectedCatalouges.push(catalouge);
+      this.selectedCatalouges.push(item);
       this.getCatalougeItems();
     }
   }
@@ -211,6 +237,7 @@ export class ShoppingCartComponent {
       .getItemCatalougeList(this.actId)
       .subscribe((response) => {
         this.itemCatalougeList = response?.OctCatList || [];
+        this.filteredCatalogueList = [...this.itemCatalougeList];
       });
   }
 
@@ -710,7 +737,7 @@ export class ShoppingCartComponent {
     },
   };
 
-  priceFilter() {}
+  priceFilter() { }
 
   resetFilterSection(title: string, key: string): void {
     this.selectedFilters[title] = [];
@@ -776,33 +803,33 @@ export class ShoppingCartComponent {
     withImage: boolean;
     orderCatelogName: string;
   } = {
-    brnId: String(this.brnId),
-    fyrId: 25,
-    wrhId: 0,
-    vdate: '',
-    cmpId: 1,
-    mkey: '',
-    withStock: true,
-    allowNegStock: true,
-    brnType: '',
-    itemType: '',
-    isWrhUnderIncl: false,
-    btpCode: 'SO',
-    getpriceCode: false,
-    maxLength: 10,
-    catType: '',
-    catId: 0,
-    priceAt: 'MRP',
-    searchType: '',
-    searchValue: '',
-    tempName: '',
-    pageNumber: 1,
-    fromPrice: 0,
-    toPrice: 0,
-    stockFilter: true,
-    withImage: true,
-    orderCatelogName: '',
-  };
+      brnId: String(this.brnId),
+      fyrId: 25,
+      wrhId: 0,
+      vdate: '',
+      cmpId: 1,
+      mkey: '',
+      withStock: true,
+      allowNegStock: true,
+      brnType: '',
+      itemType: '',
+      isWrhUnderIncl: false,
+      btpCode: 'SO',
+      getpriceCode: false,
+      maxLength: 10,
+      catType: '',
+      catId: 0,
+      priceAt: 'MRP',
+      searchType: '',
+      searchValue: '',
+      tempName: '',
+      pageNumber: 1,
+      fromPrice: 0,
+      toPrice: 0,
+      stockFilter: true,
+      withImage: true,
+      orderCatelogName: '',
+    };
 
   catalougeFilterPayload: {
     [key: string]: any;
@@ -811,11 +838,11 @@ export class ShoppingCartComponent {
     toPrice: number;
     withImage: boolean;
   } = {
-    withStock: true,
-    fromPrice: 0,
-    toPrice: 0,
-    withImage: true,
-  };
+      withStock: true,
+      fromPrice: 0,
+      toPrice: 0,
+      withImage: true,
+    };
 
   selectedNavFilterTitleDisplay = 'Select a filter';
   selectedNavFilterTitle: any = null;
@@ -1194,14 +1221,14 @@ export class ShoppingCartComponent {
     const now = new Date();
     const somFyrId = now.getFullYear() % 100;
     const gstRateMap: Record<number, number> = {
-        0: 4,
-        5: 1,
-        12: 2,
-        18: 3,
-        28: 5,
-        40: 6
-      };
-      console
+      0: 4,
+      5: 1,
+      12: 2,
+      18: 3,
+      28: 5,
+      40: 6
+    };
+    console
     if (this.isCartEditing) {
       const editableItem = this.salesOrderService.getEditableItem();
       // console.log('ed',editableItem)
@@ -1248,7 +1275,7 @@ export class ShoppingCartComponent {
             SodItmName: item.ItmName || '',
             SodItmCode: item.ItmCode || '',
             // SodItmUnitFactorType: price.UnitFactorType || '',
-            SodBaseUntCode: item.ItmBaseUntCode, 
+            SodBaseUntCode: item.ItmBaseUntCode,
           };
         }),
       };
@@ -1339,7 +1366,7 @@ export class ShoppingCartComponent {
             SodItmName: price.ItmName || '',
             SodItmCode: item.ItmCode || '',
             SodItmUnitFactorType: price.UnitFactorType || '',
-            SodBaseUntCode: item.ItmBaseUntCode || '', 
+            SodBaseUntCode: item.ItmBaseUntCode || '',
           } as SODetail;
         }),
       };
@@ -1398,7 +1425,7 @@ export class ShoppingCartComponent {
   //   });
   // }
 
-   setEditableItemsSO() {
+  setEditableItemsSO() {
     const editableItem = this.salesOrderService.getEditableItem();
     // console.log("editables", editableItem)
     if (!editableItem?.SO?.SoDetails?.length) return;
@@ -1488,7 +1515,7 @@ export class ShoppingCartComponent {
     var Vdate = now;
     var AcmId = this.userService._user?.UsrLinkAcmId ?? 0;
 
-    this.salesOrderService.GetVoucherPrefix(Vtype,BrnId,FyrId,Vdate,AcmId).subscribe((res: any) => {
+    this.salesOrderService.GetVoucherPrefix(Vtype, BrnId, FyrId, Vdate, AcmId).subscribe((res: any) => {
       // console.log('res', res);
       this.modelVnoPrefix = res.VNOPREFFIX;
       // console.log('saleorder ', this.salesOrder);
@@ -1505,5 +1532,21 @@ export class ShoppingCartComponent {
     return Date1.getTime();
   }
 
+  filterCatalogues() {
+    const search = this.searchCatalogue.toLowerCase();
+    this.filteredCatalogueList = this.itemCatalougeList.filter((item) =>
+      item.Text.toLowerCase().includes(search)
+    );
+  }
+
+  toggleSearch(show: boolean) {
+    this.showSearch = show;
+    this.categoryDropDownOpen = show;
+    if (show) {
+      this.filteredCatalogueList = [...this.itemCatalougeList];
+    } else {
+      this.searchCatalogue = '';
+    }
+  }
 
 }
