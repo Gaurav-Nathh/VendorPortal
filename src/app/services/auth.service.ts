@@ -56,7 +56,7 @@ export class AuthService {
   //   const headers = this.config.getHeader();
   //   this.loaderAuthService.show();
   //   return this.http
-  //     .post(`${this.config.getApiUrl()}/Login/Authenticate`, payload, {
+  //     .post(`${this.config.getApiUrl()}/Login/Authenticate`, payyload, {
   //       headers,
   //     })
   //     .pipe(

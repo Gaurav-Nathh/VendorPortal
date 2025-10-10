@@ -5,10 +5,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ApiConfigService {
-  // private apiUrl = 'https://efactoapitest.efacto.cloud/api';
-  // private apiKey = '140-9299-524-TEST';
-  // private logInPageUrl: string = 'http://127.0.0.1:5501/';
-
   private apiUrl: string = '';
   private apiKey: string = '';
   private logInPageUrl: string = '';
@@ -20,15 +16,12 @@ export class ApiConfigService {
 
   initialize(): void {
     const currentUrl = window.location.href;
-    if (
-      currentUrl.includes('localhost:') ||
-      currentUrl.includes('192.168.1.7:4200')
-    ) {
+    if (currentUrl.includes('localhost:')) {
       this.isProduction = false;
       this.logInPageUrl = '/login';
     } else {
       this.isProduction = true;
-      this.logInPageUrl = 'https://erptest.efacto.cloud/';
+      this.logInPageUrl = 'https://erp.efacto.cloud/';
     }
   }
 

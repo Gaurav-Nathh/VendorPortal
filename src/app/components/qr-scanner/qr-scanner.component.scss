@@ -4,13 +4,12 @@
   padding: 0.5rem;
 
   .scanner-container {
-    margin-block: 0.4rem;
-    text-align: center;
+    display: flex;
+    justify-content: center;
 
     .scanner {
-      max-width: 400px;
       height: 300px;
-      margin: 0 auto;
+      width: 300px;
       border: 2px solid #007bff;
       border-radius: 8px;
     }

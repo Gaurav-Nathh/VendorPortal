@@ -73,7 +73,7 @@ export class ShoppingCartComponent {
 
   searchText: string = '';
   somType: string = 'Customer Order';
-  somDocType: string = 'DIRECT'
+  somDocType: string = 'DIRECT';
   sortByDropDownOpen = false;
   categoryDropDownOpen = false;
   filterTopDropDownOpen = false;
@@ -489,25 +489,84 @@ export class ShoppingCartComponent {
     this.filterPayload.catType = '';
     this.filterPayload.pageNumber = 1;
     this.filterPayload.vdate = new Date().toLocaleDateString('en-US');
+    if (this.CartMode === 'catalouge') {
+      this.filterPayload.priceAt = '';
+    } else {
+      this.filterPayload.priceAt = 'MRP';
+    }
+    this.filterPayload.brnId = String(this.brnId);
     const filters = JSON.stringify(this.filterPayload);
+    console.log(filters);
 
     this.shoppingCartService.getItems(filters).subscribe({
+      // next: (res: any) => {
+      //   const items = res?.ShopCartItemCatgoryList ?? [];
+      //   items.forEach((item: any) => {
+      //     const price = item?.Itemprices?.[0];
+      //     if (price) {
+      //       // price.Stock = price.Vstock + price.Fstock;
+      //       if (price.UnitFactorType == '%') {
+      //         price.Stock =
+      //           (price.Vstock + price.Fstock) * Number(price.UnitFactor);
+      //       } else {
+      //         price.Stock =
+      //           (price.Vstock + price.Fstock) / Number(price.UnitFactor);
+      //       }
+      //       if (this.CartMode === 'catalouge') {
+      //         price.ShowPrice = price.Price;
+      //         this.catalougeProducts.push(item);
+      //       } else {
+      //         price.ShowPrice = price.MRP;
+      //         this.products.push(item);
+      //       }
+      //       this.catalougeProducts = [];
+      //       this.products = [];
+      //       if (this.CartMode === 'catalouge') {
+      //         price.ShowPrice = price.Price;
+      //         this.catalougeProducts.push(item);
+      //         this.products = [...this.catalougeProducts];
+      //       } else {
+      //         price.ShowPrice = price.MRP;
+      //         this.products.push(item);
+      //       }
+      //     }
+      //   });
+      //   this.productLoader = false;
+      // },
       next: (res: any) => {
         const items = res?.ShopCartItemCatgoryList ?? [];
+
+        this.catalougeProducts = [];
+        this.products = [];
+
         items.forEach((item: any) => {
           const price = item?.Itemprices?.[0];
           if (price) {
-            price.ShowPrice = price.MRP;
-            price.Stock = price.Vstock + price.Fstock;
-            this.products.push(item);
-            // console.log('prod',this.products)
+            if (price.UnitFactorType == '%') {
+              price.Stock =
+                (price.Vstock + price.Fstock) * Number(price.UnitFactor);
+            } else {
+              price.Stock =
+                (price.Vstock + price.Fstock) / Number(price.UnitFactor);
+            }
+
             if (this.CartMode === 'catalouge') {
+              price.ShowPrice = price.Price;
               this.catalougeProducts.push(item);
+            } else {
+              price.ShowPrice = price.MRP;
+              this.products.push(item);
             }
           }
         });
+
+        if (this.CartMode === 'catalouge') {
+          this.products = [...this.catalougeProducts];
+        }
+
         this.productLoader = false;
       },
+
       error: (err) => {
         this.productLoader = false;
         Swal.fire({
@@ -553,7 +612,7 @@ export class ShoppingCartComponent {
           this.catalougeFilterPayload.toPrice > 0) &&
         firstPrice
       ) {
-        const mrp = firstPrice.MRP ?? 0;
+        const mrp = firstPrice.Price ?? 0;
         const from = this.catalougeFilterPayload.fromPrice || 0;
         const to = this.catalougeFilterPayload.toPrice || Infinity;
         if (mrp < from || mrp > to) return false;
@@ -688,6 +747,7 @@ export class ShoppingCartComponent {
     if (this.CartMode === 'catalouge') {
       this.catalougeFilterPayload.withStock = this.inStock;
     }
+    this.applyFilters();
   }
 
   onWithImageChange(event: Event): void {
@@ -696,6 +756,7 @@ export class ShoppingCartComponent {
     if (this.CartMode === 'catalouge') {
       this.catalougeFilterPayload.withImage = this.withImage;
     }
+    this.applyFilters();
   }
 
   minValue: number = 1;
@@ -749,7 +810,7 @@ export class ShoppingCartComponent {
 
   filterPayload: {
     [key: string]: any;
-    brnId: string;
+    brnId?: string;
     fyrId: number;
     wrhId: number;
     vdate: string;
@@ -762,7 +823,7 @@ export class ShoppingCartComponent {
     isWrhUnderIncl: boolean;
     btpCode: string;
     getpriceCode: boolean;
-    priceAt: string;
+    priceAt?: string;
     maxLength: number;
     catType: string;
     catId: number;
@@ -776,7 +837,6 @@ export class ShoppingCartComponent {
     withImage: boolean;
     orderCatelogName: string;
   } = {
-    brnId: String(this.brnId),
     fyrId: 25,
     wrhId: 0,
     vdate: '',
@@ -792,7 +852,7 @@ export class ShoppingCartComponent {
     maxLength: 10,
     catType: '',
     catId: 0,
-    priceAt: 'MRP',
+    // priceAt: 'MRP',
     searchType: '',
     searchValue: '',
     tempName: '',
@@ -894,18 +954,18 @@ export class ShoppingCartComponent {
 
   addToCart(product: Product) {
     try {
-      if (product.Itemprices[0].Stock <= 0) {
-        Swal.fire({
-          toast: true,
-          icon: 'warning',
-          title: 'Item is out of stock',
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-        });
-        return;
-      }
+      // if (product.Itemprices[0].Stock <= 0) {
+      //   Swal.fire({
+      //     toast: true,
+      //     icon: 'warning',
+      //     title: 'Item is out of stock',
+      //     position: 'top-end',
+      //     showConfirmButton: false,
+      //     timer: 2000,
+      //     timerProgressBar: true,
+      //   });
+      //   return;
+      // }
       let existing: boolean = false;
       if (this.CartMode === 'catalouge') {
         existing = this.cart.find(
@@ -1194,20 +1254,24 @@ export class ShoppingCartComponent {
     const now = new Date();
     const somFyrId = now.getFullYear() % 100;
     const gstRateMap: Record<number, number> = {
-        0: 4,
-        5: 1,
-        12: 2,
-        18: 3,
-        28: 5,
-        40: 6
-      };
-      console
+      0: 4,
+      5: 1,
+      12: 2,
+      18: 3,
+      28: 5,
+      40: 6,
+    };
+    console;
     if (this.isCartEditing) {
       const editableItem = this.salesOrderService.getEditableItem();
       // console.log('ed',editableItem)
       this.salesOrder = {
         SomMkey: editableItem.SO.SomMkey,
-        SomCmpId: this.userService._user?.UsrCCmpId && this.userService._user?.UsrCCmpId !== 0 ? this.userService._user.UsrCCmpId : 1,
+        SomCmpId:
+          this.userService._user?.UsrCCmpId &&
+          this.userService._user?.UsrCCmpId !== 0
+            ? this.userService._user.UsrCCmpId
+            : 1,
         SomBrnId: this.userService._user?.UsrBrnId ?? 0,
         SomAcmId: this.userService._user?.UsrLinkAcmId ?? 0,
         SomVtype: this.modelVtype,
@@ -1248,7 +1312,7 @@ export class ShoppingCartComponent {
             SodItmName: item.ItmName || '',
             SodItmCode: item.ItmCode || '',
             // SodItmUnitFactorType: price.UnitFactorType || '',
-            SodBaseUntCode: item.ItmBaseUntCode, 
+            SodBaseUntCode: item.ItmBaseUntCode,
           };
         }),
       };
@@ -1281,11 +1345,14 @@ export class ShoppingCartComponent {
           });
         },
       });
-    }
-    else {
+    } else {
       // console.log('Cart before creating SO:', this.cart);
       this.salesOrder = {
-        SomCmpId: this.userService._user?.UsrCCmpId && this.userService._user?.UsrCCmpId !== 0 ? this.userService._user.UsrCCmpId : 1,
+        SomCmpId:
+          this.userService._user?.UsrCCmpId &&
+          this.userService._user?.UsrCCmpId !== 0
+            ? this.userService._user.UsrCCmpId
+            : 1,
         SomBrnId: this.userService._user?.UsrBrnId ?? 0,
         SomAcmId: this.userService._user?.UsrLinkAcmId ?? 0,
         SomVtype: this.modelVtype,
@@ -1319,7 +1386,8 @@ export class ShoppingCartComponent {
           const gstRate = item.Itemprices[0];
           const sodGstId = gstRate.GstRate;
           const StokcValue = this.cart[0].Itemprices[0].Stock;
-          const remarks = StokcValue < 0 ? 'STOCK NOT AVAILABLE' : 'STOCK AVAILABLE'
+          const remarks =
+            StokcValue < 0 ? 'STOCK NOT AVAILABLE' : 'STOCK AVAILABLE';
           // console.log('cart', this.cart[0].Itemprices[0].Stock)
           return {
             SodItmId: item.ItmId,
@@ -1339,7 +1407,7 @@ export class ShoppingCartComponent {
             SodItmName: price.ItmName || '',
             SodItmCode: item.ItmCode || '',
             SodItmUnitFactorType: price.UnitFactorType || '',
-            SodBaseUntCode: item.ItmBaseUntCode || '', 
+            SodBaseUntCode: item.ItmBaseUntCode || '',
           } as SODetail;
         }),
       };
@@ -1398,7 +1466,7 @@ export class ShoppingCartComponent {
   //   });
   // }
 
-   setEditableItemsSO() {
+  setEditableItemsSO() {
     const editableItem = this.salesOrderService.getEditableItem();
     // console.log("editables", editableItem)
     if (!editableItem?.SO?.SoDetails?.length) return;
@@ -1477,7 +1545,7 @@ export class ShoppingCartComponent {
       this.VoucherTypeList = res.VoucherTypeList;
       this.modelVtype = res.VoucherTypeList[1]['Id'];
       // console.log('saleorder ', this.salesOrder);
-    })
+    });
   }
 
   GetVoucherPrefix() {
@@ -1488,15 +1556,17 @@ export class ShoppingCartComponent {
     var Vdate = now;
     var AcmId = this.userService._user?.UsrLinkAcmId ?? 0;
 
-    this.salesOrderService.GetVoucherPrefix(Vtype,BrnId,FyrId,Vdate,AcmId).subscribe((res: any) => {
-      // console.log('res', res);
-      this.modelVnoPrefix = res.VNOPREFFIX;
-      // console.log('saleorder ', this.salesOrder);
-    })
+    this.salesOrderService
+      .GetVoucherPrefix(Vtype, BrnId, FyrId, Vdate, AcmId)
+      .subscribe((res: any) => {
+        // console.log('res', res);
+        this.modelVnoPrefix = res.VNOPREFFIX;
+        // console.log('saleorder ', this.salesOrder);
+      });
   }
 
   GetTId() {
-    var TrnId = this.GetTransactionNumber()
+    var TrnId = this.GetTransactionNumber();
     this.somTId = TrnId ? this.bookType + TrnId : '';
   }
 
@@ -1504,6 +1574,4 @@ export class ShoppingCartComponent {
     var Date1 = new Date();
     return Date1.getTime();
   }
-
-
 }

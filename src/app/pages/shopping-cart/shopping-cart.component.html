@@ -386,7 +386,7 @@
           class="dropdown-item text-truncate"
           style="cursor: pointer"
           tooltip="{{ item.Text }}"
-          placement="end top"
+          placement="end"
           container="body"
         >
           {{ item.Text }}
@@ -444,11 +444,17 @@
           Reset All
         </button>
       </div>
-      <div
+      <!-- <div
         class="applyFilterBtn"
         (click)="
           CartMode === 'items' ? applyFilters() : applyCatalougeFilters()
         "
+      >
+        <span>Apply</span>
+      </div> -->
+      <div
+        class="applyFilterBtn"
+        (click)="applyFilters()"
       >
         <span>Apply</span>
       </div>

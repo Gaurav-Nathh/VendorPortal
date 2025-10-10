@@ -176,12 +176,12 @@
     td {
       padding: 0.3rem 1rem;
       vertical-align: middle;
-      // border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
       font-size: 0.86rem;
 
-      &:active {
-        border-bottom: none;
-      }
+      // &:active {
+      //   border-bottom: none;
+      // }
     }
 
     .primary-row {
