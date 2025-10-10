@@ -385,6 +385,9 @@
           (click)="selectCatalouge(item); $event.stopPropagation()"
           class="dropdown-item text-truncate"
           style="cursor: pointer"
+          tooltip="{{ item.Text }}"
+          placement="end top"
+          container="body"
         >
           {{ item.Text }}
         </li>
