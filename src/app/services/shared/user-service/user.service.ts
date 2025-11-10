@@ -20,7 +20,6 @@ export class UserService {
 
   setUser(user: User | null): void {
     this._user = user;
-    // console.log('user service  ', this._user)
   }
   fetchUser(userId: number): Observable<User> {
     const headers = this.config.getHeader();

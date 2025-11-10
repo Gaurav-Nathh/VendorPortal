@@ -139,7 +139,7 @@ export class ShoppingCartComponent {
 
   ngOnInit() {
     this.productImgUrl = this.config.getAWSS3BucketUrl();
-    this.brnId = this.userService._user?.UsrBrnId ?? 0;
+    this.brnId = this.userService._user?.UsrWBrnId ?? 0;
     this.sharedService.cartMode$.subscribe((mode) => {
       this.CartMode = mode;
     });
@@ -205,7 +205,7 @@ export class ShoppingCartComponent {
 
   selectCatalouges(item: any) {
     this.selectCatalouge(item); // your existing function
-    this.toggleSearch(false);   // switch back to button after select
+    this.toggleSearch(false); // switch back to button after select
   }
 
   selectCatalouge(item: any): void {
@@ -446,6 +446,18 @@ export class ShoppingCartComponent {
       this.applyFilters();
     } else if (this.CartMode === 'catalouge') {
       this.searchText = this.searchText.trim().toLowerCase();
+      if (this.catalougeProducts.length === 0) {
+        Swal.fire({
+          toast: true,
+          icon: 'warning',
+          title: 'Please select a catalouge first!',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+        this.searchText = '';
+      }
       if (!this.searchText) {
         this.products = [...this.catalougeProducts];
       } else {
@@ -581,7 +593,7 @@ export class ShoppingCartComponent {
               price.ShowPrice = price.Price;
               this.catalougeProducts.push(item);
             } else {
-              price.ShowPrice = price.MRP;
+              price.ShowPrice = price.Price;
               this.products.push(item);
             }
           }
@@ -798,7 +810,7 @@ export class ShoppingCartComponent {
     },
   };
 
-  priceFilter() { }
+  priceFilter() {}
 
   resetFilterSection(title: string, key: string): void {
     this.selectedFilters[title] = [];
@@ -898,11 +910,11 @@ export class ShoppingCartComponent {
     toPrice: number;
     withImage: boolean;
   } = {
-      withStock: true,
-      fromPrice: 0,
-      toPrice: 0,
-      withImage: true,
-    };
+    withStock: true,
+    fromPrice: 0,
+    toPrice: 0,
+    withImage: true,
+  };
 
   selectedNavFilterTitleDisplay = 'Select a filter';
   selectedNavFilterTitle: any = null;
@@ -1286,7 +1298,7 @@ export class ShoppingCartComponent {
       12: 2,
       18: 3,
       28: 5,
-      40: 6
+      40: 6,
     };
     if (this.isCartEditing) {
       const editableItem = this.salesOrderService.getEditableItem();
@@ -1298,10 +1310,10 @@ export class ShoppingCartComponent {
           this.userService._user?.UsrCCmpId !== 0
             ? this.userService._user.UsrCCmpId
             : 1,
-        SomBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SomBrnId: this.userService._user?.UsrWBrnId ?? 0,
         SomAcmId: this.userService._user?.UsrLinkAcmId ?? 0,
         SomVtype: this.modelVtype,
-        SomShpBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SomShpBrnId: this.userService._user?.UsrWBrnId ?? 0,
         SomNetAmt: this.cart.reduce(
           (sum, item) =>
             sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
@@ -1404,7 +1416,7 @@ export class ShoppingCartComponent {
         SomDlvDate: now,
         SomVdate: now,
         SomBtpCode: this.BtpCode,
-        SomShpBrnId: this.userService._user?.UsrBrnId ?? 0,
+        SomShpBrnId: this.userService._user?.UsrWBrnId ?? 0,
         SoDetails: this.cart.map((item, index) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
@@ -1577,16 +1589,18 @@ export class ShoppingCartComponent {
   GetVoucherPrefix() {
     const now = new Date();
     var Vtype = 'SOM';
-    var BrnId = this.userService._user?.UsrBrnId ?? 0;
+    var BrnId = this.userService._user?.UsrWBrnId ?? 0;
     var FyrId = now.getFullYear() % 100;
     var Vdate = now;
     var AcmId = this.userService._user?.UsrLinkAcmId ?? 0;
 
-    this.salesOrderService.GetVoucherPrefix(Vtype, BrnId, FyrId, Vdate, AcmId).subscribe((res: any) => {
-      // console.log('res', res);
-      this.modelVnoPrefix = res.VNOPREFFIX;
-      // console.log('saleorder ', this.salesOrder);
-    })
+    this.salesOrderService
+      .GetVoucherPrefix(Vtype, BrnId, FyrId, Vdate, AcmId)
+      .subscribe((res: any) => {
+        // console.log('res', res);
+        this.modelVnoPrefix = res.VNOPREFFIX;
+        // console.log('saleorder ', this.salesOrder);
+      });
   }
 
   GetTId() {
@@ -1598,7 +1612,7 @@ export class ShoppingCartComponent {
     var Date1 = new Date();
     return Date1.getTime();
   }
-   filterCatalogues() {
+  filterCatalogues() {
     const search = this.searchCatalogue.toLowerCase();
     this.filteredCatalogueList = this.itemCatalougeList.filter((item) =>
       item.Text.toLowerCase().includes(search)
