@@ -584,10 +584,16 @@ export class ShoppingCartComponent {
             if (price.UnitFactorType == '%') {
               price.Stock =
                 (price.Vstock + price.Fstock) * Number(price.UnitFactor);
+              
+              price.Astock = Number((price.Astock * item.ItmUnitFactor).toFixed(2));
             } else {
               price.Stock =
                 (price.Vstock + price.Fstock) / Number(price.UnitFactor);
+
+              price.Astock = Number((price.Astock / item.ItmUnitFactor).toFixed(2));
             }
+            
+            console.log('Astock after applyFilters:', price.Astock);
 
             if (this.CartMode === 'catalouge') {
               price.ShowPrice = price.Price;
@@ -651,16 +657,17 @@ export class ShoppingCartComponent {
           this.catalougeFilterPayload.toPrice > 0) &&
         firstPrice
       ) {
-        const mrp = firstPrice.Price ?? 0;
+        const price = firstPrice.Price ?? 0;
         const from = this.catalougeFilterPayload.fromPrice || 0;
         const to = this.catalougeFilterPayload.toPrice || Infinity;
-        if (mrp < from || mrp > to) return false;
+        if (price < from || price > to) return false;
       }
 
       // Stock filter
       if (
         this.catalougeFilterPayload.withStock &&
-        (!firstPrice || firstPrice.Stock <= 0)
+        // (!firstPrice || firstPrice.Stock <= 0)
+        (!firstPrice || firstPrice.Astock <= 0)
       ) {
         return false;
       }
@@ -752,11 +759,28 @@ export class ShoppingCartComponent {
             const items = res?.ShopCartItemCatgoryList ?? [];
             items.forEach((item: any) => {
               const price = item?.Itemprices?.[0];
-              if (price) {
-                price.ShowPrice = price.MRP;
-                price.Stock = price.Vstock + price.Fstock;
-                this.products.push(item);
-              }
+              
+          if (price) {
+            if (price.UnitFactorType == '%') {
+              price.Stock =
+                (price.Vstock + price.Fstock) * Number(price.UnitFactor);
+              
+              price.Astock = Number((price.Astock * item.ItmUnitFactor).toFixed(2));
+            } else {
+              price.Stock =
+                (price.Vstock + price.Fstock) / Number(price.UnitFactor);
+
+              price.Astock = Number((price.Astock / item.ItmUnitFactor).toFixed(2));
+            }
+
+            if (this.CartMode === 'catalouge') {
+              price.ShowPrice = price.Price;
+              this.catalougeProducts.push(item);
+            } else {
+              price.ShowPrice = price.Price;
+              this.products.push(item);
+            }
+          }
             });
           }
           this.isDataLoading = false;
@@ -954,9 +978,26 @@ export class ShoppingCartComponent {
         items.forEach((item: any) => {
           const price = item?.Itemprices?.[0];
           if (price) {
-            price.ShowPrice = price.MRP;
-            price.Stock = price.Vstock + price.Fstock;
-            this.products.push(item);
+            if (price.UnitFactorType == '%') {
+              price.Stock =
+                (price.Vstock + price.Fstock) * Number(price.UnitFactor);
+              
+              price.Astock = Number((price.Astock * item.ItmUnitFactor).toFixed(2));
+
+            } else {
+              price.Stock =
+                (price.Vstock + price.Fstock) / Number(price.UnitFactor);
+
+              price.Astock = Number((price.Astock / item.ItmUnitFactor).toFixed(2));
+            }
+
+            if (this.CartMode === 'catalouge') {
+              price.ShowPrice = price.Price;
+              this.catalougeProducts.push(item);
+            } else {
+              price.ShowPrice = price.Price;
+              this.products.push(item);
+            }
           }
         });
         this.productLoader = false;
@@ -1009,8 +1050,7 @@ export class ShoppingCartComponent {
       if (this.CartMode === 'catalouge') {
         existing = this.cart.find(
           (item) =>
-            item.ItmId === product.ItmId ||
-            item.ItemPrices?.[0]?.MRP === product.Itemprices?.[0]?.MRP
+            item.ItmId === product.ItmId
         );
       } else {
         existing = this.cart.find((item) => item.ItmId === product.ItmId);
@@ -1053,7 +1093,8 @@ export class ShoppingCartComponent {
   }
 
   increaseItmCardQty(product: Product): void {
-    if (product.ItmQty >= product.Itemprices[0].Stock) {
+    // if (product.ItmQty >= product.Itemprices[0].Stock) {
+    if (product.ItmQty >= product.Itemprices[0].Astock) {
       Swal.fire({
         toast: true,
         icon: 'warning',
@@ -1135,7 +1176,7 @@ export class ShoppingCartComponent {
 
   get totalAmount(): number {
     return this.cart.reduce(
-      (total, item) => total + item.Itemprices[0].MRP * (item.ItmQty || 1),
+      (total, item) => total + item.Itemprices[0].Price * (item.ItmQty || 1),
       0
     );
   }
@@ -1316,7 +1357,7 @@ export class ShoppingCartComponent {
         SomShpBrnId: this.userService._user?.UsrWBrnId ?? 0,
         SomNetAmt: this.cart.reduce(
           (sum, item) =>
-            sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
+            sum + (item.ItmQty || 0) * (item.Itemprices[0]?.Price || 0),
           0
         ),
         SomStsCode: 0,
@@ -1328,7 +1369,7 @@ export class ShoppingCartComponent {
         SoDetails: this.cart.map((item, index) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
-          const rate = price?.MRP || 0;
+          const rate = price?.Price || 0;
           // const gst = parseFloat(price.Gst.match(/\d+(\.\d+)?/)![0]);
           // console.log('p',price)
           return {
@@ -1399,7 +1440,7 @@ export class ShoppingCartComponent {
         SomVnoPrefix: this.modelVnoPrefix,
         SomNetAmt: this.cart.reduce(
           (sum, item) =>
-            sum + (item.ItmQty || 0) * (item.Itemprices[0]?.MRP || 0),
+            sum + (item.ItmQty || 0) * (item.Itemprices[0]?.Price || 0),
           0
         ),
         SomStsCode: 0,
@@ -1420,10 +1461,11 @@ export class ShoppingCartComponent {
         SoDetails: this.cart.map((item, index) => {
           const price = item.Itemprices[0];
           const qty = item.ItmQty || 1;
-          const rate = price?.MRP || 0;
+          const rate = price?.Price || 0;
           const gstRate = item.Itemprices[0];
           const sodGstId = gstRate.GstRate;
-          const StokcValue = this.cart[0].Itemprices[0].Stock;
+          // const StokcValue = this.cart[0].Itemprices[0].Stock;
+          const StokcValue = this.cart[0].Itemprices[0].Astock;
           const remarks =
             StokcValue < 0 ? 'STOCK NOT AVAILABLE' : 'STOCK AVAILABLE';
           // console.log('cart', this.cart[0].Itemprices[0].Stock)
@@ -1437,7 +1479,8 @@ export class ShoppingCartComponent {
             SodUntId: item.ItmPackUntId || 0,
             SodUnitFactor: price?.UnitFactor || 1,
             SodNetAmt: qty * rate,
-            SodStock: price?.Stock || 0,
+            // SodStock: price?.Stock || 0,
+            SodStock: price?.Astock || 0,
             SodBaseQty: qty * (price?.UnitFactor || 1),
             SodBaseUntId: item.ItmBaseUntId || 0,
             SodRemarks: remarks,
@@ -1516,7 +1559,7 @@ export class ShoppingCartComponent {
         ItmUntId: detail.SodPack,
         ItmCode: detail.SodItmCode,
         ItmName: detail.SodItmName,
-        ItmMrp: 0.0,
+        ItmMrp: detail.SodMrp,
         ItmQty: detail.SodQty,
         ItmStock: detail.SodStock,
         ItmBaseUntCode: detail.SodBaseUntCode,
